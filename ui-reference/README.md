@@ -19,7 +19,7 @@ Hosted previews (private to the owner; the hero preview includes the songs):
 
 | # | بخش | Section | Status | Refs |
 |---|---|---|---|---|
-| 1 | هیرو (صحنه) | Hero: the featured poster on a colour halo, date card, featured poster rail, music pill with rhythm detection | **v3, waiting for feedback** → [`01-hero`](01-hero/) | الف، ب، ۱۰، ۱۵ |
+| 1 | هیرو (صحنه) | Hero: stage photo, featured rail, player with rhythm detection, date card | **v2, waiting for feedback** → [`01-hero`](01-hero/) | الف، ب، ۱۰، ۱۵ |
 | 2 | جستجو با حال‌وهوا | Mood search ("something funny", "date night", "this weekend") | next | ۳، ۵ |
 | 3 | پرفروش‌های هفته | Weekly best sellers with giant numbers | later | ۳ |
 | 4 | قفسه‌ی تئاتر | Theatre poster shelf | later | ۵، ۱۴ |
@@ -32,8 +32,8 @@ Reference numbers point to [`references.md`](references.md).
 
 ## قواعد مشترک همه‌ی بخش‌ها · Shared rules
 
-- Dark stage look: neutrals `#09080d / #100f16`, few elements, no backdrop blur. Events are shown by their **graphic posters** (2:3), never stock photos; each event's accent and glow colours come from its poster.
+- Dark stage look: neutrals `#07060b / #0e0c15`, solid translucent panels (no backdrop blur), one accent at a time through `--accent` (per event; brand violet `#a78bfa` as the default).
 - Type: Lalezar (display), Vazirmatn (UI and body), Noto Nastaliq Urdu (taglines only).
 - Motion: GSAP for timelines, WAAPI or CSS for compositor-only effects; `expo.out` for entrances, `power3.in` for exits; always a reduced-motion path.
-- Performance: continuous animation only on `transform` and `opacity`; no WebGL, backdrop-filter or blend modes on moving layers; nothing restyles the whole page per frame. See [`01-hero/SPEC.md` §10](01-hero/SPEC.md#10-performance-rtl-and-accessibility-rules).
-- RTL rules (no per-letter splitting, LTR clocks and media bars, mirrored arrows, unmirrored media icons) are in the same section.
+- Performance: continuous animation only on `transform` and `opacity`; no WebGL, backdrop-filter or blend modes; nothing restyles the whole page per frame. See [`01-hero/SPEC.md` §10](01-hero/SPEC.md#10-performance-rules).
+- RTL rules (no per-letter splitting, LTR clocks and media bars, mirrored arrows, unmirrored media icons) are in [`01-hero/SPEC.md` §11](01-hero/SPEC.md#11-persian--rtl-rules).
