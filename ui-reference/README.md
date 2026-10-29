@@ -7,19 +7,21 @@ This folder is the UI reference for the ticketing site. The home page is designe
 ## چطور ببینی · How to view
 
 ```bash
-cd ui-reference/01-hero && npx http-server -p 8000
+cd ui-reference && npx http-server -p 8000
 ```
-Then open http://localhost:8000. Use a local server rather than double-clicking the file. Pick one that supports range requests (`http-server` does), so the music player can seek. The songs aren't in git; see [`01-hero/assets/music/README.md`](01-hero/assets/music/README.md).
+Then open http://localhost:8000/01-hero/ or http://localhost:8000/01-hero-formal/. Use a local server rather than double-clicking the file. Pick one that supports range requests (`http-server` does), so the music player can seek. The songs aren't in git; see [`01-hero/assets/music/README.md`](01-hero/assets/music/README.md).
 
 Hosted previews (private to the owner; the hero preview includes the songs):
 - Moodboard of 16 international ticketing, festival and theatre sites: https://claude.ai/artifact/G67hnwxgRA75NhkLfJZUAP
-- Hero: https://claude.ai/artifact/FMdoTVhR22nUCmfX76FvjU
+- Hero v2 (kept): https://claude.ai/artifact/FMdoTVhR22nUCmfX76FvjU
+- Hero, formal direction: https://claude.ai/artifact/2dsVQJ2X6pTMXXZ2gt648K
 
 ## بخش‌ها · Sections
 
 | # | بخش | Section | Status | Refs |
 |---|---|---|---|---|
-| 1 | هیرو (صحنه) | Hero: stage photo, featured rail, player with rhythm detection, date card | **v2, waiting for feedback** → [`01-hero`](01-hero/) | الف، ب، ۱۰، ۱۵ |
+| 1 | هیرو (صحنه) | Hero v2: stage photo, featured rail, player with rhythm detection, date card | **kept** → [`01-hero`](01-hero/) | الف، ب، ۱۰، ۱۵ |
+| 1b | هیرو، نسخه‌ی رسمی | Hero, formal direction: editorial spread, black-and-white photo, featured index, quiet motion | **new, waiting for feedback** → [`01-hero-formal`](01-hero-formal/) | — |
 | 2 | جستجو با حال‌وهوا | Mood search ("something funny", "date night", "this weekend") | next | ۳، ۵ |
 | 3 | پرفروش‌های هفته | Weekly best sellers with giant numbers | later | ۳ |
 | 4 | قفسه‌ی تئاتر | Theatre poster shelf | later | ۵، ۱۴ |

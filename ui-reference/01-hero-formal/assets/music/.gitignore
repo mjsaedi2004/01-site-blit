@@ -1,0 +1,4 @@
+# Not committed: the songs are copyrighted. See README.md.
+*.mp3
+*.webp
+!README.md
