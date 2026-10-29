@@ -4,7 +4,7 @@
 
 **Status:** v2, the second round. It answers the owner's feedback on v1: sharper photos, too laggy, dull motion, a countdown that was too big, a featured row like reference B, Iranian songs with rhythm detection, a choice of reaction modes, and a fit in 1920×1080.
 **Stack of the prototype:** HTML + CSS + vanilla JS + GSAP 3.13 (+ ScrollTrigger) + Web Audio. No WebGL.
-**Source of truth:** `ui-reference/01-hero/index.html`.
+**Source of truth:** `ui-reference/01-hero/v2/index.html`.
 
 ---
 

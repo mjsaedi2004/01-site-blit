@@ -15,4 +15,4 @@ Files:
 - `name-1200.webp` / `name-2000.webp`: colour.
 - `name-bw-1200.webp` / `name-bw-2000.webp`: black and white.
 
-Fonts: Markazi Text and Vazirmatn, both from Google Fonts under the SIL Open Font License. Music is not part of the repository; see `music/README.md`.
+Fonts: Markazi Text and Vazirmatn, both from Google Fonts under the SIL Open Font License. Music is shared by versions 2–4 and not part of the repository; see `../../assets/music/README.md`.
