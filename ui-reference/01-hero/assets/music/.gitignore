@@ -1,0 +1,6 @@
+# Not committed: the songs and their cover art are copyrighted.
+*.mp3
+*.webp
+*.jpg
+*.png
+!README.md
