@@ -4,38 +4,34 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>بلیت · هیرو ۷</title>
-<meta name="description" content="نمونه‌ی هیروی صفحه‌ی اصلی بلیت: یه عکس تمام‌صفحه، چهار کادر کوچیک کنار صفحه، و پوستر بعدی که آروم از وسط صفحه باز می‌شه.">
+<meta name="description" content="نمونه‌ی هیروی صفحه‌ی اصلی بلیت: عکس اجرا کل صفحه رو می‌گیره، آروم زوم‌اوت می‌شه و محو می‌شه روی اجرای بعدی؛ کارت‌ها سمت راست.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wdth,wght@62.5,700..900&family=Vazirmatn:wght@300..800&family=Lalezar&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300..900&family=Lalezar&display=swap">
 <link rel="preload" as="image" href="assets/photos/pop-frequency-1920.webp" imagesrcset="assets/photos/pop-frequency-1920.webp 1920w, assets/photos/pop-frequency-2560.webp 2560w" imagesizes="100vw" fetchpriority="high">
 <script>document.documentElement.classList.add('is-intro');setTimeout(function(){document.documentElement.classList.remove('is-intro')},4000);</script>
 <style>
-/* Layout, after the owner's description of the first screen of leemeenal.app: quiet and sparse.
-   One photo fills the screen and slowly zooms in while it is on. Four small boxes at the side of
-   the page hold the shows. When a show's time is up, the next one opens softly from the middle of
-   the screen while the old one keeps moving towards the viewer, and the show's few words take
-   their place in the bottom corner.
+/* Layout, after the owner's reference (a screenshot of an Iranian site's first screen): the
+   active show's picture fills the screen, starts zoomed in and slowly zooms out while its seconds
+   pass, then fades into the next one. The words sit on the left, right-aligned, over a dark
+   gradient; a column of 16:9 cards with up and down buttons sits on the right; the header is a
+   floating capsule with softly rounded corners.
    All sizes follow one unit, --u, which is 1% of the width on a 16:9 screen and shrinks with the
    height on wider ones, so the composition is the same on any desktop screen and never
    overflows. */
 :root {
   --u: clamp(11px, min(1vw, 1.7778svh), 26px);
-  --bg: #050409;
-  --ink: #fbfaff;
-  --ink-2: rgba(246, 243, 255, .78);
-  --ink-3: rgba(246, 243, 255, .54);
-  --line: rgba(255, 255, 255, .14);
-  --line-2: rgba(255, 255, 255, .26);
-  --glass: rgba(9, 7, 16, .4);
-  --panel: #13111b;
+  --bg: #07060c;
+  --ink: #ffffff;
+  --ink-2: rgba(255, 255, 255, .86);
+  --ink-3: rgba(255, 255, 255, .6);
+  --line: rgba(255, 255, 255, .12);
+  --line-2: rgba(255, 255, 255, .24);
+  --panel: #14121d;
   --accent: #3b82f6;
-  --light: #93c5fd;
   --on-accent: #fff;
   --font-ui: "Vazirmatn", Tahoma, system-ui, sans-serif;
-  --font-title: "Noto Sans Arabic", "Vazirmatn", sans-serif;
   --ease: cubic-bezier(.16, 1, .3, 1);
-  --pad: calc(var(--u) * 3.2);
   color-scheme: dark;
 }
 
@@ -48,77 +44,56 @@ img { display: block; max-width: 100%; }
 a { color: inherit; }
 :focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 .is-intro .hero { visibility: hidden; }
-svg.i { width: 1.15em; height: 1.15em; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; flex: none; }
-.mask { display: block; overflow: hidden; padding-block: .1em .2em; margin-block: -.1em -.2em; }
-.mask > * { display: block; will-change: transform; }
+svg.i { width: 1.15em; height: 1.15em; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
 
 /* ── hero ──────────────────────────────────────────────────────── */
 .hero {
   position: relative; height: 100svh; min-height: 600px; overflow: hidden; isolation: isolate; background: var(--bg);
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: auto minmax(0, 1fr) minmax(0, calc(var(--u) * 36));
   grid-template-rows: auto minmax(0, 1fr);
-  grid-template-areas: "nav nav" "copy side";
-  column-gap: calc(var(--u) * 4);
-  padding: max(calc(var(--u) * 1.5), env(safe-area-inset-top, 0px)) max(var(--pad), env(safe-area-inset-right, 0px)) max(calc(var(--u) * 3), env(safe-area-inset-bottom, 0px)) max(var(--pad), env(safe-area-inset-left, 0px));
-  /* where a poster stands when a show only has a poster: between the boxes and the words */
-  --pfx: 40%; --pfy: 47%; --pfh: 60%;
+  grid-template-areas: "nav nav nav" "cards . copy";
+  column-gap: calc(var(--u) * 3);
+  padding: max(calc(var(--u) * 1.2), env(safe-area-inset-top, 0px)) max(calc(var(--u) * 2.6), env(safe-area-inset-right, 0px)) calc(var(--u) * 2.4) max(calc(var(--u) * 4.2), env(safe-area-inset-left, 0px));
 }
-.hero[data-boxes="row"] { --pfx: 34%; --pfy: 40%; --pfh: 54%; }
 
-/* the pictures: a stack of layers; the newest one opens over the others */
+/* the pictures: two or three layers; the new one fades in over the old */
 .bg { position: absolute; inset: 0; z-index: 0; overflow: hidden; background: var(--bg); will-change: transform; }
-.lay { position: absolute; inset: 0; visibility: hidden; contain: strict; }
-.lay.is-on { visibility: visible; }
-.iris { position: absolute; inset: 0; transform-origin: 50% 50%; }
-.lay.is-iris .iris { will-change: transform; -webkit-mask-image: radial-gradient(closest-side, #000 60%, transparent 100%); mask-image: radial-gradient(closest-side, #000 60%, transparent 100%); }
-.mv { position: absolute; inset: 0; transform-origin: 50% 50%; will-change: transform; }
-.comp { position: absolute; inset: 0; overflow: hidden; background: #0b0912; }
-.ph { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; object-position: var(--op, 50% 50%); transform: scale(var(--z, 1)); transform-origin: var(--o, 50% 50%); }
-.lay .ph { will-change: transform; }
-.dim { position: absolute; inset: 0; background: var(--bg); opacity: 0; pointer-events: none; }
-/* a show with only a poster: the poster, blurred, is the background and the poster itself stands in a frame */
-.comp.is-poster::after { content: ""; position: absolute; inset: 0; background: rgba(5, 4, 9, .3); }
-.pf { position: absolute; z-index: 1; left: var(--pfx); top: var(--pfy); height: var(--pfh); aspect-ratio: var(--pr, .8); translate: -50% -50%; rotate: -2.5deg; overflow: hidden; border-radius: calc(var(--hh, 1080px) * .014); box-shadow: 0 calc(var(--hh, 1080px) * .05) calc(var(--hh, 1080px) * .1) calc(var(--hh, 1080px) * -.035) rgba(0, 0, 0, .9), 0 0 0 1px rgba(255, 255, 255, .12); }
-.pf img { width: 100%; height: 100%; object-fit: cover; }
-
-/* legibility, kept light: the bottom corner for the words, the top for the menu, the side for the boxes */
+.lay { position: absolute; inset: 0; opacity: 0; will-change: opacity; }
+.lay img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; object-position: var(--op, 50% 50%); transform-origin: var(--o, 50% 50%); will-change: transform; }
+/* the words' side is darkened, and a little of the top and the bottom */
 .shade { position: absolute; inset: 0; z-index: 1; pointer-events: none; background:
-  radial-gradient(115% 85% at 100% 100%, rgba(5, 4, 9, .8) 0%, rgba(5, 4, 9, .5) 30%, rgba(5, 4, 9, 0) 62%),
-  linear-gradient(to bottom, rgba(5, 4, 9, .5) 0%, rgba(5, 4, 9, 0) 16%),
-  linear-gradient(to right, rgba(5, 4, 9, .42) 0%, rgba(5, 4, 9, 0) 18%); }
-.hero[data-boxes="row"] .shade { background:
-  radial-gradient(115% 85% at 100% 100%, rgba(5, 4, 9, .8) 0%, rgba(5, 4, 9, .5) 30%, rgba(5, 4, 9, 0) 62%),
-  linear-gradient(to bottom, rgba(5, 4, 9, .5) 0%, rgba(5, 4, 9, 0) 16%),
-  linear-gradient(to top, rgba(5, 4, 9, .55) 0%, rgba(5, 4, 9, 0) 24%); }
-.grain { position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: .5; background-size: 220px 220px; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .06 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"); }
+  linear-gradient(to right, rgba(7, 6, 14, .8) 0%, rgba(7, 6, 14, .62) 26%, rgba(7, 6, 14, .22) 50%, rgba(7, 6, 14, 0) 64%),
+  linear-gradient(to bottom, rgba(7, 6, 14, .5) 0%, rgba(7, 6, 14, 0) 18%),
+  linear-gradient(to top, rgba(7, 6, 14, .45) 0%, rgba(7, 6, 14, 0) 22%); }
 
-/* ── nav ───────────────────────────────────────────────────────── */
-.nav { grid-area: nav; position: relative; z-index: 6; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: calc(var(--u) * 2); height: max(40px, calc(var(--u) * 2.6)); }
-.brand { justify-self: start; display: inline-flex; align-items: center; gap: calc(var(--u) * .6); text-decoration: none; font-weight: 800; font-size: max(17px, calc(var(--u) * 1.32)); line-height: 1; color: #fff; }
-.bars { display: flex; align-items: center; gap: max(2px, calc(var(--u) * .17)); height: max(18px, calc(var(--u) * 1.4)); direction: ltr; }
-.bars i { width: max(2.5px, calc(var(--u) * .2)); height: 100%; border-radius: 9px; background: #fff; transform: scaleY(var(--s)); will-change: transform; }
-.links { display: flex; gap: calc(var(--u) * 2.2); }
-.links a { position: relative; text-decoration: none; font-size: max(13px, calc(var(--u) * .8)); color: rgba(255, 255, 255, .78); padding-block: 4px; transition: color .3s; }
-.links a::after { content: ""; position: absolute; inset-inline: 30%; bottom: -3px; height: 1.5px; border-radius: 2px; background: #fff; transform: scaleX(0); transition: transform .5s var(--ease); }
+/* ── the header: a floating capsule with softly rounded corners ── */
+.nav { grid-area: nav; position: relative; z-index: 6; display: flex; align-items: center; gap: calc(var(--u) * 2.2); height: max(54px, calc(var(--u) * 3.3)); padding-inline: calc(var(--u) * 1.3) calc(var(--u) * .6); border-radius: max(12px, calc(var(--u) * .75)); background: rgba(16, 14, 26, .64); border: 1px solid var(--line); box-shadow: 0 14px 40px -20px rgba(0, 0, 0, .8); }
+.brand { display: inline-flex; align-items: center; gap: calc(var(--u) * .55); text-decoration: none; font-weight: 800; font-size: max(17px, calc(var(--u) * 1.25)); line-height: 1; color: #fff; }
+.bars { display: flex; align-items: center; gap: max(2px, calc(var(--u) * .16)); height: max(17px, calc(var(--u) * 1.3)); direction: ltr; }
+.bars i { width: max(2.5px, calc(var(--u) * .19)); height: 100%; border-radius: 9px; background: var(--accent); transform: scaleY(var(--s)); will-change: transform; transition: background-color .8s; }
+.links { display: flex; gap: calc(var(--u) * 1.9); }
+.links a { position: relative; text-decoration: none; font-size: max(13px, calc(var(--u) * .8)); color: rgba(255, 255, 255, .72); padding-block: 4px; transition: color .3s; }
 .links a:hover, .links a[aria-current="page"] { color: #fff; }
-.links a:hover::after, .links a[aria-current="page"]::after { transform: scaleX(1); }
-.nav-end { justify-self: end; display: flex; align-items: center; gap: calc(var(--u) * 1.1); }
-.login { all: unset; cursor: pointer; font-size: max(13px, calc(var(--u) * .8)); color: rgba(255, 255, 255, .85); transition: color .3s; }
-.login:hover { color: #fff; }
+.links a[aria-current="page"] { font-weight: 700; }
+.nav-end { margin-inline-start: auto; display: flex; align-items: center; gap: calc(var(--u) * 1); }
+.login { all: unset; cursor: pointer; display: inline-flex; align-items: center; height: max(36px, calc(var(--u) * 2.2)); padding-inline: calc(var(--u) * 1.1); border-radius: max(9px, calc(var(--u) * .5)); background: #fff; color: #0c0a14; font-size: max(13px, calc(var(--u) * .78)); font-weight: 700; transition: transform .4s var(--ease); }
+.login:hover { transform: translateY(-1px); }
 .login:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.menu-btn { all: unset; cursor: pointer; display: none; place-items: center; width: 38px; height: 38px; border-radius: 10px; color: #fff; }
+.menu-btn svg.i { width: 20px; height: 20px; }
 
-/* music, in the menu bar: a play button, the song's name and four small bars */
+/* music, in the header: a play button, the song's name and four small bars */
 .music { position: relative; display: flex; align-items: center; gap: calc(var(--u) * .55); }
-.mu-play { all: unset; cursor: pointer; position: relative; display: grid; place-items: center; width: max(30px, calc(var(--u) * 1.95)); height: max(30px, calc(var(--u) * 1.95)); border-radius: 50%; border: 1px solid var(--line-2); background: var(--glass); color: #fff; transition: background .3s, color .3s, border-color .3s; }
-.mu-play::after { content: ""; position: absolute; inset: -4px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, .6); opacity: 0; transform: scale(var(--pulse, 1)); transition: opacity .4s; }
+.mu-play { all: unset; cursor: pointer; position: relative; display: grid; place-items: center; width: max(32px, calc(var(--u) * 2)); height: max(32px, calc(var(--u) * 2)); border-radius: 50%; background: rgba(255, 255, 255, .1); color: #fff; transition: background .3s, color .3s; }
+.mu-play::after { content: ""; position: absolute; inset: -4px; border-radius: 50%; border: 1.5px solid var(--accent); opacity: 0; transform: scale(var(--pulse, 1)); transition: opacity .4s, border-color .8s; }
 .music.is-playing .mu-play::after { opacity: .7; }
-.mu-play:hover { border-color: rgba(255, 255, 255, .6); }
+.mu-play:hover { background: rgba(255, 255, 255, .2); }
 .mu-play:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 .mu-play svg.i { width: 40%; height: 40%; }
 .mu-play .i-pause, .music.is-playing .mu-play .i-play { display: none; }
 .music.is-playing .mu-play .i-pause { display: block; }
-.music.is-playing .mu-play { background: #fff; color: #0b0a12; border-color: #fff; }
+.music.is-playing .mu-play { background: #fff; color: #0c0a14; }
 .mu-play .spin { display: none; width: 40%; height: 40%; border-radius: 50%; border: 1.5px solid currentColor; border-inline-end-color: transparent; animation: spin .8s linear infinite; }
 .music.is-loading .mu-play .spin { display: block; }
 .music.is-loading .mu-play .i-play, .music.is-loading .mu-play .i-pause { display: none; }
@@ -127,8 +102,8 @@ svg.i { width: 1.15em; height: 1.15em; fill: none; stroke: currentColor; stroke-
 .mu-meta:hover { color: #fff; }
 .mu-meta:focus-visible { outline: 2px solid #fff; outline-offset: 4px; border-radius: 4px; }
 .mu-eq { display: flex; align-items: flex-end; gap: 2px; height: 13px; direction: ltr; }
-.mu-eq i { width: 2px; height: 100%; border-radius: 1px; background: #fff; transform: scaleY(.2); transform-origin: bottom; will-change: transform; }
-.mu-pop { position: absolute; top: calc(100% + 14px); inset-inline-end: 0; z-index: 20; width: 340px; max-width: calc(100vw - 32px); padding: 16px; display: grid; gap: 12px; background: var(--panel); border: 1px solid var(--line); border-radius: 18px; box-shadow: 0 30px 70px -24px rgba(0, 0, 0, .85); font-size: 13.5px; }
+.mu-eq i { width: 2px; height: 100%; border-radius: 1px; background: var(--accent); transform: scaleY(.2); transform-origin: bottom; will-change: transform; transition: background-color .8s; }
+.mu-pop { position: absolute; top: calc(100% + 18px); inset-inline-end: 0; z-index: 20; width: 340px; max-width: calc(100vw - 32px); padding: 16px; display: grid; gap: 12px; background: var(--panel); border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 30px 70px -24px rgba(0, 0, 0, .85); font-size: 13.5px; }
 .mu-head { display: flex; align-items: center; gap: 12px; }
 .mu-head > :last-child { display: grid; line-height: 1.5; min-width: 0; }
 .mu-head b { font-size: 14px; }
@@ -155,86 +130,79 @@ svg.i { width: 1.15em; height: 1.15em; fill: none; stroke: currentColor; stroke-
 .mu-list .tt { font-size: 13.5px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .mu-list .ta { font-size: 11.5px; color: var(--ink-3); }
 .mu-list .td { font-size: 11.5px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
-.mu-list .bpm { color: var(--light); margin-inline-end: 6px; }
+.mu-list .bpm { color: #fff; margin-inline-end: 6px; }
 .add-song { position: relative; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px; border: 1px dashed var(--line-2); border-radius: 12px; font-size: 13px; color: var(--ink-2); cursor: pointer; transition: color .3s, border-color .3s; }
 .add-song:hover { color: #fff; border-color: rgba(255, 255, 255, .45); }
 .add-song input { position: absolute; width: 1px; height: 1px; opacity: 0; }
 .add-song:focus-within { outline: 2px solid #fff; outline-offset: 2px; }
 
-/* ── the few words of the show, in the bottom corner ───────────── */
-.copy { grid-area: copy; position: relative; z-index: 3; align-self: end; width: min(100%, calc(var(--u) * 40)); display: grid; justify-items: start; }
-.kicker { margin: 0; font-size: max(12.5px, calc(var(--u) * .82)); color: var(--ink-2); }
-.title { position: relative; width: 100%; margin: calc(var(--u) * .35) 0 0; font-family: var(--font-title); font-weight: 900; font-stretch: 62.5%; font-size: calc(var(--u) * 7.4 * var(--tf, 1)); line-height: 1.12; white-space: nowrap; color: #fff; text-shadow: 0 .03em .35em rgba(0, 0, 0, .22); }
-.title .w { display: inline-block; overflow: hidden; padding: .16em .05em .3em; margin: -.16em -.05em -.3em; vertical-align: bottom; }
-.title .wi { display: inline-block; will-change: transform; }
-.sub { margin: calc(var(--u) * .5) 0 0; font-size: max(14px, calc(var(--u) * 1.02)); font-weight: 300; color: var(--ink-2); }
-.buy { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: calc(var(--u) * .8); margin-top: calc(var(--u) * 1.8); height: max(42px, calc(var(--u) * 2.8)); padding-inline: calc(var(--u) * 1.3) calc(var(--u) * .3); border-radius: 999px; background: #fff; color: #0b0a12; font-weight: 700; font-size: max(13.5px, calc(var(--u) * .84)); transition: transform .5s var(--ease); }
+/* ── the words, on the left, right-aligned ─────────────────────── */
+.copy { grid-area: copy; position: relative; z-index: 3; align-self: center; display: grid; justify-items: start; margin-top: calc(var(--u) * 1.5); }
+.copy > * { will-change: transform, opacity; }
+.title { margin: 0; font-size: max(22px, calc(var(--u) * 1.85)); font-weight: 800; line-height: 1.6; color: #fff; text-wrap: balance; text-shadow: 0 2px 18px rgba(0, 0, 0, .35); }
+.sub { margin: calc(var(--u) * .8) 0 0; font-size: max(14px, calc(var(--u) * .95)); font-weight: 700; color: #fff; }
+.desc { margin: calc(var(--u) * .8) 0 0; min-height: 4em; font-size: max(14px, calc(var(--u) * .95)); line-height: 2; color: var(--ink-2); display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; }
+.buy { all: unset; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; margin-top: calc(var(--u) * 1.9); height: max(46px, calc(var(--u) * 3.1)); min-width: calc(var(--u) * 9.5); padding-inline: calc(var(--u) * 2); border-radius: 999px; background: var(--accent); color: var(--on-accent); font-size: max(14px, calc(var(--u) * .92)); font-weight: 800; box-shadow: 0 calc(var(--u) * .9) calc(var(--u) * 2.4) calc(var(--u) * -.5) color-mix(in oklab, var(--accent) 80%, transparent); transition: background-color .8s, color .8s, box-shadow .8s, transform .4s var(--ease); }
 .buy:hover { transform: translateY(-2px); }
 .buy:active { transform: scale(.98); }
 .buy:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
-.b-price { font-weight: 500; color: rgba(11, 10, 18, .58); white-space: nowrap; }
-.b-go { display: grid; place-items: center; width: max(32px, calc(var(--u) * 2.2)); height: max(32px, calc(var(--u) * 2.2)); border-radius: 50%; background: var(--accent); color: var(--on-accent); transition: background-color .6s, color .6s; }
-.b-go svg.i { width: 46%; height: 46%; stroke-width: 2; transition: transform .5s var(--ease); }
-.buy:hover .b-go svg { transform: translateX(-3px); }
 
-/* ── the side: four small boxes and the pause button ───────────── */
-.side { grid-area: side; position: relative; z-index: 3; align-self: center; display: grid; gap: calc(var(--u) * 1); justify-items: start; }
-.boxes { display: flex; flex-direction: column; gap: calc(var(--u) * .65); width: calc(var(--u) * 10.5); }
-.box { all: unset; box-sizing: border-box; position: relative; display: block; flex: none; height: calc(var(--u) * 6); border-radius: calc(var(--u) * .7); overflow: hidden; isolation: isolate; cursor: pointer; opacity: .55; transform: scale(.94); transform-origin: 0% 50%; transition: opacity .6s, transform .8s var(--ease); -webkit-tap-highlight-color: transparent; }
-.box::after { content: ""; position: absolute; inset: 0; z-index: 2; border-radius: inherit; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .16); transition: box-shadow .6s; pointer-events: none; }
-.box:not(.is-active):hover { opacity: .9; }
-.box:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
-.box.is-active { opacity: 1; transform: none; }
-.box.is-active::after { box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, .9); }
-.bx-art { position: absolute; inset: 0; z-index: -1; overflow: hidden; border-radius: inherit; }
-.bx-art::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(5, 4, 9, .78), rgba(5, 4, 9, 0) 58%); }
-/* the box holds the whole screen's picture, scaled down: what you see in it is what opens */
-.comp.mini { inset: auto; left: 50%; top: 50%; width: var(--hw, 1920px); height: var(--hh, 1080px); transform: translate(-50%, -50%) scale(var(--bs, .11)); pointer-events: none; }
-.bx-name { position: absolute; inset-inline: calc(var(--u) * .7); bottom: calc(var(--u) * .55); font-size: max(11.5px, calc(var(--u) * .78)); font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.bx-bar { position: absolute; inset-inline: 0; bottom: 0; z-index: 3; height: 2px; background: rgba(255, 255, 255, .16); opacity: 0; transition: opacity .4s; }
-.bx-bar i { display: block; height: 100%; background: var(--bc, #fff); transform: scaleX(0); transform-origin: 100% 50%; }
-.box.is-active .bx-bar { opacity: 1; }
-.ctl { all: unset; justify-self: end; cursor: pointer; display: grid; place-items: center; width: max(32px, calc(var(--u) * 2)); height: max(32px, calc(var(--u) * 2)); border-radius: 50%; border: 1px solid rgba(255, 255, 255, .26); color: rgba(255, 255, 255, .85); transition: background .3s, border-color .3s, color .3s; }
-.ctl:hover { background: rgba(255, 255, 255, .1); border-color: rgba(255, 255, 255, .6); color: #fff; }
-.ctl:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
-.ctl svg.i { width: 34%; height: 34%; }
+/* ── the cards, on the right ───────────────────────────────────── */
+.cards { grid-area: cards; position: relative; z-index: 3; align-self: center; width: calc(var(--u) * 15.5); max-height: 100%; min-height: 0; display: flex; flex-direction: column; gap: calc(var(--u) * .75); margin-top: calc(var(--u) * 1.5); }
+.c-arrow { all: unset; box-sizing: border-box; cursor: pointer; flex: none; display: grid; place-items: center; height: max(30px, calc(var(--u) * 1.85)); border-radius: 999px; background: rgba(255, 255, 255, .09); color: #fff; transition: background .3s; }
+.c-arrow:hover { background: rgba(255, 255, 255, .18); }
+.c-arrow:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.c-arrow svg.i { width: max(16px, calc(var(--u) * .95)); height: max(16px, calc(var(--u) * .95)); }
+.c-foot { flex: none; display: flex; gap: calc(var(--u) * .5); }
+.c-foot .c-arrow:first-child { flex: 1; }
+.c-pause { width: max(30px, calc(var(--u) * 1.85)); }
+.c-pause svg.i { width: 40%; height: 40%; }
 #autoBtn .i-play, #autoBtn[aria-pressed="true"] .i-pause { display: none; }
 #autoBtn[aria-pressed="true"] .i-play { display: block; }
-/* the row option: the boxes along the bottom on the left */
-.hero[data-boxes="row"] .side { align-self: end; grid-auto-flow: column; align-items: end; }
-.hero[data-boxes="row"] .boxes { flex-direction: row; width: auto; }
-.hero[data-boxes="row"] .box { width: calc(var(--u) * 9); height: calc(var(--u) * 5.3); transform-origin: 50% 100%; }
+.c-list { flex: 0 1 auto; min-height: 0; display: flex; flex-direction: column; gap: calc(var(--u) * .75); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; padding: 3px; margin: -3px; }
+.c-list::-webkit-scrollbar { display: none; }
+.card { all: unset; box-sizing: border-box; position: relative; flex: none; display: block; aspect-ratio: 16 / 9; border-radius: max(10px, calc(var(--u) * .6)); overflow: hidden; isolation: isolate; cursor: pointer; box-shadow: 0 0 0 1px rgba(255, 255, 255, .16); transition: box-shadow .6s, opacity .6s; -webkit-tap-highlight-color: transparent; }
+.card img { width: 100%; height: 100%; object-fit: cover; transition: transform .8s var(--ease); }
+.card:hover img { transform: scale(1.05); }
+.card::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(7, 6, 14, .72), rgba(7, 6, 14, 0) 55%); }
+.card-name { position: absolute; z-index: 1; inset-inline: calc(var(--u) * .7); bottom: calc(var(--u) * .5); font-size: max(11.5px, calc(var(--u) * .78)); font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.card:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.card.is-active { box-shadow: 0 0 0 2px var(--accent), 0 calc(var(--u) * .6) calc(var(--u) * 1.8) calc(var(--u) * -.4) color-mix(in oklab, var(--accent) 70%, transparent); }
 
 /* ── laptops and tablets ───────────────────────────────────────── */
 @media (max-width: 1100px) {
   .links { display: none; }
-  .nav { grid-template-columns: 1fr auto; }
+  .hero { grid-template-columns: auto minmax(0, 1fr) minmax(0, calc(var(--u) * 42)); }
 }
-/* ── phones: the words at the bottom, the boxes in a row under them ── */
+/* ── phones: the words at the bottom, the cards in a row under them ── */
 @media (max-width: 760px) {
-  .hero, .hero[data-boxes="row"] {
+  .hero {
     min-height: 620px; column-gap: 0; row-gap: 18px;
     grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) auto;
-    grid-template-areas: "nav" "copy" "side";
-    padding: max(12px, env(safe-area-inset-top, 0px)) 16px max(18px, env(safe-area-inset-bottom, 0px));
-    --pfx: 50%; --pfy: 32%; --pfh: 40%;
+    grid-template-areas: "nav" "copy" "cards";
+    padding: max(10px, env(safe-area-inset-top, 0px)) 12px max(16px, env(safe-area-inset-bottom, 0px));
   }
-  .shade, .hero[data-boxes="row"] .shade { background:
-    linear-gradient(to top, rgba(5, 4, 9, .94) 0%, rgba(5, 4, 9, .7) 30%, rgba(5, 4, 9, .15) 55%, rgba(5, 4, 9, 0) 68%),
-    linear-gradient(to bottom, rgba(5, 4, 9, .55) 0%, rgba(5, 4, 9, 0) 16%); }
-  .ph { object-position: var(--mop, var(--op, 50% 50%)); }
-  .mu-meta { max-width: 92px; }
-  .copy { width: 100%; }
-  .title { font-size: calc(min(15vw, 80px) * var(--tf, 1)); }
-  .sub { font-size: 15px; }
-  .buy { margin-top: 16px; }
-  .side, .hero[data-boxes="row"] .side { align-self: auto; grid-auto-flow: column; grid-template-columns: minmax(0, 1fr) auto; align-items: center; justify-items: stretch; gap: 10px; }
-  .boxes, .hero[data-boxes="row"] .boxes { flex-direction: row; width: auto; gap: 8px; }
-  .box, .hero[data-boxes="row"] .box { flex: 1 1 0; width: auto; height: auto; aspect-ratio: 16 / 10; min-width: 0; transform: none; border-radius: 10px; }
-  .bx-name { inset-inline: 7px; bottom: 5px; font-size: 11px; }
+  .shade { background:
+    linear-gradient(to top, rgba(7, 6, 14, .95) 0%, rgba(7, 6, 14, .72) 34%, rgba(7, 6, 14, .15) 58%, rgba(7, 6, 14, 0) 70%),
+    linear-gradient(to bottom, rgba(7, 6, 14, .5) 0%, rgba(7, 6, 14, 0) 16%); }
+  .lay img { object-position: var(--mop, var(--op, 50% 50%)); }
+  .nav { gap: 10px; padding-inline: 14px 6px; }
+  .mu-meta, .mu-eq, .login { display: none; }
+  .menu-btn { display: grid; }
+  .copy { align-self: end; margin: 0; padding-inline: 4px; }
+  .title { font-size: 21px; line-height: 1.65; }
+  .sub { font-size: 14px; margin-top: 6px; }
+  .desc { font-size: 13.5px; line-height: 1.9; margin-top: 6px; min-height: 3.8em; }
+  .buy { margin-top: 16px; height: 44px; min-width: 140px; }
+  .cards { width: auto; margin: 0; flex-direction: row; align-items: center; gap: 8px; }
+  .c-arrow:not(.c-pause), .c-foot .c-arrow:first-child { display: none; }
+  .c-list { flex: 1; flex-direction: row; gap: 8px; overflow: visible; }
+  .card { flex: 1 1 0; min-width: 0; border-radius: 10px; }
+  .card-name, .card::after { display: none; }
+  .c-pause { width: 34px; height: 34px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .box, .buy { transition: none; }
+  .card img, .buy, .login { transition: none; }
 }
 
 /* ── prototype panel and toast (not part of the site) ──────────── */
@@ -272,22 +240,23 @@ svg.i { width: 1.15em; height: 1.15em; fill: none; stroke: currentColor; stroke-
   <symbol id="i-pause" viewBox="0 0 24 24"><rect x="6.5" y="5" width="3.6" height="14" rx="1" fill="currentColor" stroke="none"/><rect x="13.9" y="5" width="3.6" height="14" rx="1" fill="currentColor" stroke="none"/></symbol>
   <symbol id="i-prev" viewBox="0 0 24 24"><path d="M18.5 6.2v11.6a.8.8 0 0 1-1.25.66L9.5 13.2a1.4 1.4 0 0 1 0-2.4l7.75-5.26a.8.8 0 0 1 1.25.66Z" fill="currentColor" stroke="none"/><path d="M6 6v12" stroke-width="2"/></symbol>
   <symbol id="i-next" viewBox="0 0 24 24"><path d="M5.5 6.2v11.6a.8.8 0 0 0 1.25.66l7.75-5.26a1.4 1.4 0 0 0 0-2.4L6.75 5.54A.8.8 0 0 0 5.5 6.2Z" fill="currentColor" stroke="none"/><path d="M18 6v12" stroke-width="2"/></symbol>
-  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M19 12H5m6-6-6 6 6 6"/></symbol>
+  <symbol id="i-up" viewBox="0 0 24 24"><path d="m6 15 6-6 6 6"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 8h16M4 16h16"/></symbol>
   <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
   <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></symbol>
   <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 15V4m-4.5 4.5L12 4l4.5 4.5"/><path d="M4.5 14.5V18a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-3.5"/></symbol>
 </svg>
 
 <div class="app">
-  <section class="hero" id="hero" data-boxes="column" aria-roledescription="carousel" aria-label="اجراهای ویژه">
+  <section class="hero" id="hero" aria-roledescription="carousel" aria-label="اجراهای ویژه">
     <div class="bg" id="bg" aria-hidden="true"></div>
     <div class="shade" aria-hidden="true"></div>
-    <div class="grain" aria-hidden="true"></div>
 
     <header class="nav">
       <a class="brand" href="#hero" aria-label="بلیت، صفحه‌ی اصلی"><span class="bars" aria-hidden="true"><i style="--s:.38"></i><i style="--s:.72"></i><i style="--s:1"></i><i style="--s:.6"></i><i style="--s:.34"></i></span>بلیت</a>
       <nav class="links" aria-label="دسته‌ها">
-        <a href="#hero" aria-current="page">کنسرت</a><a href="#hero">تئاتر</a><a href="#hero">استندآپ</a><a href="#hero">خانوادگی</a>
+        <a href="#hero" aria-current="page">کنسرت</a><a href="#hero">تئاتر</a><a href="#hero">استندآپ</a><a href="#hero">فستیوال</a><a href="#hero">خانوادگی</a>
       </nav>
       <div class="nav-end">
         <div class="music" id="music">
@@ -302,44 +271,46 @@ svg.i { width: 1.15em; height: 1.15em; fill: none; stroke: currentColor; stroke-
             <label class="add-song"><input type="file" id="addSong" accept="audio/*"><svg class="i"><use href="#i-upload"/></svg>آهنگ خودت رو امتحان کن</label>
           </div>
         </div>
-        <button type="button" class="login" id="loginBtn">ورود</button>
+        <button type="button" class="login" id="loginBtn">ورود | ثبت‌نام</button>
+        <button type="button" class="menu-btn" id="menuBtn" aria-label="منو"><svg class="i"><use href="#i-menu"/></svg></button>
       </div>
     </header>
 
     <div class="copy" id="copy" role="tabpanel" aria-live="off">
-      <p class="kicker"><span class="mask"><span id="kick">کنسرت پاپ · سه‌شنبه ۲۴ آذر</span></span></p>
-      <h1 class="title" id="title"><span class="w"><span class="wi" id="titleWi">فرکانس</span></span></h1>
-      <p class="sub"><span class="mask"><span id="sub">گروه نیمه‌شب · مجموعه ورزشی آزادی</span></span></p>
-      <button type="button" class="buy" id="buyBtn"><span>خرید بلیت</span><span class="mask b-price"><span id="price">از ۱٫۸ میلیون</span></span><span class="b-go" aria-hidden="true"><svg class="i"><use href="#i-arrow"/></svg></span></button>
+      <h1 class="title" id="title">کنسرت پاپ : تور ۱۴۰۵ گروه نیمه‌شب | فرکانس</h1>
+      <p class="sub" id="sub">مجموعه ورزشی آزادی · سه‌شنبه ۲۴ آذر</p>
+      <p class="desc" id="desc">تور تازه‌ی گروه نیمه‌شب، این بار در سالن ۱۲ هزار نفری آزادی؛ یک شب نور و صدا با هزاران نفری که با هم می‌خوانند.</p>
+      <button type="button" class="buy" id="buyBtn">خرید بلیت</button>
     </div>
 
-    <div class="side">
-      <div class="boxes" id="boxes" role="tablist" aria-label="اجراهای ویژه" aria-orientation="vertical"></div>
-      <button type="button" class="ctl" id="autoBtn" aria-pressed="false" aria-label="توقف نمایش خودکار"><svg class="i i-pause"><use href="#i-pause"/></svg><svg class="i i-play"><use href="#i-play"/></svg></button>
+    <div class="cards">
+      <button type="button" class="c-arrow" id="upBtn" aria-label="اجرای قبلی"><svg class="i"><use href="#i-up"/></svg></button>
+      <div class="c-list" id="cardList" role="tablist" aria-label="اجراهای ویژه" aria-orientation="vertical"></div>
+      <div class="c-foot">
+        <button type="button" class="c-arrow" id="downBtn" aria-label="اجرای بعدی"><svg class="i"><use href="#i-down"/></svg></button>
+        <button type="button" class="c-arrow c-pause" id="autoBtn" aria-pressed="false" aria-label="توقف نمایش خودکار"><svg class="i i-pause"><use href="#i-pause"/></svg><svg class="i i-play"><use href="#i-play"/></svg></button>
+      </div>
     </div>
   </section>
 
   <section class="notes" aria-labelledby="notes-h">
     <div>
-      <h2 id="notes-h">یادداشت‌های طراحی · نسخه‌ی ۷، خلوت: عکس تمام‌صفحه و چهار کادر کنار صفحه</h2>
-      <p class="lead">این بخش جزو سایت نیست. این نسخه از روی توضیحِ صاحب پروژه درباره‌ی صفحه‌ی اول leemeenal.app ساخته شده (خود سایت از محیط ساخت باز نشد): خلوت و کم، حداکثر چهار پوستر. هر پوستر تا وقتش تموم بشه آروم زوم می‌شه، بعد پوستر بعدی خیلی نرم از وسط صفحه باز می‌شه. توضیح کامل برای پیاده‌سازی تو <code>SPEC.md</code> کنار همین صفحه هست. از دکمه‌ی گوشه‌ی پایین چپ می‌شه حالت‌های دیگه رو امتحان کرد.</p>
+      <h2 id="notes-h">یادداشت‌های طراحی · نسخه‌ی ۷، از روی عکس نمونه</h2>
+      <p class="lead">این بخش جزو سایت نیست. این نسخه از روی عکسی که صاحب پروژه از نمونه فرستاد از اول ساخته شده: عکس اجرا کل صفحه رو می‌گیره، اول کمی زوم‌شده‌ست و با گذشت ثانیه‌ها زوم‌اوت می‌شه، بعد محو می‌شه روی اجرای بعدی. توضیح کامل برای پیاده‌سازی تو <code>SPEC.md</code> کنار همین صفحه هست.</p>
     </div>
     <div class="cols">
-      <article><h3>کم و خلوت</h3><p>فقط عکس، چهار کادر کوچیک، و چهار تکه متن: نوع اجرا و تاریخ، اسم، اجراکننده و مکان، و دکمه‌ی خرید با قیمت. منو هم فقط لوگو، چهار دسته، موزیک و ورود.</p></article>
-      <article><h3>زوم و باز شدن از وسط</h3><p>هر پوستر تا وقتش تموم بشه (۷ ثانیه) آروم ۱۲ درصد زوم می‌شه. بعد پوستر بعدی از وسط صفحه با لبه‌ی نرم باز می‌شه و خودش هم کمی جلو میاد؛ پوستر قبلی هم همون موقع با سرعت بیشتری به سمت بیننده جلو می‌ره و کمی تاریک می‌شه.</p></article>
-      <article><h3>کادرها</h3><p>هر کادر دقیقاً همون صحنه‌ای رو نشون می‌ده که قراره باز بشه. خط باریک پایین کادر فعال زمان رو نشون می‌ده. با بردن موس روی کادرها مکث می‌کنه؛ با کلیک هر پوستری باز می‌شه.</p></article>
-      <article><h3>موزیک</h3><p>پخش‌کننده تو منوی بالاست. وقتی آهنگ پخش می‌شه، کل تصویر با ضرب آهنگ خیلی آروم می‌تپه و میله‌های لوگو مثل اکولایزر تکون می‌خورن.</p></article>
+      <article><h3>چیدمان</h3><p>هدر یه کپسول شناور با گوشه‌های کمی گرد. متن سمت چپ صفحه و راست‌چین: تیتر، یه خط پررنگ (مکان و تاریخ)، دو خط توضیح و دکمه‌ی خرید به رنگ اجرا. سمت راست ستون کارت‌ها با دکمه‌ی بالا و پایین.</p></article>
+      <article><h3>حرکت</h3><p>هر عکس با ۱۵ درصد زوم شروع می‌شه و تو ۷ ثانیه‌ی خودش آروم زوم‌اوت می‌شه. بعد اجرای بعدی تو ۱٫۲ ثانیه روش محو می‌شه و متن‌ها هم محو می‌شن و دوباره میان. با بردن موس روی کارت‌ها مکث می‌کنه.</p></article>
+      <article><h3>موزیک</h3><p>پخش‌کننده تو هدره. وقتی آهنگ پخش می‌شه، تصویر با ضرب آهنگ خیلی آروم می‌تپه و میله‌های لوگو مثل اکولایزر تکون می‌خورن.</p></article>
     </div>
   </section>
 
   <button type="button" class="proto-fab" id="protoFab" aria-expanded="false" aria-controls="protoPanel" aria-label="تنظیمات نمونه"><svg class="i"><use href="#i-sliders"/></svg></button>
   <div class="proto-panel" id="protoPanel" role="dialog" aria-label="تنظیمات نمونه" hidden>
     <div class="pp-head"><div><b>تنظیمات نمونه</b><span>برای مقایسه؛ جزو سایت نیست</span></div><button type="button" class="ghost" id="protoClose" aria-label="بستن"><svg class="i"><use href="#i-x"/></svg></button></div>
-    <div class="pp-group"><span>اومدن پوستر بعدی</span><div class="seg" data-ctrl="trans"><button type="button" data-v="iris" aria-pressed="true">باز شدن نرم از وسط</button><button type="button" data-v="frame" aria-pressed="false">قاب از وسط</button><button type="button" data-v="fade" aria-pressed="false">محو</button></div></div>
-    <div class="pp-group"><span>زوم هر پوستر</span><div class="seg" data-ctrl="zoom"><button type="button" data-v="low" aria-pressed="false">کم</button><button type="button" data-v="mid" aria-pressed="true">متوسط</button><button type="button" data-v="high" aria-pressed="false">زیاد</button></div></div>
-    <div class="pp-group"><span>زمان هر پوستر</span><div class="seg" data-ctrl="dur"><button type="button" data-v="5" aria-pressed="false">۵ ثانیه</button><button type="button" data-v="7" aria-pressed="true">۷ ثانیه</button><button type="button" data-v="10" aria-pressed="false">۱۰ ثانیه</button></div></div>
-    <div class="pp-group"><span>جای کادرها</span><div class="seg" data-ctrl="boxes"><button type="button" data-v="column" aria-pressed="true">ستون کنار صفحه</button><button type="button" data-v="row" aria-pressed="false">ردیف پایین صفحه</button></div></div>
-    <div class="pp-group"><span>تصویر اجراها</span><div class="seg" data-ctrl="source"><button type="button" data-v="photo" aria-pressed="true">عکس افقی</button><button type="button" data-v="poster" aria-pressed="false">اگه فقط پوستر باشه</button></div></div>
+    <div class="pp-group"><span>زوم اول هر عکس</span><div class="seg" data-ctrl="zoom"><button type="button" data-v="1.08" aria-pressed="false">کم</button><button type="button" data-v="1.15" aria-pressed="true">متوسط</button><button type="button" data-v="1.24" aria-pressed="false">زیاد</button></div></div>
+    <div class="pp-group"><span>زمان هر اجرا</span><div class="seg" data-ctrl="dur"><button type="button" data-v="5" aria-pressed="false">۵ ثانیه</button><button type="button" data-v="7" aria-pressed="true">۷ ثانیه</button><button type="button" data-v="10" aria-pressed="false">۱۰ ثانیه</button></div></div>
+    <div class="pp-group"><span>محو شدن روی بعدی</span><div class="seg" data-ctrl="fade"><button type="button" data-v="0.8" aria-pressed="false">تند</button><button type="button" data-v="1.2" aria-pressed="true">معمولی</button><button type="button" data-v="1.8" aria-pressed="false">آروم</button></div></div>
     <div class="pp-group"><span>واکنش به موزیک</span><div class="seg" data-ctrl="react"><button type="button" data-v="pulse" aria-pressed="true">تپش آروم تصویر</button><button type="button" data-v="calm" aria-pressed="false">فقط میله‌ها</button></div></div>
   </div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -360,61 +331,54 @@ const fa = (v) => String(v).replace(/\d/g, (d) => FA[d]);
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 const smooth = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
 const mmss = (s) => { s = Math.max(0, Math.floor(s || 0)); return fa(`${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`); };
-const outCubic = (p) => 1 - Math.pow(1 - p, 3);
-const inOutSine = (p) => -(Math.cos(Math.PI * p) - 1) / 2;
 const root = document.documentElement;
 const hero = $('#hero');
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 if (typeof window.gsap === 'undefined') { root.classList.remove('is-intro'); return; }
 
-const state = { i: 0, boxes: 'column', trans: 'iris', zoom: 'mid', dur: 7, source: 'photo', react: 'pulse', userPaused: false, hover: false, visible: true, intro: true };
-const ZOOM = { low: 0.06, mid: 0.12, high: 0.2 }; // how much a picture zooms in while it is on
-const MID = 0.85; // seconds into a change when the new show's words and colour arrive
+// zoom: how far in a picture starts; dur: seconds per show; fade: seconds of the fade into the next
+const state = { i: 0, zoom: 1.15, dur: 7, fade: 1.2, react: 'pulse', userPaused: false, hover: false, visible: true, intro: true };
 
 /* ════════════════════════════════════════════════════════════════
    content (sample data — in production this comes from the admin panel)
-   four shows at most. photo: one wide photo per show; z and o frame it (zoom and its origin),
-   op is the object-position on wide screens and mop on phones
-   poster: what the show has when there is no photo (see "اگه فقط پوستر باشه")
+   photo: one wide photo per show; op is its object-position on wide screens and mop on phones,
+   o is the point the zoom moves towards
    ════════════════════════════════════════════════════════════════ */
 const EVENTS = [
-  { id: 'frequency', pal: 'blue', cat: 'کنسرت پاپ', type: 'کنسرت', name: 'فرکانس', by: 'گروه نیمه‌شب',
+  { id: 'frequency', pal: 'blue', type: 'کنسرت', name: 'فرکانس', title: 'کنسرت پاپ : تور ۱۴۰۵ گروه نیمه‌شب | فرکانس',
+    desc: 'تور تازه‌ی گروه نیمه‌شب، این بار در سالن ۱۲ هزار نفری آزادی؛ یک شب نور و صدا با هزاران نفری که با هم می‌خوانند.',
     venue: 'مجموعه ورزشی آزادی', startsAt: '2026-12-15T20:30:00+03:30', price: '۱٫۸ میلیون', track: 0,
-    photo: { name: 'pop-frequency', z: 1.04, o: '50% 40%', op: '50% 30%', mop: '44% 50%' } },
-  { id: 'chaharmezrab', pal: 'gold', cat: 'ارکستر', type: 'ارکستر', name: 'چهارمضراب', by: 'ارکستر زهی باران',
+    photo: { name: 'pop-frequency', o: '55% 40%', op: '50% 30%', mop: '44% 50%' } },
+  { id: 'chaharmezrab', pal: 'gold', type: 'ارکستر', name: 'چهارمضراب', title: 'ارکستر : شبی با ارکستر زهی باران | چهارمضراب',
+    desc: 'ارکستر زهی باران با تنظیم‌های تازه از قطعه‌های ماندگار موسیقی ایرانی؛ دو شب در تالار وحدت.',
     venue: 'تالار وحدت', startsAt: '2026-11-28T19:00:00+03:30', price: '۹۵۰ هزار', track: 1,
-    photo: { name: 'orchestra-chaharmezrab', z: 1.02, o: '50% 60%', op: '50% 60%', mop: '62% 50%' },
-    poster: { src: 'assets/posters/orchestra-4x5.webp', thumb: 'assets/posters/orchestra-4x5-thumb.webp', r: 0.8 } },
-  { id: 'shadows', pal: 'orange', cat: 'تئاتر فیزیکال', type: 'تئاتر', name: 'سایه‌ها', by: 'گروه تئاتر آینه',
+    photo: { name: 'orchestra-chaharmezrab', o: '60% 55%', op: '50% 60%', mop: '62% 50%' } },
+  { id: 'shadows', pal: 'orange', type: 'تئاتر', name: 'سایه‌ها', title: 'تئاتر فیزیکال : نمایش بی‌کلام گروه آینه | سایه‌ها',
+    desc: 'تئاتری بی‌کلام که قصه‌اش را با بدن و نور می‌گوید؛ اجرای گروه تئاتر آینه در تالار اصلی تئاتر شهر.',
     venue: 'تئاتر شهر', startsAt: '2026-11-07T19:30:00+03:30', price: '۴۵۰ هزار', track: 2,
-    photo: { name: 'theatre-shadows', z: 1.02, o: '40% 45%', op: '50% 50%', mop: '28% 50%' } },
-  { id: 'parvaz', pal: 'teal', cat: 'سیرک خانوادگی', type: 'سیرک', name: 'پرواز', by: 'گروه آکروبات آسمان',
+    photo: { name: 'theatre-shadows', o: '45% 40%', op: '50% 50%', mop: '28% 50%' } },
+  { id: 'parvaz', pal: 'teal', type: 'سیرک', name: 'پرواز', title: 'سیرک خانوادگی : آکروبات‌های گروه آسمان | پرواز',
+    desc: 'آکروبات‌هایی که روی هوا راه می‌روند؛ نمایشی برای همه‌ی خانواده، عصرهای آبان در فرهنگسرای نیاوران.',
     venue: 'فرهنگسرای نیاوران', startsAt: '2026-11-14T17:00:00+03:30', price: '۳۸۰ هزار', track: 1,
-    photo: { name: 'circus-parvaz', z: 1.03, o: '40% 40%', op: '50% 40%', mop: '30% 50%' } },
+    photo: { name: 'circus-parvaz', o: '45% 40%', op: '50% 40%', mop: '30% 50%' } },
 ];
-// the fixed palette (the same eight sets as v6): accent for the timer line and the arrow button
+// the fixed palette (the same eight sets as v6): each show's button, its card's frame and the bars
 const PALETTE = {
-  violet: { accent: '#8b5cf6', light: '#c4b5fd', onAccent: '#ffffff' },
-  blue: { accent: '#3b82f6', light: '#93c5fd', onAccent: '#ffffff' },
-  teal: { accent: '#14b8a6', light: '#5eead4', onAccent: '#03201c' },
-  green: { accent: '#22c55e', light: '#86efac', onAccent: '#03200f' },
-  gold: { accent: '#d9a441', light: '#f5d48b', onAccent: '#1a1206' },
-  orange: { accent: '#f97316', light: '#fdba74', onAccent: '#1b0d03' },
-  crimson: { accent: '#e11d48', light: '#fda4af', onAccent: '#ffffff' },
-  pink: { accent: '#ec4899', light: '#f9a8d4', onAccent: '#ffffff' },
+  violet: { accent: '#8b5cf6', onAccent: '#ffffff' },
+  blue: { accent: '#3b82f6', onAccent: '#ffffff' },
+  teal: { accent: '#14b8a6', onAccent: '#03201c' },
+  green: { accent: '#22c55e', onAccent: '#03200f' },
+  gold: { accent: '#d9a441', onAccent: '#1a1206' },
+  orange: { accent: '#f97316', onAccent: '#1b0d03' },
+  crimson: { accent: '#e11d48', onAccent: '#ffffff' },
+  pink: { accent: '#ec4899', onAccent: '#ffffff' },
 };
 EVENTS.forEach((e) => Object.assign(e, PALETTE[e.pal] || PALETTE.violet));
 const tz = { timeZone: 'Asia/Tehran' };
 const fWeek = new Intl.DateTimeFormat('fa-IR-u-ca-persian', { weekday: 'long', ...tz });
 const fShort = new Intl.DateTimeFormat('fa-IR-u-ca-persian', { day: 'numeric', month: 'long', ...tz });
 EVENTS.forEach((e) => { e.date = new Date(e.startsAt); e.week = fWeek.format(e.date); e.short = fShort.format(e.date); });
-
-const photoFiles = (n) => ({ src: `assets/photos/${n}-1920.webp`, srcset: `assets/photos/${n}-1920.webp 1920w, assets/photos/${n}-2560.webp 2560w`, thumb: `assets/photos/${n}-640.webp` });
-// what a show is shown with right now: its photo, or (in the poster demo) its poster
-function mediaOf(e) {
-  if (state.source === 'poster' && e.poster) return { kind: 'poster', z: 1, ...e.poster };
-  const p = e.photo; return { kind: 'photo', ...photoFiles(p.name), z: p.z, o: p.o, op: p.op, mop: p.mop };
-}
+const files = (n) => ({ src: `assets/photos/${n}-1920.webp`, srcset: `assets/photos/${n}-1920.webp 1920w, assets/photos/${n}-2560.webp 2560w`, thumb: `assets/photos/${n}-640.webp` });
 
 /* playlist: managed in the admin panel; `analysis` is stored on upload (see SPEC §6) */
 const TRACKS = [
@@ -640,223 +604,127 @@ function coverEl(tr, size) {
 }
 
 /* ════════════════════════════════════════════════════════════════
-   pictures: one function draws a show's picture at full size, for the background, and the same
-   picture scaled down inside its box
+   the background: a show's picture starts zoomed in and zooms out over its time and the fade
+   after it, so it is still moving while the next one fades in over it
    ════════════════════════════════════════════════════════════════ */
-const imgCache = new Map(), blurCache = new Map();
-function getImg(src) {
-  if (!imgCache.has(src)) imgCache.set(src, new Promise((res, rej) => { const im = new Image(); im.decoding = 'async'; im.onload = () => res(im); im.onerror = rej; im.src = src; }));
-  return imgCache.get(src);
-}
-// a poster's background: the poster itself, drawn small and blurred once (cheap to show full screen)
-function blurred(src) {
-  if (!blurCache.has(src)) blurCache.set(src, getImg(src).then((im) => {
-    const w = 160, h = 90, c = document.createElement('canvas'); c.width = w; c.height = h;
-    const x = c.getContext('2d'), r = Math.max(w / im.naturalWidth, h / im.naturalHeight) * 1.3, dw = im.naturalWidth * r, dh = im.naturalHeight * r;
-    x.filter = 'blur(6px) saturate(1.3)'; x.drawImage(im, (w - dw) / 2, (h - dh) / 2, dw, dh);
-    return c.toDataURL('image/webp', 0.85);
-  }));
-  return blurCache.get(src);
-}
 const decoded = (im) => (im.decode ? im.decode() : Promise.resolve()).catch(() => {});
-function compose(comp, e, mini) {
-  const m = mediaOf(e), key = `${m.kind}|${e.id}`;
-  if (comp.dataset.key === key && comp.ready) return comp.ready;
-  comp.dataset.key = key; comp.innerHTML = '';
-  comp.className = `comp${mini ? ' mini' : ''}${m.kind === 'poster' ? ' is-poster' : ''}`;
-  if (m.kind === 'photo') {
-    const s = comp.style; s.setProperty('--z', m.z); s.setProperty('--o', m.o); s.setProperty('--op', m.op); s.setProperty('--mop', m.mop);
-    const im = new Image(); im.className = 'ph'; im.alt = ''; im.decoding = 'async';
-    if (mini) im.src = m.thumb; else { im.sizes = '100vw'; im.srcset = m.srcset; im.src = m.src; }
-    comp.appendChild(im);
-    return (comp.ready = decoded(im));
-  }
-  ['--z', '--o', '--op', '--mop'].forEach((p) => comp.style.removeProperty(p));
-  const bd = new Image(); bd.className = 'ph'; bd.alt = '';
-  const pf = document.createElement('span'); pf.className = 'pf'; pf.style.setProperty('--pr', m.r);
-  const pim = new Image(); pim.alt = ''; pim.decoding = 'async'; pim.src = mini ? m.thumb : m.src; pf.appendChild(pim);
-  comp.append(bd, pf);
-  return (comp.ready = blurred(m.src).then((url) => { bd.src = url; return Promise.all([decoded(bd), decoded(pim)]); }, () => {}));
-}
-
-/* ════════════════════════════════════════════════════════════════
-   the background: a stack of layers.
-   - while a show is on, its picture zooms in slowly (bg.hold, driven by the show's timer)
-   - a change takes a free layer, puts it on top and opens it softly from the middle of the
-     screen: an ellipse with a wide soft edge grows from the centre while the picture inside
-     grows from 86 % to full size; the old picture keeps moving towards the viewer, faster and
-     faster from the speed it had, and darkens a little
-   - a second change during the first simply opens on top of it
-   ════════════════════════════════════════════════════════════════ */
 const bg = {
   el: $('#bg'), pool: [], z: 0, token: 0, top: null,
   free() {
     let l = this.pool.find((x) => !x.busy);
     if (!l) {
       l = document.createElement('div'); l.className = 'lay';
-      l.innerHTML = '<div class="iris"><div class="mv"><div class="comp"></div><i class="dim"></i></div></div>';
-      l.iris = $('.iris', l); l.mv = $('.mv', l); l.comp = $('.comp', l); l.dim = $('.dim', l);
+      l.img = new Image(); l.img.alt = ''; l.img.decoding = 'async'; l.appendChild(l.img);
       this.el.appendChild(l); this.pool.push(l);
     }
     l.busy = true; return l;
   },
   release(l) {
-    if (l.tw) { l.tw.kill(); l.tw = null; }
-    l.busy = false; l.pusher = null; l.classList.remove('is-on', 'is-iris');
-    l.style.clipPath = ''; l.style.opacity = ''; l.style.zIndex = '';
-    l.iris.style.transform = ''; l.mv.style.transform = ''; l.dim.style.opacity = '';
-    // quick clicking can stack several layers; keep three and let the rest (and their pictures) go
+    if (l.fadeTw) l.fadeTw.kill(); if (l.zoomTw) l.zoomTw.kill();
+    l.fadeTw = l.zoomTw = null; l.busy = false; gsap.set(l, { opacity: 0 });
     if (this.pool.length > 3) { this.pool.splice(this.pool.indexOf(l), 1); l.remove(); }
   },
-  // the slow zoom while a show is on: p runs from 0 to 1 over the show's time
-  hold(l, p) {
-    if (!l || !l.ph) return;
-    l.hp = p;
-    const s = (l.z * (1 + ZOOM[state.zoom] * p)).toFixed(4);
-    if (s !== l.hs) { l.hs = s; l.ph.style.transform = `scale(${s})`; }
-  },
-  async show(i, { mode = 'iris', onOpen } = {}) {
-    const token = ++this.token, l = this.free();
-    await compose(l.comp, EVENTS[i], false);
+  async show(i, { instant = false } = {}) {
+    const token = ++this.token, e = EVENTS[i], f = files(e.photo.name), l = this.free();
+    if (l.key !== e.id) {
+      l.key = e.id; l.style.setProperty('--o', e.photo.o); l.style.setProperty('--op', e.photo.op); l.style.setProperty('--mop', e.photo.mop);
+      l.img.sizes = '100vw'; l.img.srcset = f.srcset; l.img.src = f.src;
+    }
+    await decoded(l.img);
     if (token !== this.token) { this.release(l); return; }
-    l.ph = $('.ph', l.comp); l.z = mediaOf(EVENTS[i]).z || 1; l.hs = ''; this.hold(l, 0);
-    const under = this.pool.filter((m) => m !== l && m.busy && m.classList.contains('is-on'));
-    l.zi = ++this.z; l.style.zIndex = l.zi; l.classList.add('is-on'); this.top = l;
-    const done = () => {
-      l.tw = null; l.classList.remove('is-iris'); l.style.clipPath = ''; l.style.opacity = ''; l.iris.style.transform = ''; l.mv.style.transform = '';
-      [...this.pool].forEach((m) => { if (m !== l && m.busy && m.zi < l.zi) this.release(m); }); // a copy: release() can shorten the pool
-      if (onOpen && token === this.token) onOpen(l);
-    };
-    if (mode === 'instant') { done(); return; }
-    // the settled layers underneath keep zooming in; layers still opening go on underneath
-    const back = under.filter((m) => !m.tw); back.forEach((m) => { m.pusher = l; });
-    const W = hero.clientWidth, H = hero.clientHeight, T = mode === 'iris' || mode === 'intro' ? 2.2 : mode === 'frame' ? 1.7 : 1.5;
-    const v0 = timer.running() ? ZOOM[state.zoom] / state.dur : 0, push = 0.16, acc = 2 * (push - v0 * T) / (T * T);
-    const o = { p: 0 }, iris = mode === 'iris' || mode === 'intro';
-    if (iris) l.classList.add('is-iris');
-    const upd = () => {
-      const p = o.p, e = inOutSine(p), t = p * T, grow = mode === 'fade' ? 1.05 - 0.05 * outCubic(p) : 0.86 + 0.14 * outCubic(p);
-      if (iris) {
-        // the soft ellipse fills the screen at scale 1 (its solid core is the inner 60 %); at 2.4 the
-        // corners are inside the core. The picture inside is scaled back so only the ellipse grows.
-        const k = Math.max(0.04, 2.4 * e);
-        l.iris.style.transform = `scale(${k.toFixed(4)})`;
-        l.style.opacity = smooth(0, 0.15, p).toFixed(3); // the first moment is a fade, not a dot
-        l.mv.style.transform = `scale(${(grow / k).toFixed(4)})`;
-      } else if (mode === 'frame') {
-        const hw = W / 2 * e, hh = H / 2 * e, r = 26 * (1 - e);
-        l.style.clipPath = `inset(${(H / 2 - hh).toFixed(1)}px ${(W / 2 - hw).toFixed(1)}px ${(H / 2 - hh).toFixed(1)}px ${(W / 2 - hw).toFixed(1)}px round ${r.toFixed(1)}px)`;
-      } else {
-        l.style.opacity = smooth(0, 0.8, p).toFixed(3);
-      }
-      if (!iris) l.mv.style.transform = `scale(${grow.toFixed(4)})`;
-      back.forEach((m) => { if (m.pusher === l) { m.mv.style.transform = `scale(${(1 + v0 * t + 0.5 * acc * t * t).toFixed(4)})`; m.dim.style.opacity = (0.3 * e).toFixed(3); } });
-    };
-    upd();
-    l.tw = gsap.to(o, { p: 1, duration: reduceMotion ? 0.5 : T, ease: 'none', onUpdate: upd, onComplete: done });
+    l.style.zIndex = ++this.z; this.top = l;
+    const fade = reduceMotion ? 0.4 : state.fade, z0 = reduceMotion ? 1 : state.zoom;
+    // the zoom runs over the show's time plus the next fade, linearly; it pauses with the timer
+    l.zoomTw = gsap.fromTo(l.img, { scale: z0 }, { scale: 1, duration: state.dur + fade, ease: 'none', paused: !timer.running() && !instant && !state.intro });
+    const done = () => { [...this.pool].forEach((m) => { if (m !== l && m.busy && +m.style.zIndex < +l.style.zIndex) this.release(m); }); };
+    if (instant) { gsap.set(l, { opacity: 1 }); done(); return; }
+    l.fadeTw = gsap.fromTo(l, { opacity: 0 }, { opacity: 1, duration: fade, ease: 'sine.inOut', onComplete: done });
   },
 };
 
-/* the show's time: one tween fills the active box's line and drives the slow zoom; it pauses with
-   the pointer over the boxes, the pause button, the hero off screen or the tab hidden */
+/* the show's time: when it ends, the next show fades in. It pauses (and so does the zoom) with the
+   pointer over the cards, the pause button, the hero off screen or the tab hidden */
 const timer = {
   tw: null,
   running() { return !reduceMotion && !state.userPaused && !state.hover && !state.intro && state.visible && !document.hidden; },
-  start(l) {
-    this.stop();
-    const bar = $('.bx-bar i', boxes.list[state.i]), o = { p: 0 };
-    this.tw = gsap.to(o, { p: 1, duration: state.dur, ease: 'none', paused: !this.running(),
-      onUpdate: () => { bar.style.transform = `scaleX(${o.p.toFixed(4)})`; bg.hold(l, o.p); },
-      onComplete: () => { this.tw = null; next('auto'); } });
-  },
+  start() { this.stop(); this.tw = gsap.delayedCall(state.dur, () => { this.tw = null; next('auto'); }); this.sync(); },
   stop() { if (this.tw) { this.tw.kill(); this.tw = null; } },
-  sync() { if (!this.tw) return; if (this.running()) this.tw.resume(); else this.tw.pause(); },
-  // a new duration from the panel keeps how far through the show the line is
-  retime() { if (this.tw) { const f = this.tw.progress(); this.tw.duration(state.dur); this.tw.progress(f); } },
+  sync() {
+    const run = this.running(), z = bg.top && bg.top.zoomTw;
+    if (this.tw) this.tw.paused(!run);
+    if (z) z.paused(!run && !state.intro);
+  },
 };
 
 /* ════════════════════════════════════════════════════════════════
-   the boxes: each is a tab for one show and holds that show's picture, scaled from the whole
-   screen
+   the cards on the right
    ════════════════════════════════════════════════════════════════ */
-const boxes = {
-  el: $('#boxes'), list: [],
+const cards = {
+  list: $('#cardList'), els: [],
   build() {
     EVENTS.forEach((e, k) => {
-      const b = document.createElement('button'); b.type = 'button'; b.className = 'box'; b.setAttribute('role', 'tab'); b.setAttribute('aria-selected', 'false'); b.setAttribute('aria-controls', 'copy'); b.tabIndex = -1;
-      b.style.setProperty('--bc', e.accent);
-      b.innerHTML = `<span class="bx-art" aria-hidden="true"><span class="comp mini"></span></span><span class="bx-name"></span><span class="bx-bar" aria-hidden="true"><i></i></span>`;
-      $('.bx-name', b).textContent = e.name;
-      b.setAttribute('aria-label', `${e.name}، ${e.cat}، ${e.short}`);
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'card'; b.setAttribute('role', 'tab'); b.setAttribute('aria-selected', 'false'); b.setAttribute('aria-controls', 'copy'); b.tabIndex = -1;
+      const im = new Image(); im.alt = ''; im.decoding = 'async'; im.src = files(e.photo.name).thumb; im.style.objectPosition = e.photo.op;
+      const nm = document.createElement('span'); nm.className = 'card-name'; nm.textContent = `${e.type} ${e.name}`;
+      b.append(im, nm); b.setAttribute('aria-label', `${e.type} ${e.name}، ${e.venue}، ${e.short}`);
       b.addEventListener('click', () => { if (k === state.i) $('#buyBtn').focus(); else go(k, 'user'); });
-      this.el.appendChild(b); this.list.push(b);
+      this.list.appendChild(b); this.els.push(b);
     });
-    this.refresh();
-    this.el.addEventListener('keydown', (ev) => {
+    this.list.addEventListener('keydown', (ev) => {
       const k = { ArrowDown: 1, ArrowLeft: 1, ArrowUp: -1, ArrowRight: -1 }[ev.key];
-      if (k) { ev.preventDefault(); go((state.i + k + EVENTS.length) % EVENTS.length, 'user'); this.list[state.i].focus(); }
-      if (ev.key === 'Home' || ev.key === 'End') { ev.preventDefault(); go(ev.key === 'Home' ? 0 : EVENTS.length - 1, 'user'); this.list[state.i].focus(); }
+      if (k) { ev.preventDefault(); go((state.i + k + EVENTS.length) % EVENTS.length, 'user'); this.els[state.i].focus(); }
+      if (ev.key === 'Home' || ev.key === 'End') { ev.preventDefault(); go(ev.key === 'Home' ? 0 : EVENTS.length - 1, 'user'); this.els[state.i].focus(); }
     });
-    this.el.addEventListener('pointerenter', () => { state.hover = true; syncPlay(); });
-    this.el.addEventListener('pointerleave', () => { state.hover = false; syncPlay(); });
-    this.el.addEventListener('focusin', () => { state.hover = true; syncPlay(); });
-    this.el.addEventListener('focusout', () => { state.hover = false; syncPlay(); });
-    const ro = new ResizeObserver(() => this.size()); ro.observe(hero); ro.observe(this.list[0]);
-  },
-  refresh() { this.list.forEach((b, k) => compose($('.comp', b), EVENTS[k], true)); },
-  // the scale that fits the whole screen's picture into a box (covering it, like the background)
-  size() {
-    const W = hero.clientWidth, H = hero.clientHeight, b = this.list[0]; if (!W || !H || !b) return;
-    hero.style.setProperty('--hw', W + 'px'); hero.style.setProperty('--hh', H + 'px');
-    this.el.style.setProperty('--bs', Math.max(b.offsetWidth / W, b.offsetHeight / H).toFixed(5));
+    const box = $('.cards');
+    box.addEventListener('pointerenter', () => { state.hover = true; syncPlay(); });
+    box.addEventListener('pointerleave', () => { state.hover = false; syncPlay(); });
+    box.addEventListener('focusin', () => { state.hover = true; syncPlay(); });
+    box.addEventListener('focusout', () => { state.hover = false; syncPlay(); });
   },
   set(i) {
-    this.list.forEach((b, k) => { const on = k === i; b.classList.toggle('is-active', on); b.setAttribute('aria-selected', on); b.tabIndex = on ? 0 : -1; if (!on) $('.bx-bar i', b).style.transform = ''; });
+    this.els.forEach((b, k) => { const on = k === i; b.classList.toggle('is-active', on); b.setAttribute('aria-selected', on); b.tabIndex = on ? 0 : -1; });
+    // keep the active card in view when the column is shorter than the list (without moving the page)
+    const c = this.els[i], l = this.list;
+    if (l.scrollHeight > l.clientHeight + 1) {
+      const top = c.offsetTop - l.offsetTop, want = clamp(top - (l.clientHeight - c.offsetHeight) / 2, 0, l.scrollHeight - l.clientHeight);
+      l.scrollTo({ top: want, behavior: reduceMotion ? 'auto' : 'smooth' });
+    }
   },
 };
 
 /* ════════════════════════════════════════════════════════════════
-   the words: each line sits in a mask; the old words leave upwards and the new ones rise into place
+   the words: they fade out and the new ones fade in, a little from below
    ════════════════════════════════════════════════════════════════ */
 const copy = {
-  el: $('#copy'), title: $('#title'), wi: $('#titleWi'),
-  lines() { return [$('#kick'), this.wi, $('#sub'), $('#price')]; },
+  el: $('#copy'), parts: [$('#title'), $('#sub'), $('#desc'), $('#buyBtn')],
   render(e) {
-    $('#kick').textContent = `${e.cat} · ${e.week} ${e.short}`;
-    this.wi.textContent = e.name; this.fit();
-    $('#sub').textContent = `${e.by} · ${e.venue}`;
-    $('#price').textContent = `از ${e.price}`;
+    $('#title').textContent = e.title;
+    $('#sub').textContent = `${e.venue} · ${e.week} ${e.short}`;
+    $('#desc').textContent = e.desc;
     $('#buyBtn').setAttribute('aria-label', `خرید بلیت ${e.type} ${e.name}، از ${e.price} تومان`);
   },
-  // a long name gets a smaller size instead of running out of its column
-  fit() { const t = this.title; t.style.setProperty('--tf', '1'); const w = t.clientWidth, sw = t.scrollWidth; if (sw > w + 1) t.style.setProperty('--tf', ((w - 1) / sw).toFixed(3)); },
-  out() {
-    if (reduceMotion) { gsap.to(this.lines(), { opacity: 0, duration: 0.2, overwrite: true }); return; }
-    gsap.to(this.lines(), { yPercent: -110, duration: 0.5, ease: 'power3.in', stagger: 0.04, overwrite: true });
-  },
-  in(delay = 0) {
-    if (reduceMotion) { gsap.set(this.lines(), { yPercent: 0 }); gsap.to(this.lines(), { opacity: 1, duration: 0.4, overwrite: true }); return; }
-    gsap.fromTo(this.lines(), { yPercent: 110 }, { yPercent: 0, duration: 1.3, ease: 'expo.out', stagger: 0.08, delay, overwrite: true });
-  },
+  out() { gsap.to(this.parts, { opacity: 0, y: reduceMotion ? 0 : -8, duration: 0.35, ease: 'power2.in', stagger: 0.03, overwrite: true }); },
+  in(delay = 0) { gsap.fromTo(this.parts, { opacity: 0, y: reduceMotion ? 0 : 14 }, { opacity: 1, y: 0, duration: 0.85, ease: 'power3.out', stagger: 0.07, delay, overwrite: true, clearProps: 'transform' }); },
 };
 
-function setAccent(e) { const s = hero.style; s.setProperty('--accent', e.accent); s.setProperty('--light', e.light); s.setProperty('--on-accent', e.onAccent); player.draw(); }
+function setAccent(e) { const s = hero.style; s.setProperty('--accent', e.accent); s.setProperty('--on-accent', e.onAccent); player.draw(); }
 
 /* ════════════════════════════════════════════════════════════════
-   a change: the box, the background and the words
+   a change: the card, the background and the words
    ════════════════════════════════════════════════════════════════ */
 let swapCall = null;
 function go(i, source = 'user') {
   if (i === state.i) return;
   const e = EVENTS[i];
-  state.i = i; boxes.set(i); timer.stop();
+  state.i = i; cards.set(i);
   copy.el.setAttribute('aria-live', source === 'auto' ? 'off' : 'polite');
-  bg.show(i, { mode: reduceMotion ? 'fade' : state.trans, onOpen: (l) => timer.start(l) });
+  bg.show(i); timer.start();
   copy.out();
   if (swapCall) swapCall.kill();
-  swapCall = gsap.delayedCall(reduceMotion ? 0.2 : MID, () => { swapCall = null; setAccent(e); copy.render(e); copy.in(0); });
+  swapCall = gsap.delayedCall(0.4, () => { swapCall = null; setAccent(e); copy.render(e); copy.in(0); });
 }
 const next = (src = 'user') => go((state.i + 1) % EVENTS.length, src);
+const prev = () => go((state.i - 1 + EVENTS.length) % EVENTS.length, 'user');
 
 function syncPlay() { timer.sync(); }
 
@@ -1009,21 +877,22 @@ function toast(msg) {
   gsap.to(toastEl, { y: 10, opacity: 0, duration: 0.4, delay: 3.6, ease: 'power2.in' });
 }
 $('#buyBtn').addEventListener('click', () => toast(`اینجا صفحه‌ی انتخاب صندلی «${EVENTS[state.i].type} ${EVENTS[state.i].name}» باز می‌شه.`));
-$('#loginBtn').addEventListener('click', () => toast('این بخش هنوز ساخته نشده.'));
+$$('#loginBtn, #menuBtn').forEach((b) => b.addEventListener('click', () => toast('این بخش هنوز ساخته نشده.')));
 $$('.links a').forEach((a) => a.addEventListener('click', (ev) => ev.preventDefault()));
+$('#upBtn').addEventListener('click', prev);
+$('#downBtn').addEventListener('click', () => next('user'));
 $('#autoBtn').addEventListener('click', (ev) => {
   state.userPaused = !state.userPaused; const b = ev.currentTarget;
   b.setAttribute('aria-pressed', state.userPaused); b.setAttribute('aria-label', state.userPaused ? 'ادامه‌ی نمایش خودکار' : 'توقف نمایش خودکار'); syncPlay();
 });
 
-// after the intro: every show's full picture, one at a time, so each change opens at once
+// after the intro: every show's full picture, one at a time, so each fade starts at once
 function warm() {
   let k = 0;
   const step = () => {
     const e = EVENTS[k++]; if (!e) return;
-    const m = mediaOf(e), im = new Image();
-    if (m.kind === 'photo') { im.sizes = '100vw'; im.srcset = m.srcset; }
-    im.src = m.src; decoded(im).then(() => setTimeout(step, 60));
+    const f = files(e.photo.name), im = new Image(); im.sizes = '100vw'; im.srcset = f.srcset; im.src = f.src;
+    decoded(im).then(() => setTimeout(step, 60));
   };
   step();
 }
@@ -1043,21 +912,10 @@ function warm() {
     const b = ev.target.closest('button'); if (!b) return;
     $$('button', g).forEach((x) => x.setAttribute('aria-pressed', x === b ? 'true' : 'false'));
     const v = b.dataset.v, k = g.dataset.ctrl;
-    if (k === 'trans') { state.trans = v; next('user'); }
-    if (k === 'zoom') { state.zoom = v; bg.hold(bg.top, bg.top ? bg.top.hp || 0 : 0); }
-    if (k === 'dur') { state.dur = +v; timer.retime(); }
-    if (k === 'boxes') {
-      state.boxes = v; hero.dataset.boxes = v; boxes.el.setAttribute('aria-orientation', v === 'row' ? 'horizontal' : 'vertical');
-      boxes.size(); copy.fit();
-      if (!reduceMotion) { gsap.set(boxes.list, { transition: 'none' }); gsap.fromTo(boxes.list, { opacity: 0, y: 14 }, { opacity: (k2) => (k2 === state.i ? 1 : 0.55), y: 0, duration: 0.7, stagger: 0.05, ease: 'expo.out', clearProps: 'opacity,transform,transition' }); }
-    }
-    if (k === 'source') {
-      state.source = v; boxes.refresh(); timer.stop();
-      bg.show(state.i, { mode: 'fade', onOpen: (l) => timer.start(l) });
-      if (v === 'poster') toast('«چهارمضراب» حالا فقط پوستر داره؛ برو سراغش.');
-      warm();
-    }
-    if (k === 'react') { state.react = v; if (v === 'pulse' && !player.playing()) toast('یه آهنگ از دکمه‌ی پخش بالای صفحه پخش کن تا تصویر با ضربش بتپه.'); }
+    if (k === 'zoom') { state.zoom = +v; next('user'); }
+    if (k === 'dur') { state.dur = +v; timer.start(); }
+    if (k === 'fade') { state.fade = +v; next('user'); }
+    if (k === 'react') { state.react = v; if (v === 'pulse' && !player.playing()) toast('یه آهنگ از دکمه‌ی پخش تو هدر پخش کن تا تصویر با ضربش بتپه.'); }
   }));
 })();
 
@@ -1075,37 +933,31 @@ function frame(now) {
 
 /* boot */
 audioSys.init();
-boxes.build(); boxes.size();
+cards.build();
 copy.render(EVENTS[0]); setAccent(EVENTS[0]);
-boxes.set(0);
+cards.set(0);
 player.init();
 requestAnimationFrame(frame);
 if (reduceMotion) { state.userPaused = true; $('#autoBtn').setAttribute('aria-pressed', 'true'); $('#autoBtn').setAttribute('aria-label', 'ادامه‌ی نمایش خودکار'); }
-document.fonts.ready.then(() => copy.fit());
-new ResizeObserver(() => copy.fit()).observe(copy.title);
 
 (function intro() {
   root.classList.remove('is-intro');
-  // the first picture opens from the middle too; its time starts when the intro is over
-  bg.show(0, { mode: reduceMotion ? 'instant' : 'intro', onOpen: (l) => timer.start(l) });
+  // the first picture fades in from the dark page, already zooming out
+  bg.show(0, { instant: reduceMotion }).then(() => { timer.start(); });
   if (reduceMotion) { state.intro = false; syncPlay(); gsap.from(hero, { opacity: 0, duration: 0.5 }); warm(); return; }
-  copy.in(0.9); // fromTo with a delay: the words start hidden right away, so nothing flashes
-  const moving = [...boxes.list, $('#buyBtn')];
+  copy.in(0.7); // fromTo with a delay: the words start hidden right away, so nothing flashes
+  const moving = [...cards.els, $('#buyBtn'), $('#loginBtn')];
   gsap.set(moving, { transition: 'none' }); // their hover transitions would drag the entrance
   const tl = gsap.timeline({ defaults: { ease: 'expo.out' } });
-  tl.from('.brand', { y: -14, opacity: 0, duration: 1 }, 0.3)
-    .from('.links a', { y: -12, opacity: 0, duration: 0.9, stagger: 0.05 }, 0.38)
-    .from('.nav-end > *', { y: -12, opacity: 0, duration: 0.9, stagger: 0.06 }, 0.44)
-    .from('#buyBtn', { y: 20, opacity: 0, duration: 1.1, clearProps: 'transform,opacity,transition' }, 1.3)
-    .from(boxes.list, { x: -36, opacity: 0, duration: 1.2, stagger: 0.08, clearProps: 'transform,opacity,transition' }, 0.9)
-    .from('#autoBtn', { opacity: 0, duration: 0.8 }, 1.4)
-    .from('#protoFab', { opacity: 0, duration: 0.6 }, 1.8)
-    .add(() => { state.intro = false; syncPlay(); }, 2.2)
-    .add(warm, 2.2);
+  tl.from('.nav', { y: -24, opacity: 0, duration: 1.2 }, 0.2)
+    .from('.cards > *, .c-list > *', { x: 30, opacity: 0, duration: 1.1, stagger: 0.07, clearProps: 'transform,opacity,transition' }, 0.6)
+    .from('#protoFab', { opacity: 0, duration: 0.6 }, 1.6)
+    .add(() => { gsap.set(moving, { clearProps: 'transition' }); state.intro = false; syncPlay(); }, 1.4)
+    .add(warm, 2);
 })();
 
 // test hook for local checks only (?debug in the URL)
-if (/[?&]debug/.test(location.search)) window.__hero = { bg, boxes, copy, timer, player, meters, audioSys, A, analyseTrack, TRACKS, EVENTS, state, go, next, mediaOf, compose, syncPlay };
+if (/[?&]debug/.test(location.search)) window.__hero = { bg, cards, copy, timer, player, meters, audioSys, A, analyseTrack, TRACKS, EVENTS, state, go, next, prev, syncPlay };
 })();
 </script>
 </body>

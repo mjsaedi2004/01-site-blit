@@ -1,21 +1,20 @@
-# Hero · نسخه‌ی ۷ · خلوت: عکس تمام‌صفحه و چهار کادر کنار صفحه · handoff spec
+# Hero · نسخه‌ی ۷ · زوم‌اوت و محو، کارت‌ها سمت راست · handoff spec
 
-> **خلاصه برای خودت:** یه عکس کل صفحه رو می‌گیره و تا وقتش تموم بشه آروم زوم می‌شه. چهار کادر کوچیک کنار صفحه اجراها رو نگه می‌دارن و خط باریک پایین کادر فعال زمان رو نشون می‌ده. وقتی وقت تموم شد، پوستر بعدی خیلی نرم از وسط صفحه باز می‌شه و پوستر قبلی همون موقع جلوتر میاد و کمی تاریک می‌شه. متن فقط چهار تیکه‌ست، پایین گوشه‌ی راست. `index.html` همین پوشه مرجع زنده‌ست. دکمه‌ی گوشه‌ی پایین چپ حالت‌های دیگه رو نشون می‌ده.
+> **خلاصه برای خودت:** عکس اجرای فعال کل صفحه رو می‌گیره. اول کمی زوم‌شده‌ست و با گذشت ثانیه‌ها آروم زوم‌اوت می‌شه، بعد اجرای بعدی روش محو می‌شه.
+> - **متن:** سمت چپ صفحه و راست‌چین، روی یه سایه‌ی تیره. تیتر، مکان و تاریخ، دو خط توضیح و دکمه‌ی خرید به رنگ اجرا.
+> - **کارت‌ها:** سمت راست، کارت‌های ۱۶:۹ با دکمه‌ی بالا و پایین.
+> - **هدر:** یه کپسول شناور با گوشه‌های کمی گرد.
+>
+> `index.html` همین پوشه مرجع زنده‌ست.
 
-**Status:** v7, second round.
+**Status:** v7, third round, rebuilt from scratch.
 
-The owner asked for the first screen of leemeenal.app: a few small boxes at the side of the page; after a few seconds on each, the background becomes that box's picture and the related text takes its place; "simple but attractive".
+The first two rounds were built from a description of leemeenal.app, which can't be opened from the build environment, and both missed. This time the owner sent a screenshot of the reference and described the motion:
+- **The zoom:** «عکس‌ها مقداری زوم شده، و ثانیه که می‌گذره زوم‌اوت می‌شه». The pictures start a little zoomed in and zoom out as the seconds pass.
+- **The change:** «فید می‌شه و می‌ره رو بعدی… همین‌قدر ساده و جذاب». It fades into the next one; that simple.
+- **The header:** «کپسولی… زاویه‌های مربعی، ولی کناره‌هاش مقداری نرم و گرد… نمی‌خوام خیلی گرد بشه». A capsule, squarish, with corners softened a little but not very round.
 
-The first round was "much too busy". The owner asked for:
-- **Sparse, like the reference:** at most four posters.
-- **Zoom:** each poster zooms in a little while its seconds pass.
-- **The change:** after that, the next poster comes in very softly from the middle of the screen, exactly as in the reference.
-
-The site still can't be opened from the build environment: every request to leemeenal.app is cut off. So the opening is a reading of that description. The prototype panel offers alternatives for it:
-- a hard-edged frame from the middle
-- a fade
-- three zoom amounts
-- three durations
+This version follows the screenshot's layout.
 
 Shared with earlier versions and unchanged:
 - **Sizing unit:** `--u`, 1% of the width on a 16:9 screen, smaller on wider ones (`../v5/SPEC.md`).
@@ -29,171 +28,118 @@ Shared with earlier versions and unchanged:
 
 ```
 ┌──────────────────────────────────────────────────────────────────────┐
-│ ورود  ♪ تا ابد تو ▮▮▮▮      کنسرت تئاتر استندآپ خانوادگی   bars بلیت  │  nav
-│                                                                      │
-│ ┌─────┐                                                              │
-│ │ box │◀ active                                                      │
-│ └─────┘          (the show's photo fills the screen                  │
-│ ┌────┐            and slowly zooms in)                               │
-│ │box │                                                               │
-│ └────┘                                                               │
-│ ┌────┐                                            کنسرت پاپ · ۲۴ آذر  │
-│ │box │                                                  فرکانس       │  title
-│ └────┘                               گروه نیمه‌شب · مجموعه ورزشی آزادی │
-│ ┌────┐                                  (←) از ۱٫۸ میلیون  خرید بلیت  │
-│ │box │                                                               │
-│ └────┘ (❚❚)                                                          │
+│ ╭────────────────────────────────────────────────────────────────╮   │
+│ │ [ورود | ثبت‌نام]  ♪ تا ابد تو ▮▮   خانوادگی … تئاتر کنسرت  ▮▮▮ بلیت │   │  header capsule
+│ ╰────────────────────────────────────────────────────────────────╯   │
+│                                                      ( ˄ )           │
+│      کنسرت پاپ : تور ۱۴۰۵ گروه نیمه‌شب | فرکانس       ┌────────┐      │
+│               مجموعه ورزشی آزادی · سه‌شنبه ۲۴ آذر     │ card 1 │◀ active
+│   تور تازه‌ی گروه نیمه‌شب، این بار در سالن ۱۲ هزار…    └────────┘      │
+│                         …با هزاران نفری که با هم می‌خوانند. ┌────────┐ │
+│                                    [ خرید بلیت ]     │ card 2 │      │
+│      (the photo fills the screen, zooming out)        └────────┘      │
+│                                                       … card 3, 4    │
+│                                                      (❚❚)( ˅ )       │
 └──────────────────────────────────────────────────────────────────────┘
 ```
 
-- **Grid:** the hero is `100svh` tall (at least 600px) with two rows: `nav` / `copy side`.
-  - In RTL the words take the right column (`1fr`) and sit at its bottom.
-  - The side column (`auto`, on the left) holds the boxes and the pause button, vertically centred.
-  - Padding is `1.5u` at the top, `3u` at the bottom and `3.2u` at the sides.
-- **Nothing else:**
-  - the menu has the logo, four categories, the music button and «ورود»
-  - the words are four lines
-  - there is no counter, badge, description or icon row
+- **Grid:** the hero is `100svh` tall (at least 600px) with two rows: `nav` / `cards . copy`.
+  - In RTL the first column is on the right: the cards (`auto`), then an empty `1fr`, then the words (`minmax(0, 36u)`) on the left.
+  - Padding is `1.2u` at the top, `2.6u` on the cards' side, `4.2u` on the words' side and `2.4u` at the bottom.
+- **Shade:** a dark gradient from the left edge under the words: 0.8 at the edge, 0.62 at 26 %, 0.22 at 50 %, clear by 64 %. A light one goes at the top and at the bottom.
 
 ---
 
-## 2. The boxes
+## 2. The header capsule
 
-At most four shows; each box is a `role="tab"` button in a `role="tablist"`.
-
-- **Size:** `10.5u × 6u`, radius `0.7u`, gap `0.65u`.
-- **Picture:** the box holds the whole screen's picture, scaled down. It is the same DOM as the background layer, at the hero's size, with `transform: translate(-50%, -50%) scale(--bs)`, where `--bs = max(boxW / heroW, boxH / heroH)`. So the box shows exactly what will open.
-- **Name:** the show's name at the bottom, `0.78u`, over a dark gradient.
-- **Inactive:** opacity `.55` and `scale(.94)` toward the screen edge. On hover, opacity `.9`.
-- **Active:** opacity 1, scale 1, and a 1.5px white inner ring. A 2px line along the bottom edge fills from right to left in the show's accent. That line is the show's time (§3).
-- **Click:** opens that show. Clicking the active box moves focus to the buy button.
-- **Keys:**
-  - ArrowDown or ArrowLeft: next show.
-  - ArrowUp or ArrowRight: previous show.
-  - Home and End: first and last show.
-  - Focus follows the active box.
-- **Pause button:** a small round button under the boxes (`aria-pressed`).
-
-The **row** option («ردیف پایین صفحه») puts the boxes in a row at the bottom left, each `9u × 5.3u`.
+- **Shape:** a floating bar, `3.3u` tall (at least 54px), inside the page padding.
+  - Its radius is `0.75u` (at least 12px): squarish, with the corners softened, not a pill.
+  - Background `rgba(16, 14, 26, .64)`, a 1px border at 12 % white and a soft shadow underneath. No backdrop blur.
+- **Contents, right to left:**
+  - the logo with its five bars (an equaliser while music plays)
+  - five categories (the current one bold and white)
+  - pushed to the far end, the music control and «ورود | ثبت‌نام»
+- **«ورود | ثبت‌نام»:** a white button with the same softened corners (`0.5u`, at least 9px).
+- **Music control:** a round play button, the song's name (it opens the playlist panel) and four small bars.
+- **Below 1100px wide:** the categories are hidden.
+- **On phones:** the logo, the play button and a menu button.
 
 ---
 
-## 3. A show's time: the slow zoom
+## 3. The words
 
-One GSAP tween per show, 7 s long by default, with linear easing, drives two things together:
-- **The line:** the active box's line, `scaleX(p)`.
-- **The zoom:** the picture's scale, `scale(z · (1 + 0.12 · p))`.
-  - `z` is the photo's framing zoom; the origin is the photo's `o`.
-  - 0.12 is the «متوسط» zoom; the panel also offers 0.06 («کم») and 0.20 («زیاد»).
+Right-aligned, in the left column, vertically centred:
+1. **Title:** Vazirmatn 800, `1.85u` (at least 22px), line-height 1.6, `text-wrap: balance`, one or two lines.
+   - It is written like the reference's: «دسته : عنوان | اسم», for example «کنسرت پاپ : تور ۱۴۰۵ گروه نیمه‌شب | فرکانس».
+2. **Venue and date:** Vazirmatn 700, `0.95u`. The date uses the Persian calendar (`Intl.DateTimeFormat('fa-IR-u-ca-persian', { timeZone: 'Asia/Tehran' })`).
+3. **Description:** `0.95u`, line-height 2. It always takes two lines and is clamped to them, so the block has one height.
+4. **«خرید بلیت»:**
+   - a pill (`3.1u` tall, at least `9.5u` wide) in the show's accent from the fixed palette, with text in its `onAccent` colour
+   - a soft glow of the same colour under it
+   - the colour changes with a 0.8 s transition
 
-When it ends, the next show opens.
-
-**Pausing.** The tween pauses, so the line and the zoom stop together, when:
-- the pointer is over the boxes, or focus is inside them
-- the pause button is pressed
-- the hero is scrolled away, or the tab is hidden
-
-**Reduced motion:** no zoom, and auto-advance starts paused.
-
-**Duration:** 7 s by default; the panel offers 5 and 10 s. A new duration keeps how far through the show the line is.
+**On a change:**
+- The four parts fade out (0.35 s, `power2.in`, moving up 8px, staggered by 0.03 s).
+- At 0.4 s the new show's words and colour are written, and the parts fade in from 14px below (0.85 s, `power3.out`, staggered by 0.07 s).
 
 ---
 
-## 4. The change: soft, from the middle
+## 4. The picture: zoomed in, zooming out, fading into the next
+
+Each layer is `.lay > img`. The image uses `object-fit: cover`, with `object-position` from the show's `op` (`mop` on phones) and its zoom origin at `o`.
 
 | t (s) | What happens |
 |---|---|
-| 0 | The box becomes active and the old words leave upward. Each line is in a mask and moves `yPercent: −110` over 0.5 s (`power3.in`), staggered by 0.04 s. |
-| 0 → 2.2 | The next picture opens from the middle of the screen, while the old picture keeps coming towards the viewer (below). |
-| 0.85 | The show's colour is written once and the new words rise into place: `yPercent 110 → 0` over 1.3 s (`expo.out`), staggered by 0.08 s. |
-| 2.2 | The layers underneath are let go and the new show's time (§3) starts from zoom 0. |
+| 0 | The new layer goes on top at `opacity 0`, its picture at `scale(1.15)`. |
+| 0 → 1.2 | It fades in: opacity 0 → 1, `sine.inOut`. |
+| 0 → 8.2 | Its picture zooms out linearly from 1.15 to 1, over the show's 7 s plus the next fade's 1.2 s. So it is still moving while the next one fades in over it. |
+| 1.2 | The layers underneath are let go. |
+| 7 | The next show starts. |
 
-**The opening («باز شدن نرم از وسط», default).** Each layer is `.lay > .iris > .mv > .comp > img`.
-
-The opening runs one progress value `p` from 0 to 1, linearly, over 2.2 s, with `e = easeInOutSine(p)`:
-
-```
-.iris   carries a fixed soft ellipse mask: radial-gradient(closest-side, #000 60%, transparent 100%)
-        transform: scale(k),  k = max(0.04, 2.4 · e)         (at 2.4 the screen's corners are inside the solid core)
-.mv     transform: scale(grow / k),  grow = 0.86 + 0.14 · easeOutCubic(p)
-.lay    opacity: smoothstep(0, 0.15, p)                       (the first moment is a fade, not a dot)
-```
-
-- Only transforms and opacity change per frame. The mask itself never changes, so it is drawn once and the compositor scales it.
-- Changing the mask's gradient per frame was measured: it was about 25 % slower in software rendering.
-- The picture inside the ellipse grows from 86 % to full size while it opens. So the whole screen seems to move towards the viewer.
-
-**The old picture keeps moving.** It continues from the speed its slow zoom had, `v0 = zoom / duration` per second (0 if it was paused), and accelerates evenly:
-- It adds `push = 0.16` of scale over the 2.2 s: `.mv scale(1 + v0·t + ½·a·t²)` with `a = 2·(push − v0·T) / T²`.
-- A dark veil goes over it at `0.3 · e`.
-
-So nothing stops and restarts; it is one continuous movement.
-
-**Other openings in the panel:**
-- **«قاب از وسط»** (1.7 s): a rounded rectangle in the screen's proportions grows from the centre with `clip-path: inset(…)`. The radius goes from 26px to 0. The picture grows from 86 % the same way.
-- **«محو»** (1.5 s): the new layer fades in over the first 80 % of the time, while its picture settles from 1.05 to 1.
-
-**Intro:** the first picture opens the same way from the middle, out of the dark page.
-
-**Quick clicking:** each change opens on top of the last. A layer is let go once a layer above it has fully opened. At most three layers stay in the DOM.
+- **The panel's options:**
+  - zoom 1.08 / 1.15 / 1.24
+  - 5 / 7 / 10 s per show
+  - a fade of 0.8 / 1.2 / 1.8 s
+- **Before a fade:** the picture is decoded (`img.decode()`). After the intro, every show's full picture is preloaded one at a time.
+- **Pausing:** the timer (`gsap.delayedCall`) and the top picture's zoom pause together when:
+  - the pointer is over the cards, or focus is inside them
+  - the pause button is pressed
+  - the hero is scrolled away, or the tab is hidden
+- **Reduced motion:** no zoom, a 0.4 s fade, and auto-advance starts paused.
+- **Quick clicking:** each change fades in on top of the last, and a layer is let go once a layer above it has fully faded in. At most three layers stay in the DOM.
+- **Intro:** the first picture fades in from the dark page, already zooming out. The header drops in, the cards slide in from the right, and the words fade up.
 
 ---
 
-## 5. The picture
+## 5. The cards
 
-Each show has one wide photo. Its framing is data:
+A column on the right, `15.5u` wide:
+1. **Up bar:** a full-width pill (`1.85u` tall, 9 % white) with a chevron. It goes to the previous show.
+2. **List:** one card per show, 16:9, radius `0.6u` (at least 10px), gap `0.75u`.
+   - Each card shows the show's photo (`photos/name-640.webp`) and «کنسرت فرکانس» at the bottom, over a dark gradient.
+   - The cards are `role="tab"` buttons in a `role="tablist"`.
+   - Inactive cards have a 1px ring at 16 % white, and their picture grows 5 % on hover.
+   - The active card has a 2px ring in the show's accent and a soft glow.
+   - When the column is shorter than the list, the list scrolls so the active card stays in view; the page itself never moves.
+3. **Bottom row:** the down bar (next show) and a small round pause button (`aria-pressed`).
 
-| Field | Meaning | Sample (فرکانس) |
-|---|---|---|
-| `z` | zoom of the picture (1 = cover) | 1.04 |
-| `o` | origin of that zoom and of the slow zoom | `50% 40%` |
-| `op` | `object-position` on wide screens | `50% 30%` |
-| `mop` | `object-position` on phones (portrait crop) | `44% 50%` |
+**Keys:**
+- ArrowDown or ArrowLeft: next show.
+- ArrowUp or ArrowRight: previous show.
+- Home and End: first and last show.
+- Focus follows the active card.
 
-- **Legibility:** kept light, so the photo breathes.
-  - A radial darkening in the bottom-right corner under the words (0.8 at the corner, clear by 62 %).
-  - A band at the top for the menu, and one on the left for the boxes.
-  - The row layout adds one at the bottom.
-- **Grain:** static SVG noise at 6 %.
-- **Files:**
-  - `photos/name-640.webp` for the boxes
-  - `photos/name-1920.webp` and `name-2560.webp` for the background (`srcset` with `sizes="100vw"`)
-  - After the intro, every show's full picture is preloaded one at a time.
+**Clicking the active card** moves focus to the buy button.
 
-**What makes a good photo:** landscape, at least 1920px wide, with the subject in the middle or on the left. The opening starts in the middle, and the bottom-right corner will sit under the words.
-
----
-
-## 6. When a show only has a poster
-
-This is the «اگه فقط پوستر باشه» option; in the sample, «چهارمضراب» switches to its poster.
-
-- **Background:** the poster itself, drawn once at 160×90 with `blur(6px) saturate(1.3)` into a data URL, covering the screen. A 30 % dark veil goes over it.
-- **The poster:** it stands in a frame between the boxes and the words.
-  - Its centre is at `(--pfx, --pfy)`: `(40 %, 47 %)` in the column layout, `(34 %, 40 %)` in the row layout and `(50 %, 32 %)` on phones.
-  - Its height is `--pfh` of the hero: 60 %, 54 % and 40 % respectively.
-  - It is rotated −2.5°, with a radius of 1.4 % of the hero height and a deep shadow.
-- **Behaviour:** the poster zooms and opens exactly like a photo.
+**On phones:**
+- The four cards are a row under the words, without names.
+- The pause button sits at the row's end.
+- The up and down bars are hidden.
 
 ---
 
-## 7. Words
+## 6. Music
 
-Four lines in the bottom-right corner, up to `40u` wide:
-1. **Kicker:** the category and the date, «کنسرت پاپ · سه‌شنبه ۲۴ آذر». It uses the Persian calendar (`Intl.DateTimeFormat('fa-IR-u-ca-persian', { timeZone: 'Asia/Tehran' })`), `0.82u`.
-2. **Title:** the show's name in Noto Sans Arabic 900 at width 62.5, `7.4u`, on one line. It shrinks to fit its column (`--tf`).
-3. **Performer and venue:** «گروه نیمه‌شب · مجموعه ورزشی آزادی», `1.02u`, weight 300.
-4. **Buy button:** a white pill: «خرید بلیت», then the starting price in grey, then a round arrow in the accent. The arrow icon uses the palette's `onAccent`.
-
----
-
-## 8. Menu and music
-
-- **Menu:** the logo with its five bars, four categories, the music button and «ورود».
-- **Music button:**
-  - a round play button
-  - the song's name (it opens the playlist)
-  - four small bars
 - **Playlist panel:**
   - the cover
   - a waveform you can scrub
@@ -201,63 +147,46 @@ Four lines in the bottom-right corner, up to `40u` wide:
   - the list, with each song's tempo
   - «آهنگ خودت رو امتحان کن»
 - **Songs:** the same tracks and stored analysis as v2–v6.
-- **Reactions:**
-  - **«تپش آروم تصویر»** (default): the whole picture swells very slightly on each beat, `scale(1 + (kick·0.01 + downbeat·0.005)·level)`. The logo bars follow frequency bands relative to their own recent average, the button's bars follow the song, and the play button's ring pulses.
-  - **«فقط میله‌ها»:** only the bars move.
+- **«تپش آروم تصویر»** (default):
+  - the whole picture swells very slightly on each beat, `scale(1 + (kick·0.01 + downbeat·0.005)·level)` on the background
+  - the logo's bars and the four small bars follow the song
+  - the play button's ring pulses
+- **«فقط میله‌ها»:** only the bars move.
 
 ---
 
-## 9. Smaller screens
-
-- **1100px wide and below:** the categories are hidden.
-- **760px wide and below (phones):**
-  - The words sit at the bottom.
-  - The four boxes are a row under them; each takes a quarter of the row at 16:10, and the pause button sits at the row's end.
-  - Under the words the gradient is deeper.
-  - The title is `min(15vw, 80px)`.
-
----
-
-## 10. Data model
+## 7. Data model
 
 ```
 { id, pal: 'violet' | 'blue' | 'teal' | 'green' | 'gold' | 'orange' | 'crimson' | 'pink',
-  type, cat, name, by, venue, startsAt, price, track,
-  photo:   { name, z, o, op, mop },          // files: photos/name-{640,1920,2560}.webp
-  poster?: { src, thumb, r } }               // used when there is no photo
+  type, name, title, desc, venue, startsAt, price, track,
+  photo: { name, o, op, mop } }        // files: photos/name-{640,1920,2560}.webp
 ```
-At most four shows on the hero.
+`title` is the full line on the hero («کنسرت پاپ : تور ۱۴۰۵ گروه نیمه‌شب | فرکانس»). `type` and `name` label the card.
 
-`pal` keys the fixed palette. v7 uses three of each set's colours:
-- `accent` for the time line and the arrow button
-- `light` for the playlist's tempo
-- `onAccent` for the arrow icon
+The sample has four shows; the column fits four on every desktop screen tested, and more scroll.
+
+**What makes a good photo:** landscape, at least 1920px wide, with the subject in the middle or on the right. The left half sits under the words.
 
 ---
 
-## 11. Measured
+## 8. Measured
 
-- **Fit:** in both layouts, there is no horizontal scroll, nothing outside the hero, no overlap and no clipped text at:
+- **Fit:** there is no horizontal scroll, nothing outside the hero, no overlap and no clipped text at:
   - 1920×1080, 1920×1028 (inside the comparison page) and 1920×940
   - 2560×1300, 1536×730 and 1440×900
   - 1366×768, 1366×650, 1280×720, 1280×600 and 1024×768
   - 390×844 and 360×700
+- **Cards and words:**
+  - All four cards are visible at every desktop size tested.
+  - Every description fits its two lines.
+  - Titles take one line, and two on the shortest screens.
 - **Motion:**
-  - The openings were checked frame by frame on GSAP's own clock.
-  - The time line and the zoom stop and go together with the pointer over the boxes and with the pause button.
-  - After five quick clicks 120 ms apart, and after fourteen changes in a row, the screen ends with one layer showing, the right words and active box, and no mask left behind.
-  - The layer pool stays at three.
-- **Frame rate** (software rendering in the test machine, so far below a real GPU; the comparison is what matters): during a change, about 27 frames/s for the soft opening and 40 for the frame and the fade. The idle screen runs at 60.
-- **Cost of music:** about 15 ms of script and 29 ms of style work per second, with no layout per frame.
-
----
-
-## 12. To confirm with the owner
-
-The real site was never seen, so these are guesses:
-- **The opening:** a soft ellipse from the middle (default), or a hard frame from the middle?
-- **Zoom:** 12 % per show, linear.
-- **The new picture:** it grows from 86 % to full size while it opens.
-- **Timing:** 7 s per show and a 2.2 s opening.
-
-A screen recording of leemeenal.app's first screen would settle them. So would allowing the domain in the environment's network settings.
+  - The fade and the zoom were checked frame by frame on GSAP's own clock.
+  - The timer and the zoom stop together with the pointer over the cards and with the pause button.
+  - After five quick clicks 120 ms apart, and after fourteen changes in a row, one layer is showing, with the right words and the right active card.
+- **Cost:**
+  - **Idle:** about 3 ms of script per second.
+  - **During a change:** 6 ms of script and 14 ms of style per second.
+  - **With music playing:** 14 ms of script and 34 ms of style per second.
+  - There is no layout per frame.

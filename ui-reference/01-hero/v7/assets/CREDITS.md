@@ -11,10 +11,8 @@
 
 Sizes, all WebP:
 - `name-1920.webp`, `name-2560.webp`: the background. The browser picks one through `srcset`.
-- `name-640.webp`: the picture inside the boxes.
+- `name-640.webp`: the picture on the cards.
 
-**Sample poster** (`posters/`). This is one of version 6's sample posters. The page uses it for the «اگه فقط پوستر باشه» option. It was designed for this prototype, and the names on it are fictional. Its photo comes from Unsplash: https://images.unsplash.com/photo-1628015653124-09d8eabd51c2
-
-**Fonts.** Noto Sans Arabic, Vazirmatn and Lalezar, all from Google Fonts under the SIL Open Font License.
+**Fonts.** Vazirmatn and Lalezar (the playlist covers), from Google Fonts under the SIL Open Font License.
 
 **Music.** Shared by versions 2–7 and not part of the repository; see `../../assets/music/README.md`.
