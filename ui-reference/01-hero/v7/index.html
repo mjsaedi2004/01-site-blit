@@ -4,18 +4,18 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>بلیت · هیرو ۷</title>
-<meta name="description" content="نمونه‌ی هیروی صفحه‌ی اصلی بلیت: عکس اجرا کل صفحه رو می‌گیره و چند کادر کوچیک کنار صفحه اجراهای دیگه رو نگه می‌دارن.">
+<meta name="description" content="نمونه‌ی هیروی صفحه‌ی اصلی بلیت: یه عکس تمام‌صفحه، چهار کادر کوچیک کنار صفحه، و پوستر بعدی که آروم از وسط صفحه باز می‌شه.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wdth,wght@62.5,700..900&family=Vazirmatn:wght@300..800&family=Lalezar&display=swap">
 <link rel="preload" as="image" href="assets/photos/pop-frequency-1920.webp" imagesrcset="assets/photos/pop-frequency-1920.webp 1920w, assets/photos/pop-frequency-2560.webp 2560w" imagesizes="100vw" fetchpriority="high">
 <script>document.documentElement.classList.add('is-intro');setTimeout(function(){document.documentElement.classList.remove('is-intro')},4000);</script>
 <style>
-/* Layout, after the owner's description of the first screen of leemeenal.app: the show's photo
-   fills the whole screen, and a few small boxes at the side of the page hold the other shows.
-   Every few seconds the next box opens up into the background and the show's words take their
-   places on the right. Each box shows exactly the picture it will open into, so the change is
-   one continuous movement.
+/* Layout, after the owner's description of the first screen of leemeenal.app: quiet and sparse.
+   One photo fills the screen and slowly zooms in while it is on. Four small boxes at the side of
+   the page hold the shows. When a show's time is up, the next one opens softly from the middle of
+   the screen while the old one keeps moving towards the viewer, and the show's few words take
+   their place in the bottom corner.
    All sizes follow one unit, --u, which is 1% of the width on a 16:9 screen and shrinks with the
    height on wider ones, so the composition is the same on any desktop screen and never
    overflows. */
@@ -23,11 +23,11 @@
   --u: clamp(11px, min(1vw, 1.7778svh), 26px);
   --bg: #050409;
   --ink: #fbfaff;
-  --ink-2: rgba(246, 243, 255, .76);
-  --ink-3: rgba(246, 243, 255, .52);
+  --ink-2: rgba(246, 243, 255, .78);
+  --ink-3: rgba(246, 243, 255, .54);
   --line: rgba(255, 255, 255, .14);
   --line-2: rgba(255, 255, 255, .26);
-  --glass: rgba(9, 7, 16, .46);
+  --glass: rgba(9, 7, 16, .4);
   --panel: #13111b;
   --accent: #3b82f6;
   --light: #93c5fd;
@@ -36,9 +36,6 @@
   --font-title: "Noto Sans Arabic", "Vazirmatn", sans-serif;
   --ease: cubic-bezier(.16, 1, .3, 1);
   --pad: calc(var(--u) * 3.2);
-  --play: running;
-  --amb: running;
-  --dur: 7s;
   color-scheme: dark;
 }
 
@@ -60,87 +57,78 @@ svg.i { width: 1.15em; height: 1.15em; fill: none; stroke: currentColor; stroke-
   position: relative; height: 100svh; min-height: 600px; overflow: hidden; isolation: isolate; background: var(--bg);
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  grid-template-rows: auto minmax(0, 1fr) auto;
-  grid-template-areas: "nav nav" "copy boxes" "foot foot";
+  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-areas: "nav nav" "copy side";
   column-gap: calc(var(--u) * 4);
-  padding: max(calc(var(--u) * 1.5), env(safe-area-inset-top, 0px)) max(var(--pad), env(safe-area-inset-right, 0px)) max(calc(var(--u) * 1.5), env(safe-area-inset-bottom, 0px)) max(var(--pad), env(safe-area-inset-left, 0px));
-  /* where a poster stands when a show only has a poster: between the text and the boxes */
-  --pfx: 34%; --pfy: 51%; --pfh: 64%;
+  padding: max(calc(var(--u) * 1.5), env(safe-area-inset-top, 0px)) max(var(--pad), env(safe-area-inset-right, 0px)) max(calc(var(--u) * 3), env(safe-area-inset-bottom, 0px)) max(var(--pad), env(safe-area-inset-left, 0px));
+  /* where a poster stands when a show only has a poster: between the boxes and the words */
+  --pfx: 40%; --pfy: 47%; --pfh: 60%;
 }
-.hero[data-boxes="row"] { grid-template-areas: "nav nav" "copy copy" "foot boxes"; --pfx: 30%; --pfy: 43%; --pfh: 56%; }
+.hero[data-boxes="row"] { --pfx: 34%; --pfy: 40%; --pfh: 54%; }
 
 /* the pictures: a stack of layers; the newest one opens over the others */
 .bg { position: absolute; inset: 0; z-index: 0; overflow: hidden; background: var(--bg); will-change: transform; }
 .lay { position: absolute; inset: 0; visibility: hidden; contain: strict; }
 .lay.is-on { visibility: visible; }
+.iris { position: absolute; inset: 0; transform-origin: 50% 50%; }
+.lay.is-iris .iris { will-change: transform; -webkit-mask-image: radial-gradient(closest-side, #000 60%, transparent 100%); mask-image: radial-gradient(closest-side, #000 60%, transparent 100%); }
 .mv { position: absolute; inset: 0; transform-origin: 50% 50%; will-change: transform; }
 .comp { position: absolute; inset: 0; overflow: hidden; background: #0b0912; }
 .ph { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; object-position: var(--op, 50% 50%); transform: scale(var(--z, 1)); transform-origin: var(--o, 50% 50%); }
-.lay.is-cur .ph { animation: drift calc(var(--dur) * 2.4) linear both; animation-play-state: var(--amb); }
-@keyframes drift { from { transform: scale(var(--z, 1)); } to { transform: scale(calc(var(--z, 1) * 1.1)); } }
+.lay .ph { will-change: transform; }
 .dim { position: absolute; inset: 0; background: var(--bg); opacity: 0; pointer-events: none; }
 /* a show with only a poster: the poster, blurred, is the background and the poster itself stands in a frame */
 .comp.is-poster::after { content: ""; position: absolute; inset: 0; background: rgba(5, 4, 9, .3); }
 .pf { position: absolute; z-index: 1; left: var(--pfx); top: var(--pfy); height: var(--pfh); aspect-ratio: var(--pr, .8); translate: -50% -50%; rotate: -2.5deg; overflow: hidden; border-radius: calc(var(--hh, 1080px) * .014); box-shadow: 0 calc(var(--hh, 1080px) * .05) calc(var(--hh, 1080px) * .1) calc(var(--hh, 1080px) * -.035) rgba(0, 0, 0, .9), 0 0 0 1px rgba(255, 255, 255, .12); }
 .pf img { width: 100%; height: 100%; object-fit: cover; }
 
-/* legibility: dark on the right for the words, at the top for the menu, at the bottom and on the left for the boxes */
+/* legibility, kept light: the bottom corner for the words, the top for the menu, the side for the boxes */
 .shade { position: absolute; inset: 0; z-index: 1; pointer-events: none; background:
-  linear-gradient(to left, rgba(5, 4, 9, .86) 0%, rgba(5, 4, 9, .64) 24%, rgba(5, 4, 9, .2) 50%, rgba(5, 4, 9, 0) 64%),
-  linear-gradient(to top, rgba(5, 4, 9, .78) 0%, rgba(5, 4, 9, 0) 26%),
-  linear-gradient(to bottom, rgba(5, 4, 9, .58) 0%, rgba(5, 4, 9, 0) 18%),
-  linear-gradient(to right, rgba(5, 4, 9, .55) 0%, rgba(5, 4, 9, 0) 22%); }
+  radial-gradient(115% 85% at 100% 100%, rgba(5, 4, 9, .8) 0%, rgba(5, 4, 9, .5) 30%, rgba(5, 4, 9, 0) 62%),
+  linear-gradient(to bottom, rgba(5, 4, 9, .5) 0%, rgba(5, 4, 9, 0) 16%),
+  linear-gradient(to right, rgba(5, 4, 9, .42) 0%, rgba(5, 4, 9, 0) 18%); }
 .hero[data-boxes="row"] .shade { background:
-  linear-gradient(to left, rgba(5, 4, 9, .86) 0%, rgba(5, 4, 9, .64) 24%, rgba(5, 4, 9, .2) 50%, rgba(5, 4, 9, 0) 64%),
-  linear-gradient(to top, rgba(5, 4, 9, .88) 0%, rgba(5, 4, 9, .4) 22%, rgba(5, 4, 9, 0) 40%),
-  linear-gradient(to bottom, rgba(5, 4, 9, .58) 0%, rgba(5, 4, 9, 0) 18%); }
-/* the beat: a light from below in the show's colour */
-.beat { position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: 0; will-change: opacity; background: radial-gradient(60% 46% at 50% 112%, color-mix(in oklab, var(--accent) 62%, transparent), color-mix(in oklab, var(--accent) 14%, transparent) 55%, transparent 78%); }
+  radial-gradient(115% 85% at 100% 100%, rgba(5, 4, 9, .8) 0%, rgba(5, 4, 9, .5) 30%, rgba(5, 4, 9, 0) 62%),
+  linear-gradient(to bottom, rgba(5, 4, 9, .5) 0%, rgba(5, 4, 9, 0) 16%),
+  linear-gradient(to top, rgba(5, 4, 9, .55) 0%, rgba(5, 4, 9, 0) 24%); }
 .grain { position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: .5; background-size: 220px 220px; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .06 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"); }
 
 /* ── nav ───────────────────────────────────────────────────────── */
 .nav { grid-area: nav; position: relative; z-index: 6; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: calc(var(--u) * 2); height: max(40px, calc(var(--u) * 2.6)); }
 .brand { justify-self: start; display: inline-flex; align-items: center; gap: calc(var(--u) * .6); text-decoration: none; font-weight: 800; font-size: max(17px, calc(var(--u) * 1.32)); line-height: 1; color: #fff; }
 .bars { display: flex; align-items: center; gap: max(2px, calc(var(--u) * .17)); height: max(18px, calc(var(--u) * 1.4)); direction: ltr; }
-.bars i { width: max(2.5px, calc(var(--u) * .2)); height: 100%; border-radius: 9px; background: var(--accent); transform: scaleY(var(--s)); will-change: transform; transition: background-color .8s; }
-.links { display: flex; gap: calc(var(--u) * 2.1); }
-.links a { position: relative; text-decoration: none; font-size: max(13px, calc(var(--u) * .8)); color: rgba(255, 255, 255, .8); padding-block: 4px; transition: color .3s; }
-.links a::after { content: ""; position: absolute; inset-inline: 30%; bottom: -3px; height: 2px; border-radius: 2px; background: var(--accent); transform: scaleX(0); transition: transform .5s var(--ease), background-color .8s; }
+.bars i { width: max(2.5px, calc(var(--u) * .2)); height: 100%; border-radius: 9px; background: #fff; transform: scaleY(var(--s)); will-change: transform; }
+.links { display: flex; gap: calc(var(--u) * 2.2); }
+.links a { position: relative; text-decoration: none; font-size: max(13px, calc(var(--u) * .8)); color: rgba(255, 255, 255, .78); padding-block: 4px; transition: color .3s; }
+.links a::after { content: ""; position: absolute; inset-inline: 30%; bottom: -3px; height: 1.5px; border-radius: 2px; background: #fff; transform: scaleX(0); transition: transform .5s var(--ease); }
 .links a:hover, .links a[aria-current="page"] { color: #fff; }
 .links a:hover::after, .links a[aria-current="page"]::after { transform: scaleX(1); }
-.nav-end { justify-self: end; display: flex; align-items: center; gap: calc(var(--u) * .7); }
-.icon-btn { all: unset; cursor: pointer; display: grid; place-items: center; width: max(38px, calc(var(--u) * 2.6)); height: max(38px, calc(var(--u) * 2.6)); border-radius: 50%; border: 1px solid var(--line-2); background: var(--glass); color: #fff; transition: border-color .3s, background .3s; }
-.icon-btn:hover { border-color: rgba(255, 255, 255, .55); background: rgba(255, 255, 255, .1); }
-.icon-btn:focus-visible, .login:focus-visible, .pill:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
-.icon-btn svg.i { width: 44%; height: 44%; }
-.login { all: unset; cursor: pointer; font-size: max(13px, calc(var(--u) * .8)); color: rgba(255, 255, 255, .85); padding-inline: calc(var(--u) * .4); transition: color .3s; }
+.nav-end { justify-self: end; display: flex; align-items: center; gap: calc(var(--u) * 1.1); }
+.login { all: unset; cursor: pointer; font-size: max(13px, calc(var(--u) * .8)); color: rgba(255, 255, 255, .85); transition: color .3s; }
 .login:hover { color: #fff; }
-.pill { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: .5em; height: max(38px, calc(var(--u) * 2.6)); padding-inline: calc(var(--u) * 1.2); border-radius: 999px; background: #fff; color: #0b0a12; font-size: max(13px, calc(var(--u) * .8)); font-weight: 700; transition: transform .5s var(--ease), box-shadow .5s; }
-.pill:hover { transform: translateY(-1px); box-shadow: 0 10px 24px -12px rgba(0, 0, 0, .8); }
-.menu-btn { display: none; }
+.login:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 
-/* music, in the menu bar */
-.music { position: relative; display: flex; align-items: center; gap: calc(var(--u) * .6); height: max(38px, calc(var(--u) * 2.6)); padding-inline: calc(var(--u) * .28) calc(var(--u) * .9); border-radius: 999px; background: var(--glass); border: 1px solid var(--line-2); }
-.mu-play { all: unset; cursor: pointer; position: relative; display: grid; place-items: center; width: max(30px, calc(var(--u) * 2)); height: max(30px, calc(var(--u) * 2)); border-radius: 50%; background: rgba(255, 255, 255, .12); color: #fff; transition: background .3s, color .3s; }
-.mu-play::after { content: ""; position: absolute; inset: -4px; border-radius: 50%; border: 1.5px solid var(--accent); opacity: 0; transform: scale(var(--pulse, 1)); transition: opacity .4s, border-color .8s; }
+/* music, in the menu bar: a play button, the song's name and four small bars */
+.music { position: relative; display: flex; align-items: center; gap: calc(var(--u) * .55); }
+.mu-play { all: unset; cursor: pointer; position: relative; display: grid; place-items: center; width: max(30px, calc(var(--u) * 1.95)); height: max(30px, calc(var(--u) * 1.95)); border-radius: 50%; border: 1px solid var(--line-2); background: var(--glass); color: #fff; transition: background .3s, color .3s, border-color .3s; }
+.mu-play::after { content: ""; position: absolute; inset: -4px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, .6); opacity: 0; transform: scale(var(--pulse, 1)); transition: opacity .4s; }
 .music.is-playing .mu-play::after { opacity: .7; }
-.mu-play:hover { background: rgba(255, 255, 255, .22); }
+.mu-play:hover { border-color: rgba(255, 255, 255, .6); }
 .mu-play:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
-.mu-play svg.i { width: 42%; height: 42%; }
+.mu-play svg.i { width: 40%; height: 40%; }
 .mu-play .i-pause, .music.is-playing .mu-play .i-play { display: none; }
 .music.is-playing .mu-play .i-pause { display: block; }
-.music.is-playing .mu-play { background: #fff; color: #0b0a12; }
+.music.is-playing .mu-play { background: #fff; color: #0b0a12; border-color: #fff; }
 .mu-play .spin { display: none; width: 40%; height: 40%; border-radius: 50%; border: 1.5px solid currentColor; border-inline-end-color: transparent; animation: spin .8s linear infinite; }
 .music.is-loading .mu-play .spin { display: block; }
 .music.is-loading .mu-play .i-play, .music.is-loading .mu-play .i-pause { display: none; }
 @keyframes spin { to { transform: rotate(360deg); } }
-.mu-meta { all: unset; cursor: pointer; display: grid; line-height: 1.3; max-width: calc(var(--u) * 8.5); min-width: 0; }
+.mu-meta { all: unset; cursor: pointer; display: block; max-width: calc(var(--u) * 7); min-width: 0; font-size: max(12.5px, calc(var(--u) * .74)); color: rgba(255, 255, 255, .85); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color .3s; }
+.mu-meta:hover { color: #fff; }
 .mu-meta:focus-visible { outline: 2px solid #fff; outline-offset: 4px; border-radius: 4px; }
-.mu-title { font-size: max(12.5px, calc(var(--u) * .74)); color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.mu-sub { font-size: max(11px, calc(var(--u) * .6)); color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.mu-eq { display: flex; align-items: flex-end; gap: 2px; height: 15px; direction: ltr; }
-.mu-eq i { width: 2px; height: 100%; border-radius: 1px; background: var(--accent); transform: scaleY(.2); transform-origin: bottom; will-change: transform; transition: background-color .8s; }
-.mu-pop { position: absolute; top: calc(100% + 12px); inset-inline-end: 0; z-index: 20; width: 340px; max-width: calc(100vw - 32px); padding: 16px; display: grid; gap: 12px; background: var(--panel); border: 1px solid var(--line); border-radius: 18px; box-shadow: 0 30px 70px -24px rgba(0, 0, 0, .85); font-size: 13.5px; }
+.mu-eq { display: flex; align-items: flex-end; gap: 2px; height: 13px; direction: ltr; }
+.mu-eq i { width: 2px; height: 100%; border-radius: 1px; background: #fff; transform: scaleY(.2); transform-origin: bottom; will-change: transform; }
+.mu-pop { position: absolute; top: calc(100% + 14px); inset-inline-end: 0; z-index: 20; width: 340px; max-width: calc(100vw - 32px); padding: 16px; display: grid; gap: 12px; background: var(--panel); border: 1px solid var(--line); border-radius: 18px; box-shadow: 0 30px 70px -24px rgba(0, 0, 0, .85); font-size: 13.5px; }
 .mu-head { display: flex; align-items: center; gap: 12px; }
 .mu-head > :last-child { display: grid; line-height: 1.5; min-width: 0; }
 .mu-head b { font-size: 14px; }
@@ -173,126 +161,87 @@ svg.i { width: 1.15em; height: 1.15em; fill: none; stroke: currentColor; stroke-
 .add-song input { position: absolute; width: 1px; height: 1px; opacity: 0; }
 .add-song:focus-within { outline: 2px solid #fff; outline-offset: 2px; }
 
-/* ── the words of the show ─────────────────────────────────────── */
-.copy { grid-area: copy; position: relative; z-index: 3; align-self: center; width: min(100%, calc(var(--u) * 46)); display: grid; justify-items: start; }
-.kicker { display: flex; align-items: center; gap: calc(var(--u) * .75); font-size: max(12.5px, calc(var(--u) * .8)); color: var(--ink-2); }
-.k-no { color: var(--light); font-weight: 700; font-variant-numeric: tabular-nums; transition: color .6s; }
-.k-line { width: calc(var(--u) * 3); height: 1px; background: rgba(255, 255, 255, .45); transform-origin: 100% 50%; }
-.k-badge { display: inline-flex; align-items: center; height: 2em; padding-inline: .9em; border-radius: 999px; font-size: .88em; color: #fff; background: color-mix(in oklab, var(--accent) 24%, rgba(9, 7, 16, .45)); border: 1px solid color-mix(in oklab, var(--accent) 60%, transparent); transition: background-color .6s, border-color .6s; }
-.title { position: relative; width: 100%; margin: calc(var(--u) * .45) 0 0; font-family: var(--font-title); font-weight: 900; font-stretch: 62.5%; font-size: calc(var(--u) * 9.4 * var(--tf, 1)); line-height: 1.12; white-space: nowrap; color: #fff; text-shadow: 0 .03em .35em rgba(0, 0, 0, .22); }
+/* ── the few words of the show, in the bottom corner ───────────── */
+.copy { grid-area: copy; position: relative; z-index: 3; align-self: end; width: min(100%, calc(var(--u) * 40)); display: grid; justify-items: start; }
+.kicker { margin: 0; font-size: max(12.5px, calc(var(--u) * .82)); color: var(--ink-2); }
+.title { position: relative; width: 100%; margin: calc(var(--u) * .35) 0 0; font-family: var(--font-title); font-weight: 900; font-stretch: 62.5%; font-size: calc(var(--u) * 7.4 * var(--tf, 1)); line-height: 1.12; white-space: nowrap; color: #fff; text-shadow: 0 .03em .35em rgba(0, 0, 0, .22); }
 .title .w { display: inline-block; overflow: hidden; padding: .16em .05em .3em; margin: -.16em -.05em -.3em; vertical-align: bottom; }
 .title .wi { display: inline-block; will-change: transform; }
-.title.fly { position: absolute; z-index: 4; margin: 0; pointer-events: none; }
-.title.fly .w { overflow: visible; }
-.sub { margin: calc(var(--u) * .45) 0 0; font-size: max(15px, calc(var(--u) * 1.3)); font-weight: 300; color: #fff; }
-.desc { margin: calc(var(--u) * 1) 0 0; max-width: calc(var(--u) * 34); min-height: 3.9em; font-size: max(13px, calc(var(--u) * .9)); line-height: 1.95; color: var(--ink-2); text-wrap: pretty; }
-.desc #desc { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; }
-.meta { list-style: none; margin: calc(var(--u) * 1.25) 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: calc(var(--u) * .5) calc(var(--u) * 1.5); font-size: max(13px, calc(var(--u) * .84)); color: #fff; }
-.meta li { display: flex; align-items: center; gap: calc(var(--u) * .45); }
-.meta svg.i { color: var(--light); transition: color .6s; }
-.cta { display: flex; flex-wrap: wrap; align-items: center; gap: calc(var(--u) * 1.2); margin-top: calc(var(--u) * 1.9); }
-.buy { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: calc(var(--u) * .85); height: max(44px, calc(var(--u) * 3.1)); padding-inline: calc(var(--u) * 1.45) calc(var(--u) * .34); border-radius: 999px; background: #fff; color: #0b0a12; font-weight: 700; font-size: max(13.5px, calc(var(--u) * .88)); box-shadow: 0 calc(var(--u) * .8) calc(var(--u) * 2.4) calc(var(--u) * -.8) rgba(0, 0, 0, .7); transition: transform .5s var(--ease), box-shadow .5s; }
+.sub { margin: calc(var(--u) * .5) 0 0; font-size: max(14px, calc(var(--u) * 1.02)); font-weight: 300; color: var(--ink-2); }
+.buy { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: calc(var(--u) * .8); margin-top: calc(var(--u) * 1.8); height: max(42px, calc(var(--u) * 2.8)); padding-inline: calc(var(--u) * 1.3) calc(var(--u) * .3); border-radius: 999px; background: #fff; color: #0b0a12; font-weight: 700; font-size: max(13.5px, calc(var(--u) * .84)); transition: transform .5s var(--ease); }
 .buy:hover { transform: translateY(-2px); }
 .buy:active { transform: scale(.98); }
 .buy:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
-.b-sep { width: 1px; height: 1.3em; background: rgba(11, 10, 18, .16); }
-.b-price { font-weight: 500; color: rgba(11, 10, 18, .62); white-space: nowrap; }
-.b-go { display: grid; place-items: center; width: max(34px, calc(var(--u) * 2.42)); height: max(34px, calc(var(--u) * 2.42)); border-radius: 50%; background: var(--accent); color: var(--on-accent); transition: background-color .6s, color .6s; }
+.b-price { font-weight: 500; color: rgba(11, 10, 18, .58); white-space: nowrap; }
+.b-go { display: grid; place-items: center; width: max(32px, calc(var(--u) * 2.2)); height: max(32px, calc(var(--u) * 2.2)); border-radius: 50%; background: var(--accent); color: var(--on-accent); transition: background-color .6s, color .6s; }
 .b-go svg.i { width: 46%; height: 46%; stroke-width: 2; transition: transform .5s var(--ease); }
 .buy:hover .b-go svg { transform: translateX(-3px); }
-.more { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: .45em; padding-block: .35em; font-size: max(13.5px, calc(var(--u) * .88)); color: #fff; border-bottom: 1px solid rgba(255, 255, 255, .35); transition: border-color .3s; }
-.more:hover { border-color: #fff; }
-.more:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
-.more svg.i { width: 1em; height: 1em; transition: transform .5s var(--ease); }
-.more:hover svg.i { transform: translateX(-3px); }
 
-/* ── the boxes ─────────────────────────────────────────────────── */
-.boxes { grid-area: boxes; position: relative; z-index: 3; align-self: center; display: flex; flex-direction: column; gap: calc(var(--u) * .7); width: calc(var(--u) * 12.5); }
-.box { all: unset; box-sizing: border-box; position: relative; display: block; flex: none; height: calc(var(--u) * 6.1); border-radius: calc(var(--u) * .8); overflow: hidden; isolation: isolate; cursor: pointer; opacity: .6; transform: scale(.93); transform-origin: 0% 50%; transition: opacity .5s, transform .7s var(--ease); -webkit-tap-highlight-color: transparent; }
-.box::after { content: ""; position: absolute; inset: 0; z-index: 2; border-radius: inherit; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .18); transition: box-shadow .5s; pointer-events: none; }
-.box:not(.is-active):hover { opacity: .92; }
+/* ── the side: four small boxes and the pause button ───────────── */
+.side { grid-area: side; position: relative; z-index: 3; align-self: center; display: grid; gap: calc(var(--u) * 1); justify-items: start; }
+.boxes { display: flex; flex-direction: column; gap: calc(var(--u) * .65); width: calc(var(--u) * 10.5); }
+.box { all: unset; box-sizing: border-box; position: relative; display: block; flex: none; height: calc(var(--u) * 6); border-radius: calc(var(--u) * .7); overflow: hidden; isolation: isolate; cursor: pointer; opacity: .55; transform: scale(.94); transform-origin: 0% 50%; transition: opacity .6s, transform .8s var(--ease); -webkit-tap-highlight-color: transparent; }
+.box::after { content: ""; position: absolute; inset: 0; z-index: 2; border-radius: inherit; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .16); transition: box-shadow .6s; pointer-events: none; }
+.box:not(.is-active):hover { opacity: .9; }
 .box:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 .box.is-active { opacity: 1; transform: none; }
-.box.is-active::after { box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .95); }
+.box.is-active::after { box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, .9); }
 .bx-art { position: absolute; inset: 0; z-index: -1; overflow: hidden; border-radius: inherit; }
-.bx-art::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(5, 4, 9, .9), rgba(5, 4, 9, .22) 64%, rgba(5, 4, 9, 0)); }
+.bx-art::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(5, 4, 9, .78), rgba(5, 4, 9, 0) 58%); }
 /* the box holds the whole screen's picture, scaled down: what you see in it is what opens */
-.comp.mini { inset: auto; left: 50%; top: 50%; width: var(--hw, 1920px); height: var(--hh, 1080px); transform: translate(-50%, -50%) scale(var(--bs, .125)); pointer-events: none; }
-.bx-txt { position: absolute; inset-inline: calc(var(--u) * .8); bottom: calc(var(--u) * .6); display: grid; line-height: 1.4; }
-.bx-txt small { font-size: max(10px, calc(var(--u) * .58)); color: rgba(255, 255, 255, .72); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.bx-txt b { font-size: max(12px, calc(var(--u) * .92)); font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.bx-bar { position: absolute; inset-inline: 0; bottom: 0; z-index: 3; height: 3px; background: rgba(255, 255, 255, .16); opacity: 0; transition: opacity .4s; }
+.comp.mini { inset: auto; left: 50%; top: 50%; width: var(--hw, 1920px); height: var(--hh, 1080px); transform: translate(-50%, -50%) scale(var(--bs, .11)); pointer-events: none; }
+.bx-name { position: absolute; inset-inline: calc(var(--u) * .7); bottom: calc(var(--u) * .55); font-size: max(11.5px, calc(var(--u) * .78)); font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bx-bar { position: absolute; inset-inline: 0; bottom: 0; z-index: 3; height: 2px; background: rgba(255, 255, 255, .16); opacity: 0; transition: opacity .4s; }
 .bx-bar i { display: block; height: 100%; background: var(--bc, #fff); transform: scaleX(0); transform-origin: 100% 50%; }
 .box.is-active .bx-bar { opacity: 1; }
-.box.is-active .bx-bar i { animation: fill var(--dur) linear forwards; animation-play-state: var(--play); }
-@keyframes fill { to { transform: scaleX(1); } }
-.hero[data-boxes="row"] .boxes { align-self: end; flex-direction: row; width: auto; gap: calc(var(--u) * .65); }
-.hero[data-boxes="row"] .box { width: calc(var(--u) * 9.4); height: calc(var(--u) * 5.5); transform-origin: 50% 100%; }
-
-/* ── the bottom row ────────────────────────────────────────────── */
-.foot { grid-area: foot; position: relative; z-index: 3; display: flex; align-items: center; justify-content: space-between; gap: calc(var(--u) * 2); padding-top: calc(var(--u) * .9); }
-.hero[data-boxes="row"] .foot { align-self: end; }
-.count { display: flex; align-items: center; gap: calc(var(--u) * .5); min-width: 0; font-variant-numeric: tabular-nums; }
-.c-cur { font-size: max(16px, calc(var(--u) * 1.45)); font-weight: 700; color: #fff; line-height: 1.3; }
-.c-of { font-size: max(12px, calc(var(--u) * .75)); color: var(--ink-3); white-space: nowrap; }
-.c-line { position: relative; width: calc(var(--u) * 8); flex-shrink: 1; min-width: 24px; height: 2px; margin-inline-start: calc(var(--u) * .5); border-radius: 2px; overflow: hidden; background: rgba(255, 255, 255, .2); }
-.c-line i { position: absolute; inset: 0; background: #fff; transform-origin: 100% 50%; transform: scaleX(.1667); }
-.ctrls { display: flex; align-items: center; gap: calc(var(--u) * .5); }
-.ctl { all: unset; cursor: pointer; display: grid; place-items: center; width: max(36px, calc(var(--u) * 2.4)); height: max(36px, calc(var(--u) * 2.4)); border-radius: 50%; border: 1px solid rgba(255, 255, 255, .3); background: rgba(9, 7, 16, .3); color: #fff; transition: background .3s, border-color .3s; }
-.ctl:hover { background: rgba(255, 255, 255, .12); border-color: rgba(255, 255, 255, .65); }
+.ctl { all: unset; justify-self: end; cursor: pointer; display: grid; place-items: center; width: max(32px, calc(var(--u) * 2)); height: max(32px, calc(var(--u) * 2)); border-radius: 50%; border: 1px solid rgba(255, 255, 255, .26); color: rgba(255, 255, 255, .85); transition: background .3s, border-color .3s, color .3s; }
+.ctl:hover { background: rgba(255, 255, 255, .1); border-color: rgba(255, 255, 255, .6); color: #fff; }
 .ctl:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
-.ctl svg.i { width: 42%; height: 42%; }
-#autoBtn svg.i { width: 36%; height: 36%; }
+.ctl svg.i { width: 34%; height: 34%; }
 #autoBtn .i-play, #autoBtn[aria-pressed="true"] .i-pause { display: none; }
 #autoBtn[aria-pressed="true"] .i-play { display: block; }
+/* the row option: the boxes along the bottom on the left */
+.hero[data-boxes="row"] .side { align-self: end; grid-auto-flow: column; align-items: end; }
+.hero[data-boxes="row"] .boxes { flex-direction: row; width: auto; }
+.hero[data-boxes="row"] .box { width: calc(var(--u) * 9); height: calc(var(--u) * 5.3); transform-origin: 50% 100%; }
 
 /* ── laptops and tablets ───────────────────────────────────────── */
 @media (max-width: 1100px) {
-  .links, .login { display: none; }
+  .links { display: none; }
   .nav { grid-template-columns: 1fr auto; }
-  .menu-btn { display: grid; }
 }
 /* ── phones: the words at the bottom, the boxes in a row under them ── */
 @media (max-width: 760px) {
   .hero, .hero[data-boxes="row"] {
-    min-height: 640px; column-gap: 0; row-gap: 14px;
-    grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) auto auto;
-    grid-template-areas: "nav" "copy" "boxes" "foot";
-    padding: max(12px, env(safe-area-inset-top, 0px)) 16px max(14px, env(safe-area-inset-bottom, 0px));
-    --pfx: 50%; --pfy: 30%; --pfh: 38%;
+    min-height: 620px; column-gap: 0; row-gap: 18px;
+    grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) auto;
+    grid-template-areas: "nav" "copy" "side";
+    padding: max(12px, env(safe-area-inset-top, 0px)) 16px max(18px, env(safe-area-inset-bottom, 0px));
+    --pfx: 50%; --pfy: 32%; --pfh: 40%;
   }
   .shade, .hero[data-boxes="row"] .shade { background:
-    linear-gradient(to top, rgba(5, 4, 9, .96) 0%, rgba(5, 4, 9, .8) 36%, rgba(5, 4, 9, .25) 60%, rgba(5, 4, 9, 0) 74%),
-    linear-gradient(to bottom, rgba(5, 4, 9, .6) 0%, rgba(5, 4, 9, 0) 16%); }
+    linear-gradient(to top, rgba(5, 4, 9, .94) 0%, rgba(5, 4, 9, .7) 30%, rgba(5, 4, 9, .15) 55%, rgba(5, 4, 9, 0) 68%),
+    linear-gradient(to bottom, rgba(5, 4, 9, .55) 0%, rgba(5, 4, 9, 0) 16%); }
   .ph { object-position: var(--mop, var(--op, 50% 50%)); }
-  .nav { gap: 10px; }
-  #searchBtn, .nav-end .pill, .mu-eq { display: none; }
   .mu-meta { max-width: 92px; }
-  .copy { align-self: end; width: 100%; }
-  .title { font-size: calc(min(16vw, 84px) * var(--tf, 1)); }
-  .sub { font-size: 16px; }
-  .desc { font-size: 13.5px; line-height: 1.85; margin-top: 8px; min-height: 5.55em; }
-  .desc #desc { -webkit-line-clamp: 3; line-clamp: 3; }
-  .meta { margin-top: 12px; gap: 6px 16px; font-size: 13px; }
-  .cta { margin-top: 16px; }
-  .more { display: none; }
-  .boxes, .hero[data-boxes="row"] .boxes { align-self: auto; flex-direction: row; width: auto; gap: 8px; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none; margin-inline: -16px; padding: 3px 16px; scroll-padding-inline: 16px; scroll-snap-type: x proximity; }
-  .boxes::-webkit-scrollbar { display: none; }
-  .box, .hero[data-boxes="row"] .box { width: 31vw; height: 19vw; min-height: 66px; transform: none; scroll-snap-align: start; border-radius: 12px; }
-  .bx-txt { inset-inline: 9px; bottom: 7px; }
-  .foot { padding-top: 0; }
-  .c-line { width: 64px; }
-  .proto-fab { top: calc(50% - 17px); bottom: auto; }
+  .copy { width: 100%; }
+  .title { font-size: calc(min(15vw, 80px) * var(--tf, 1)); }
+  .sub { font-size: 15px; }
+  .buy { margin-top: 16px; }
+  .side, .hero[data-boxes="row"] .side { align-self: auto; grid-auto-flow: column; grid-template-columns: minmax(0, 1fr) auto; align-items: center; justify-items: stretch; gap: 10px; }
+  .boxes, .hero[data-boxes="row"] .boxes { flex-direction: row; width: auto; gap: 8px; }
+  .box, .hero[data-boxes="row"] .box { flex: 1 1 0; width: auto; height: auto; aspect-ratio: 16 / 10; min-width: 0; transform: none; border-radius: 10px; }
+  .bx-name { inset-inline: 7px; bottom: 5px; font-size: 11px; }
 }
-@media (max-width: 760px) and (max-height: 700px) { .desc { display: none; } }
 @media (prefers-reduced-motion: reduce) {
-  .lay.is-cur .ph { animation: none; }
+  .box, .buy { transition: none; }
 }
 
 /* ── prototype panel and toast (not part of the site) ──────────── */
 .proto-fab { position: fixed; z-index: 40; bottom: max(4px, env(safe-area-inset-bottom, 0px)); left: max(4px, env(safe-area-inset-left, 0px)); display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--line-2); background: var(--panel); color: var(--ink-2); cursor: pointer; box-shadow: 0 10px 26px -12px rgba(0, 0, 0, .8); transition: color .3s; }
 .proto-fab:hover { color: #fff; }
 .proto-fab svg.i { width: 16px; height: 16px; }
+@media (max-width: 760px) { .proto-fab { top: calc(50% - 17px); bottom: auto; } }
 .proto-panel { position: fixed; z-index: 41; bottom: max(14px, env(safe-area-inset-bottom, 0px)); left: max(14px, env(safe-area-inset-left, 0px)); width: min(340px, calc(100vw - 28px)); max-height: calc(100svh - 28px); overflow: auto; padding: 18px; display: grid; gap: 16px; background: var(--panel); border: 1px solid var(--line-2); border-radius: 18px; box-shadow: 0 30px 70px -24px rgba(0, 0, 0, .85); font-size: 13.5px; }
 .pp-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
 .pp-head b { font-weight: 700; font-size: 15px; }
@@ -324,13 +273,7 @@ svg.i { width: 1.15em; height: 1.15em; fill: none; stroke: currentColor; stroke-
   <symbol id="i-prev" viewBox="0 0 24 24"><path d="M18.5 6.2v11.6a.8.8 0 0 1-1.25.66L9.5 13.2a1.4 1.4 0 0 1 0-2.4l7.75-5.26a.8.8 0 0 1 1.25.66Z" fill="currentColor" stroke="none"/><path d="M6 6v12" stroke-width="2"/></symbol>
   <symbol id="i-next" viewBox="0 0 24 24"><path d="M5.5 6.2v11.6a.8.8 0 0 0 1.25.66l7.75-5.26a1.4 1.4 0 0 0 0-2.4L6.75 5.54A.8.8 0 0 0 5.5 6.2Z" fill="currentColor" stroke="none"/><path d="M18 6v12" stroke-width="2"/></symbol>
   <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M19 12H5m6-6-6 6 6 6"/></symbol>
-  <symbol id="i-arrow-r" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></symbol>
-  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4-4"/></symbol>
-  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 8h16M4 16h16"/></symbol>
   <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
-  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11Z"/><circle cx="12" cy="10" r="2.4"/></symbol>
-  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="4" y="5.5" width="16" height="14.5" rx="2.6"/><path d="M4 10.2h16M8.5 3.5v4M15.5 3.5v4"/></symbol>
-  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 7.6V12l2.9 1.9"/></symbol>
   <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></symbol>
   <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 15V4m-4.5 4.5L12 4l4.5 4.5"/><path d="M4.5 14.5V18a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-3.5"/></symbol>
 </svg>
@@ -339,18 +282,17 @@ svg.i { width: 1.15em; height: 1.15em; fill: none; stroke: currentColor; stroke-
   <section class="hero" id="hero" data-boxes="column" aria-roledescription="carousel" aria-label="اجراهای ویژه">
     <div class="bg" id="bg" aria-hidden="true"></div>
     <div class="shade" aria-hidden="true"></div>
-    <div class="beat" id="beat" aria-hidden="true"></div>
     <div class="grain" aria-hidden="true"></div>
 
     <header class="nav">
       <a class="brand" href="#hero" aria-label="بلیت، صفحه‌ی اصلی"><span class="bars" aria-hidden="true"><i style="--s:.38"></i><i style="--s:.72"></i><i style="--s:1"></i><i style="--s:.6"></i><i style="--s:.34"></i></span>بلیت</a>
       <nav class="links" aria-label="دسته‌ها">
-        <a href="#hero" aria-current="page">کنسرت</a><a href="#hero">تئاتر</a><a href="#hero">استندآپ</a><a href="#hero">فستیوال</a><a href="#hero">خانوادگی</a>
+        <a href="#hero" aria-current="page">کنسرت</a><a href="#hero">تئاتر</a><a href="#hero">استندآپ</a><a href="#hero">خانوادگی</a>
       </nav>
       <div class="nav-end">
         <div class="music" id="music">
           <button type="button" class="mu-play" id="muPlay" aria-label="پخش"><svg class="i i-play"><use href="#i-play"/></svg><svg class="i i-pause"><use href="#i-pause"/></svg><span class="spin" aria-hidden="true"></span></button>
-          <button type="button" class="mu-meta" id="muOpen" aria-expanded="false" aria-controls="muPop" aria-label="پلی‌لیست هفته"><span class="mu-title" id="muTitle">تا ابد تو</span><span class="mu-sub" id="muSub">دایان</span></button>
+          <button type="button" class="mu-meta" id="muOpen" aria-expanded="false" aria-controls="muPop" aria-label="پلی‌لیست هفته"><span id="muTitle">تا ابد تو</span></button>
           <span class="mu-eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
           <div class="mu-pop" id="muPop" role="dialog" aria-label="پلی‌لیست هفته" hidden>
             <div class="mu-head"><span class="mu-art" id="muArt"></span><div><b>پلی‌لیست هفته</b><span id="muNow"></span></div></div>
@@ -360,68 +302,45 @@ svg.i { width: 1.15em; height: 1.15em; fill: none; stroke: currentColor; stroke-
             <label class="add-song"><input type="file" id="addSong" accept="audio/*"><svg class="i"><use href="#i-upload"/></svg>آهنگ خودت رو امتحان کن</label>
           </div>
         </div>
-        <button type="button" class="icon-btn" id="searchBtn" aria-label="جستجو"><svg class="i"><use href="#i-search"/></svg></button>
         <button type="button" class="login" id="loginBtn">ورود</button>
-        <button type="button" class="pill" id="navBuy">خرید بلیت</button>
-        <button type="button" class="icon-btn menu-btn" id="menuBtn" aria-label="منو"><svg class="i"><use href="#i-menu"/></svg></button>
       </div>
     </header>
 
     <div class="copy" id="copy" role="tabpanel" aria-live="off">
-      <div class="kicker">
-        <span class="mask k-no"><span id="kNo">۱</span></span>
-        <span class="k-line" aria-hidden="true"></span>
-        <span class="mask k-cat"><span id="kCat">کنسرت پاپ</span></span>
-        <span class="k-badge" id="kBadge">پرفروش</span>
-      </div>
+      <p class="kicker"><span class="mask"><span id="kick">کنسرت پاپ · سه‌شنبه ۲۴ آذر</span></span></p>
       <h1 class="title" id="title"><span class="w"><span class="wi" id="titleWi">فرکانس</span></span></h1>
-      <p class="sub"><span class="mask"><span id="sub">گروه نیمه‌شب · تور ۱۴۰۵</span></span></p>
-      <p class="desc"><span class="mask"><span id="desc">تور تازه‌ی گروه نیمه‌شب، این بار در سالن ۱۲ هزار نفری آزادی؛ یک شب نور و صدا با هزاران نفری که با هم می‌خوانند.</span></span></p>
-      <ul class="meta">
-        <li><svg class="i" aria-hidden="true"><use href="#i-cal"/></svg><span class="mask"><span id="mDate">سه‌شنبه ۲۴ آذر</span></span></li>
-        <li><svg class="i" aria-hidden="true"><use href="#i-clock"/></svg><span class="mask"><span id="mTime">ساعت ۲۰:۳۰</span></span></li>
-        <li><svg class="i" aria-hidden="true"><use href="#i-pin"/></svg><span class="mask"><span id="mVenue">مجموعه ورزشی آزادی</span></span></li>
-      </ul>
-      <div class="cta">
-        <button type="button" class="buy" id="buyBtn"><span>خرید بلیت</span><span class="b-sep" aria-hidden="true"></span><span class="mask b-price"><span id="price">از ۱٫۸ میلیون تومان</span></span><span class="b-go" aria-hidden="true"><svg class="i"><use href="#i-arrow"/></svg></span></button>
-        <button type="button" class="more" id="moreBtn">جزئیات اجرا<svg class="i" aria-hidden="true"><use href="#i-arrow"/></svg></button>
-      </div>
+      <p class="sub"><span class="mask"><span id="sub">گروه نیمه‌شب · مجموعه ورزشی آزادی</span></span></p>
+      <button type="button" class="buy" id="buyBtn"><span>خرید بلیت</span><span class="mask b-price"><span id="price">از ۱٫۸ میلیون</span></span><span class="b-go" aria-hidden="true"><svg class="i"><use href="#i-arrow"/></svg></span></button>
     </div>
 
-    <div class="boxes" id="boxes" role="tablist" aria-label="اجراهای ویژه" aria-orientation="vertical"></div>
-
-    <div class="foot">
-      <div class="count" aria-hidden="true"><span class="mask c-cur"><span id="cCur">۱</span></span><span class="c-of">/ <span id="cAll">۶</span></span><span class="c-line"><i id="cLine"></i></span></div>
-      <div class="ctrls">
-        <button type="button" class="ctl" id="prevBtn" aria-label="اجرای قبلی"><svg class="i"><use href="#i-arrow-r"/></svg></button>
-        <button type="button" class="ctl" id="autoBtn" aria-pressed="false" aria-label="توقف نمایش خودکار"><svg class="i i-pause"><use href="#i-pause"/></svg><svg class="i i-play"><use href="#i-play"/></svg></button>
-        <button type="button" class="ctl" id="nextBtn" aria-label="اجرای بعدی"><svg class="i"><use href="#i-arrow"/></svg></button>
-      </div>
+    <div class="side">
+      <div class="boxes" id="boxes" role="tablist" aria-label="اجراهای ویژه" aria-orientation="vertical"></div>
+      <button type="button" class="ctl" id="autoBtn" aria-pressed="false" aria-label="توقف نمایش خودکار"><svg class="i i-pause"><use href="#i-pause"/></svg><svg class="i i-play"><use href="#i-play"/></svg></button>
     </div>
   </section>
 
   <section class="notes" aria-labelledby="notes-h">
     <div>
-      <h2 id="notes-h">یادداشت‌های طراحی · نسخه‌ی ۷، عکس تمام‌صفحه و کادرهای کنار صفحه</h2>
-      <p class="lead">این بخش جزو سایت نیست. این نسخه از روی توضیحِ صاحب پروژه درباره‌ی صفحه‌ی اول leemeenal.app ساخته شده (خود سایت از محیط ساخت باز نشد): چند کادر کوچیک کنار صفحه؛ هر چند ثانیه یکی‌شون فعال می‌شه، عکسش از دل همون کادر باز می‌شه و کل پس‌زمینه رو می‌گیره، و متن‌های همون اجرا سر جاشون می‌شینن. توضیح کامل برای پیاده‌سازی تو <code>SPEC.md</code> کنار همین صفحه هست. از دکمه‌ی گوشه‌ی پایین چپ می‌شه حالت‌های دیگه رو امتحان کرد.</p>
+      <h2 id="notes-h">یادداشت‌های طراحی · نسخه‌ی ۷، خلوت: عکس تمام‌صفحه و چهار کادر کنار صفحه</h2>
+      <p class="lead">این بخش جزو سایت نیست. این نسخه از روی توضیحِ صاحب پروژه درباره‌ی صفحه‌ی اول leemeenal.app ساخته شده (خود سایت از محیط ساخت باز نشد): خلوت و کم، حداکثر چهار پوستر. هر پوستر تا وقتش تموم بشه آروم زوم می‌شه، بعد پوستر بعدی خیلی نرم از وسط صفحه باز می‌شه. توضیح کامل برای پیاده‌سازی تو <code>SPEC.md</code> کنار همین صفحه هست. از دکمه‌ی گوشه‌ی پایین چپ می‌شه حالت‌های دیگه رو امتحان کرد.</p>
     </div>
     <div class="cols">
-      <article><h3>کادرها</h3><p>هر کادر دقیقاً همون صحنه‌ای رو نشون می‌ده که قراره باز بشه. خط پایین کادرِ فعال تو ۷ ثانیه پر می‌شه و بعد نوبت کادر بعدیه. با بردن موس روی کادرها مکث می‌کنه؛ با کلیک هر اجرایی رو می‌شه باز کرد.</p></article>
-      <article><h3>عوض شدن</h3><p>عکس اجرای بعدی از دل کادرش بزرگ می‌شه تا کل صفحه رو بگیره؛ عکس قبلی کمی عقب می‌ره و تاریک می‌شه. متن قبلی رو به بالا می‌ره و متن تازه از پایین سر جاش میاد. عکس فعلی هم آروم آروم زوم می‌شه که صفحه هیچ‌وقت ساکن نباشه.</p></article>
-      <article><h3>چی از مدیریت لازمه</h3><p>یه عکس افقی از اجرا (دست‌کم ۱۹۲۰ پیکسل، آدم یا صحنه سمت چپ یا وسط عکس) و متن‌ها. اگه فقط پوستر باشه، پس‌زمینه از خود پوستر (محو) ساخته می‌شه و پوستر تو یه قاب کنار متن می‌ایسته؛ تو تنظیمات «اگه فقط پوستر باشه» رو بزن.</p></article>
-      <article><h3>موزیک</h3><p>پخش‌کننده تو منوی بالاست. وقتی آهنگ پخش می‌شه، پس‌زمینه با ضرب آهنگ آروم می‌تپه، یه نور به رنگ اجرا از پایین صفحه با ریتم بالا و پایین می‌ره و میله‌های لوگو مثل اکولایزر تکون می‌خورن.</p></article>
+      <article><h3>کم و خلوت</h3><p>فقط عکس، چهار کادر کوچیک، و چهار تکه متن: نوع اجرا و تاریخ، اسم، اجراکننده و مکان، و دکمه‌ی خرید با قیمت. منو هم فقط لوگو، چهار دسته، موزیک و ورود.</p></article>
+      <article><h3>زوم و باز شدن از وسط</h3><p>هر پوستر تا وقتش تموم بشه (۷ ثانیه) آروم ۱۲ درصد زوم می‌شه. بعد پوستر بعدی از وسط صفحه با لبه‌ی نرم باز می‌شه و خودش هم کمی جلو میاد؛ پوستر قبلی هم همون موقع با سرعت بیشتری به سمت بیننده جلو می‌ره و کمی تاریک می‌شه.</p></article>
+      <article><h3>کادرها</h3><p>هر کادر دقیقاً همون صحنه‌ای رو نشون می‌ده که قراره باز بشه. خط باریک پایین کادر فعال زمان رو نشون می‌ده. با بردن موس روی کادرها مکث می‌کنه؛ با کلیک هر پوستری باز می‌شه.</p></article>
+      <article><h3>موزیک</h3><p>پخش‌کننده تو منوی بالاست. وقتی آهنگ پخش می‌شه، کل تصویر با ضرب آهنگ خیلی آروم می‌تپه و میله‌های لوگو مثل اکولایزر تکون می‌خورن.</p></article>
     </div>
   </section>
 
   <button type="button" class="proto-fab" id="protoFab" aria-expanded="false" aria-controls="protoPanel" aria-label="تنظیمات نمونه"><svg class="i"><use href="#i-sliders"/></svg></button>
   <div class="proto-panel" id="protoPanel" role="dialog" aria-label="تنظیمات نمونه" hidden>
     <div class="pp-head"><div><b>تنظیمات نمونه</b><span>برای مقایسه؛ جزو سایت نیست</span></div><button type="button" class="ghost" id="protoClose" aria-label="بستن"><svg class="i"><use href="#i-x"/></svg></button></div>
+    <div class="pp-group"><span>اومدن پوستر بعدی</span><div class="seg" data-ctrl="trans"><button type="button" data-v="iris" aria-pressed="true">باز شدن نرم از وسط</button><button type="button" data-v="frame" aria-pressed="false">قاب از وسط</button><button type="button" data-v="fade" aria-pressed="false">محو</button></div></div>
+    <div class="pp-group"><span>زوم هر پوستر</span><div class="seg" data-ctrl="zoom"><button type="button" data-v="low" aria-pressed="false">کم</button><button type="button" data-v="mid" aria-pressed="true">متوسط</button><button type="button" data-v="high" aria-pressed="false">زیاد</button></div></div>
+    <div class="pp-group"><span>زمان هر پوستر</span><div class="seg" data-ctrl="dur"><button type="button" data-v="5" aria-pressed="false">۵ ثانیه</button><button type="button" data-v="7" aria-pressed="true">۷ ثانیه</button><button type="button" data-v="10" aria-pressed="false">۱۰ ثانیه</button></div></div>
     <div class="pp-group"><span>جای کادرها</span><div class="seg" data-ctrl="boxes"><button type="button" data-v="column" aria-pressed="true">ستون کنار صفحه</button><button type="button" data-v="row" aria-pressed="false">ردیف پایین صفحه</button></div></div>
-    <div class="pp-group"><span>عوض شدن عکس</span><div class="seg" data-ctrl="trans"><button type="button" data-v="expand" aria-pressed="true">باز شدن از دل کادر</button><button type="button" data-v="fade" aria-pressed="false">محو و زوم</button></div></div>
-    <div class="pp-group"><span>اومدن تیتر</span><div class="seg" data-ctrl="title"><button type="button" data-v="rise" aria-pressed="true">از پایین</button><button type="button" data-v="fly" aria-pressed="false">پرواز از کادر</button></div></div>
-    <div class="pp-group"><span>زمان هر اجرا</span><div class="seg" data-ctrl="dur"><button type="button" data-v="5" aria-pressed="false">۵ ثانیه</button><button type="button" data-v="7" aria-pressed="true">۷ ثانیه</button><button type="button" data-v="10" aria-pressed="false">۱۰ ثانیه</button></div></div>
     <div class="pp-group"><span>تصویر اجراها</span><div class="seg" data-ctrl="source"><button type="button" data-v="photo" aria-pressed="true">عکس افقی</button><button type="button" data-v="poster" aria-pressed="false">اگه فقط پوستر باشه</button></div></div>
-    <div class="pp-group"><span>واکنش به موزیک</span><div class="seg" data-ctrl="react"><button type="button" data-v="pulse" aria-pressed="true">تپش پس‌زمینه و نور</button><button type="button" data-v="calm" aria-pressed="false">فقط نشانگرها</button></div></div>
+    <div class="pp-group"><span>واکنش به موزیک</span><div class="seg" data-ctrl="react"><button type="button" data-v="pulse" aria-pressed="true">تپش آروم تصویر</button><button type="button" data-v="calm" aria-pressed="false">فقط میله‌ها</button></div></div>
   </div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 </div>
@@ -442,52 +361,38 @@ const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 const smooth = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
 const mmss = (s) => { s = Math.max(0, Math.floor(s || 0)); return fa(`${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`); };
 const outCubic = (p) => 1 - Math.pow(1 - p, 3);
-const outExpo = (p) => (p >= 1 ? 1 : 1 - Math.pow(2, -10 * p));
+const inOutSine = (p) => -(Math.cos(Math.PI * p) - 1) / 2;
 const root = document.documentElement;
 const hero = $('#hero');
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
-const isMobile = () => innerWidth <= 760;
 if (typeof window.gsap === 'undefined') { root.classList.remove('is-intro'); return; }
 
-const state = { i: 0, boxes: 'column', trans: 'expand', title: 'rise', source: 'photo', react: 'pulse', userPaused: false, hover: false, visible: true, intro: true };
-const MID = 0.5; // seconds into a change when the new show's words and colour arrive
+const state = { i: 0, boxes: 'column', trans: 'iris', zoom: 'mid', dur: 7, source: 'photo', react: 'pulse', userPaused: false, hover: false, visible: true, intro: true };
+const ZOOM = { low: 0.06, mid: 0.12, high: 0.2 }; // how much a picture zooms in while it is on
+const MID = 0.85; // seconds into a change when the new show's words and colour arrive
 
 /* ════════════════════════════════════════════════════════════════
    content (sample data — in production this comes from the admin panel)
-   photo: one wide photo per show; z and o frame it (zoom and its origin), op is the
-   object-position on wide screens and mop on phones
+   four shows at most. photo: one wide photo per show; z and o frame it (zoom and its origin),
+   op is the object-position on wide screens and mop on phones
    poster: what the show has when there is no photo (see "اگه فقط پوستر باشه")
    ════════════════════════════════════════════════════════════════ */
 const EVENTS = [
-  { id: 'frequency', pal: 'blue', cat: 'کنسرت پاپ', type: 'کنسرت', name: 'فرکانس', by: 'گروه نیمه‌شب · تور ۱۴۰۵', badge: 'پرفروش',
-    desc: 'تور تازه‌ی گروه نیمه‌شب، این بار در سالن ۱۲ هزار نفری آزادی؛ یک شب نور و صدا با هزاران نفری که با هم می‌خوانند.',
+  { id: 'frequency', pal: 'blue', cat: 'کنسرت پاپ', type: 'کنسرت', name: 'فرکانس', by: 'گروه نیمه‌شب',
     venue: 'مجموعه ورزشی آزادی', startsAt: '2026-12-15T20:30:00+03:30', price: '۱٫۸ میلیون', track: 0,
-    photo: { name: 'pop-frequency', z: 1.06, o: '100% 40%', op: '50% 30%', mop: '44% 50%' } },
-  { id: 'spectrum', pal: 'pink', cat: 'فستیوال الکترونیک', type: 'فستیوال', name: 'طیف', by: 'شش دی‌جی · دو شب پشت سر هم', badge: 'فروش آغاز شد',
-    desc: 'شش دی‌جی، دو شب پشت سر هم در برج میلاد؛ صدا و نوری که تا آخر شب رهایتان نمی‌کند.',
-    venue: 'برج میلاد', startsAt: '2026-11-19T21:00:00+03:30', price: '۱٫۲ میلیون', track: 2,
-    photo: { name: 'edm-spectrum', z: 1.04, o: '40% 50%', op: '50% 45%', mop: '45% 50%' } },
-  { id: 'chaharmezrab', pal: 'gold', cat: 'ارکستر', type: 'ارکستر', name: 'چهارمضراب', by: 'ارکستر زهی باران · به رهبری آرش امینی', badge: 'دو شب',
-    desc: 'ارکستر زهی باران با تنظیم‌های تازه از قطعه‌های ماندگار موسیقی ایرانی؛ دو شب در تالار وحدت.',
+    photo: { name: 'pop-frequency', z: 1.04, o: '50% 40%', op: '50% 30%', mop: '44% 50%' } },
+  { id: 'chaharmezrab', pal: 'gold', cat: 'ارکستر', type: 'ارکستر', name: 'چهارمضراب', by: 'ارکستر زهی باران',
     venue: 'تالار وحدت', startsAt: '2026-11-28T19:00:00+03:30', price: '۹۵۰ هزار', track: 1,
-    photo: { name: 'orchestra-chaharmezrab', z: 1.04, o: '50% 60%', op: '50% 60%', mop: '62% 50%' },
+    photo: { name: 'orchestra-chaharmezrab', z: 1.02, o: '50% 60%', op: '50% 60%', mop: '62% 50%' },
     poster: { src: 'assets/posters/orchestra-4x5.webp', thumb: 'assets/posters/orchestra-4x5-thumb.webp', r: 0.8 } },
-  { id: 'shadows', pal: 'orange', cat: 'تئاتر فیزیکال', type: 'تئاتر', name: 'سایه‌ها', by: 'گروه تئاتر آینه · نمایش بی‌کلام', badge: 'آخرین بلیت‌ها',
-    desc: 'تئاتری بی‌کلام که قصه‌اش را با بدن و نور می‌گوید؛ اجرای گروه تئاتر آینه در تالار اصلی تئاتر شهر.',
+  { id: 'shadows', pal: 'orange', cat: 'تئاتر فیزیکال', type: 'تئاتر', name: 'سایه‌ها', by: 'گروه تئاتر آینه',
     venue: 'تئاتر شهر', startsAt: '2026-11-07T19:30:00+03:30', price: '۴۵۰ هزار', track: 2,
-    photo: { name: 'theatre-shadows', z: 1.04, o: '30% 50%', op: '50% 50%', mop: '28% 50%' } },
-  { id: 'bitaarof', pal: 'crimson', cat: 'استندآپ کمدی', type: 'استندآپ', name: 'بی‌تعارف', by: 'گروه شب‌خند', badge: 'همین هفته',
-    desc: 'یک شب خنده‌ی بی‌وقفه با گروه شب‌خند؛ از ماجراهای هر روزمان تا حرف‌هایی که همه می‌زنیم و کسی بلند نمی‌گوید.',
-    venue: 'پردیس تئاتر شهرزاد', startsAt: '2026-11-03T21:00:00+03:30', price: '۶۵۰ هزار', track: 0,
-    photo: { name: 'standup-bitaarof', z: 1, o: '50% 30%', op: '50% 30%', mop: '50% 50%' },
-    poster: { src: 'assets/posters/standup-4x5.webp', thumb: 'assets/posters/standup-4x5-thumb.webp', r: 0.8 } },
-  { id: 'parvaz', pal: 'teal', cat: 'سیرک خانوادگی', type: 'سیرک', name: 'پرواز', by: 'گروه آکروبات آسمان', badge: 'مناسب خانواده',
-    desc: 'آکروبات‌هایی که روی هوا راه می‌روند؛ نمایشی برای همه‌ی خانواده، عصرهای آبان در فرهنگسرای نیاوران.',
+    photo: { name: 'theatre-shadows', z: 1.02, o: '40% 45%', op: '50% 50%', mop: '28% 50%' } },
+  { id: 'parvaz', pal: 'teal', cat: 'سیرک خانوادگی', type: 'سیرک', name: 'پرواز', by: 'گروه آکروبات آسمان',
     venue: 'فرهنگسرای نیاوران', startsAt: '2026-11-14T17:00:00+03:30', price: '۳۸۰ هزار', track: 1,
-    photo: { name: 'circus-parvaz', z: 1.05, o: '0% 40%', op: '50% 40%', mop: '30% 50%' } },
+    photo: { name: 'circus-parvaz', z: 1.03, o: '40% 40%', op: '50% 40%', mop: '30% 50%' } },
 ];
-// the fixed palette (the same eight sets as v6, SPEC §5): accent for lines, lights and the
-// arrow button; light for small coloured text on the photo
+// the fixed palette (the same eight sets as v6): accent for the timer line and the arrow button
 const PALETTE = {
   violet: { accent: '#8b5cf6', light: '#c4b5fd', onAccent: '#ffffff' },
   blue: { accent: '#3b82f6', light: '#93c5fd', onAccent: '#ffffff' },
@@ -502,13 +407,12 @@ EVENTS.forEach((e) => Object.assign(e, PALETTE[e.pal] || PALETTE.violet));
 const tz = { timeZone: 'Asia/Tehran' };
 const fWeek = new Intl.DateTimeFormat('fa-IR-u-ca-persian', { weekday: 'long', ...tz });
 const fShort = new Intl.DateTimeFormat('fa-IR-u-ca-persian', { day: 'numeric', month: 'long', ...tz });
-const fTime = new Intl.DateTimeFormat('fa-IR', { hour: '2-digit', minute: '2-digit', hour12: false, ...tz });
-EVENTS.forEach((e) => { e.date = new Date(e.startsAt); e.week = fWeek.format(e.date); e.short = fShort.format(e.date); e.time = fTime.format(e.date); });
+EVENTS.forEach((e) => { e.date = new Date(e.startsAt); e.week = fWeek.format(e.date); e.short = fShort.format(e.date); });
 
 const photoFiles = (n) => ({ src: `assets/photos/${n}-1920.webp`, srcset: `assets/photos/${n}-1920.webp 1920w, assets/photos/${n}-2560.webp 2560w`, thumb: `assets/photos/${n}-640.webp` });
 // what a show is shown with right now: its photo, or (in the poster demo) its poster
 function mediaOf(e) {
-  if (state.source === 'poster' && e.poster) return { kind: 'poster', ...e.poster };
+  if (state.source === 'poster' && e.poster) return { kind: 'poster', z: 1, ...e.poster };
   const p = e.photo; return { kind: 'photo', ...photoFiles(p.name), z: p.z, o: p.o, op: p.op, mop: p.mop };
 }
 
@@ -776,77 +680,104 @@ function compose(comp, e, mini) {
 }
 
 /* ════════════════════════════════════════════════════════════════
-   the background: a stack of layers. A change takes a free layer, puts it on top and opens it
-   out of the box (a clip that grows from the box's rectangle to the whole screen while the
-   picture inside scales from the box's size to full size); the layers under it step back and
-   darken, and are let go when it has finished. A second change during the first simply opens
-   on top of it.
+   the background: a stack of layers.
+   - while a show is on, its picture zooms in slowly (bg.hold, driven by the show's timer)
+   - a change takes a free layer, puts it on top and opens it softly from the middle of the
+     screen: an ellipse with a wide soft edge grows from the centre while the picture inside
+     grows from 86 % to full size; the old picture keeps moving towards the viewer, faster and
+     faster from the speed it had, and darkens a little
+   - a second change during the first simply opens on top of it
    ════════════════════════════════════════════════════════════════ */
 const bg = {
-  el: $('#bg'), pool: [], z: 0, token: 0,
+  el: $('#bg'), pool: [], z: 0, token: 0, top: null,
   free() {
     let l = this.pool.find((x) => !x.busy);
     if (!l) {
       l = document.createElement('div'); l.className = 'lay';
-      l.innerHTML = '<div class="mv"><div class="comp"></div><i class="dim"></i></div>';
-      l.mv = $('.mv', l); l.comp = $('.comp', l); l.dim = $('.dim', l);
+      l.innerHTML = '<div class="iris"><div class="mv"><div class="comp"></div><i class="dim"></i></div></div>';
+      l.iris = $('.iris', l); l.mv = $('.mv', l); l.comp = $('.comp', l); l.dim = $('.dim', l);
       this.el.appendChild(l); this.pool.push(l);
     }
     l.busy = true; return l;
   },
   release(l) {
     if (l.tw) { l.tw.kill(); l.tw = null; }
-    l.busy = false; l.pusher = null; l.classList.remove('is-on', 'is-cur');
-    l.style.clipPath = ''; l.style.opacity = ''; l.style.zIndex = ''; l.mv.style.transform = ''; l.dim.style.opacity = '';
+    l.busy = false; l.pusher = null; l.classList.remove('is-on', 'is-iris');
+    l.style.clipPath = ''; l.style.opacity = ''; l.style.zIndex = '';
+    l.iris.style.transform = ''; l.mv.style.transform = ''; l.dim.style.opacity = '';
     // quick clicking can stack several layers; keep three and let the rest (and their pictures) go
     if (this.pool.length > 3) { this.pool.splice(this.pool.indexOf(l), 1); l.remove(); }
   },
-  async show(i, { from = null, mode = 'fade' } = {}) {
+  // the slow zoom while a show is on: p runs from 0 to 1 over the show's time
+  hold(l, p) {
+    if (!l || !l.ph) return;
+    l.hp = p;
+    const s = (l.z * (1 + ZOOM[state.zoom] * p)).toFixed(4);
+    if (s !== l.hs) { l.hs = s; l.ph.style.transform = `scale(${s})`; }
+  },
+  async show(i, { mode = 'iris', onOpen } = {}) {
     const token = ++this.token, l = this.free();
     await compose(l.comp, EVENTS[i], false);
     if (token !== this.token) { this.release(l); return; }
+    l.ph = $('.ph', l.comp); l.z = mediaOf(EVENTS[i]).z || 1; l.hs = ''; this.hold(l, 0);
     const under = this.pool.filter((m) => m !== l && m.busy && m.classList.contains('is-on'));
-    l.zi = ++this.z; l.style.zIndex = l.zi;
-    l.classList.remove('is-cur'); void l.offsetWidth; l.classList.add('is-on', 'is-cur'); // restarts the slow zoom
+    l.zi = ++this.z; l.style.zIndex = l.zi; l.classList.add('is-on'); this.top = l;
     const done = () => {
-      l.tw = null; l.style.clipPath = ''; l.style.opacity = ''; l.mv.style.transform = '';
+      l.tw = null; l.classList.remove('is-iris'); l.style.clipPath = ''; l.style.opacity = ''; l.iris.style.transform = ''; l.mv.style.transform = '';
       [...this.pool].forEach((m) => { if (m !== l && m.busy && m.zi < l.zi) this.release(m); }); // a copy: release() can shorten the pool
+      if (onOpen && token === this.token) onOpen(l);
     };
-    if (mode === 'instant' || !under.length && mode !== 'intro') { done(); return; }
-    // layers that are still opening keep going underneath; the settled ones step back
+    if (mode === 'instant') { done(); return; }
+    // the settled layers underneath keep zooming in; layers still opening go on underneath
     const back = under.filter((m) => !m.tw); back.forEach((m) => { m.pusher = l; });
-    const push = (p, k, d) => back.forEach((m) => { if (m.pusher === l) { m.mv.style.transform = `scale(${(1 + k * p).toFixed(4)})`; m.dim.style.opacity = (d * p).toFixed(3); } });
-    const o = { p: 0 };
-    let upd, dur, ease = 'none';
-    if (mode === 'expand' && from) {
-      const hr = hero.getBoundingClientRect(), br = from.getBoundingClientRect(), W = hr.width, H = hr.height;
-      const bx = br.left - hr.left, by = br.top - hr.top, bw = br.width, bh = br.height;
-      const s = Math.max(bw / W, bh / H), dx = bx + bw / 2 - W / 2, dy = by + bh / 2 - H / 2;
-      const rad = parseFloat(getComputedStyle(from).borderTopLeftRadius) || 0;
-      upd = () => {
-        const p = o.p, q = 1 - p;
-        l.style.clipPath = `inset(${(by * q).toFixed(1)}px ${((W - bx - bw) * q).toFixed(1)}px ${((H - by - bh) * q).toFixed(1)}px ${(bx * q).toFixed(1)}px round ${(rad * q).toFixed(1)}px)`;
-        l.mv.style.transform = `translate3d(${(dx * q).toFixed(2)}px, ${(dy * q).toFixed(2)}px, 0) scale(${(s + (1 - s) * p).toFixed(5)})`;
-        push(p, 0.06, 0.55);
-      };
-      dur = 1.3; ease = 'power3.inOut';
-    } else if (mode === 'intro') {
-      upd = () => { const p = o.p; l.style.opacity = smooth(0, 0.5, p).toFixed(3); l.mv.style.transform = `scale(${(1 + 0.16 * (1 - outExpo(p))).toFixed(4)})`; };
-      dur = 2.6;
-    } else {
-      upd = () => { const p = o.p; l.style.opacity = smooth(0, 0.7, p).toFixed(3); l.mv.style.transform = `scale(${(1 + 0.08 * (1 - outCubic(p))).toFixed(4)})`; push(smooth(0, 0.7, p), 0.03, 0.4); };
-      dur = reduceMotion ? 0.5 : 1.5;
-      if (reduceMotion) upd = () => { l.style.opacity = o.p.toFixed(3); };
-    }
+    const W = hero.clientWidth, H = hero.clientHeight, T = mode === 'iris' || mode === 'intro' ? 2.2 : mode === 'frame' ? 1.7 : 1.5;
+    const v0 = timer.running() ? ZOOM[state.zoom] / state.dur : 0, push = 0.16, acc = 2 * (push - v0 * T) / (T * T);
+    const o = { p: 0 }, iris = mode === 'iris' || mode === 'intro';
+    if (iris) l.classList.add('is-iris');
+    const upd = () => {
+      const p = o.p, e = inOutSine(p), t = p * T, grow = mode === 'fade' ? 1.05 - 0.05 * outCubic(p) : 0.86 + 0.14 * outCubic(p);
+      if (iris) {
+        // the soft ellipse fills the screen at scale 1 (its solid core is the inner 60 %); at 2.4 the
+        // corners are inside the core. The picture inside is scaled back so only the ellipse grows.
+        const k = Math.max(0.04, 2.4 * e);
+        l.iris.style.transform = `scale(${k.toFixed(4)})`;
+        l.style.opacity = smooth(0, 0.15, p).toFixed(3); // the first moment is a fade, not a dot
+        l.mv.style.transform = `scale(${(grow / k).toFixed(4)})`;
+      } else if (mode === 'frame') {
+        const hw = W / 2 * e, hh = H / 2 * e, r = 26 * (1 - e);
+        l.style.clipPath = `inset(${(H / 2 - hh).toFixed(1)}px ${(W / 2 - hw).toFixed(1)}px ${(H / 2 - hh).toFixed(1)}px ${(W / 2 - hw).toFixed(1)}px round ${r.toFixed(1)}px)`;
+      } else {
+        l.style.opacity = smooth(0, 0.8, p).toFixed(3);
+      }
+      if (!iris) l.mv.style.transform = `scale(${grow.toFixed(4)})`;
+      back.forEach((m) => { if (m.pusher === l) { m.mv.style.transform = `scale(${(1 + v0 * t + 0.5 * acc * t * t).toFixed(4)})`; m.dim.style.opacity = (0.3 * e).toFixed(3); } });
+    };
     upd();
-    l.tw = gsap.to(o, { p: 1, duration: dur, ease, onUpdate: upd, onComplete: done });
+    l.tw = gsap.to(o, { p: 1, duration: reduceMotion ? 0.5 : T, ease: 'none', onUpdate: upd, onComplete: done });
   },
+};
+
+/* the show's time: one tween fills the active box's line and drives the slow zoom; it pauses with
+   the pointer over the boxes, the pause button, the hero off screen or the tab hidden */
+const timer = {
+  tw: null,
+  running() { return !reduceMotion && !state.userPaused && !state.hover && !state.intro && state.visible && !document.hidden; },
+  start(l) {
+    this.stop();
+    const bar = $('.bx-bar i', boxes.list[state.i]), o = { p: 0 };
+    this.tw = gsap.to(o, { p: 1, duration: state.dur, ease: 'none', paused: !this.running(),
+      onUpdate: () => { bar.style.transform = `scaleX(${o.p.toFixed(4)})`; bg.hold(l, o.p); },
+      onComplete: () => { this.tw = null; next('auto'); } });
+  },
+  stop() { if (this.tw) { this.tw.kill(); this.tw = null; } },
+  sync() { if (!this.tw) return; if (this.running()) this.tw.resume(); else this.tw.pause(); },
+  // a new duration from the panel keeps how far through the show the line is
+  retime() { if (this.tw) { const f = this.tw.progress(); this.tw.duration(state.dur); this.tw.progress(f); } },
 };
 
 /* ════════════════════════════════════════════════════════════════
    the boxes: each is a tab for one show and holds that show's picture, scaled from the whole
-   screen. The line along the bottom of the active box is the timer (a CSS animation paused with
-   --play); when it ends, the next box opens.
+   screen
    ════════════════════════════════════════════════════════════════ */
 const boxes = {
   el: $('#boxes'), list: [],
@@ -854,13 +785,13 @@ const boxes = {
     EVENTS.forEach((e, k) => {
       const b = document.createElement('button'); b.type = 'button'; b.className = 'box'; b.setAttribute('role', 'tab'); b.setAttribute('aria-selected', 'false'); b.setAttribute('aria-controls', 'copy'); b.tabIndex = -1;
       b.style.setProperty('--bc', e.accent);
-      b.innerHTML = `<span class="bx-art" aria-hidden="true"><span class="comp mini"></span></span><span class="bx-txt"><small>${fa(k + 1)} · ${e.type}</small><b>${e.name}</b></span><span class="bx-bar" aria-hidden="true"><i></i></span>`;
+      b.innerHTML = `<span class="bx-art" aria-hidden="true"><span class="comp mini"></span></span><span class="bx-name"></span><span class="bx-bar" aria-hidden="true"><i></i></span>`;
+      $('.bx-name', b).textContent = e.name;
       b.setAttribute('aria-label', `${e.name}، ${e.cat}، ${e.short}`);
       b.addEventListener('click', () => { if (k === state.i) $('#buyBtn').focus(); else go(k, 'user'); });
       this.el.appendChild(b); this.list.push(b);
     });
     this.refresh();
-    this.el.addEventListener('animationend', (ev) => { if (ev.animationName === 'fill' && ev.target.closest('.box') === this.list[state.i]) next('auto'); });
     this.el.addEventListener('keydown', (ev) => {
       const k = { ArrowDown: 1, ArrowLeft: 1, ArrowUp: -1, ArrowRight: -1 }[ev.key];
       if (k) { ev.preventDefault(); go((state.i + k + EVENTS.length) % EVENTS.length, 'user'); this.list[state.i].focus(); }
@@ -880,84 +811,32 @@ const boxes = {
     this.el.style.setProperty('--bs', Math.max(b.offsetWidth / W, b.offsetHeight / H).toFixed(5));
   },
   set(i) {
-    this.list.forEach((b, k) => { const on = k === i; b.classList.toggle('is-active', on); b.setAttribute('aria-selected', on); b.tabIndex = on ? 0 : -1; });
-    // on phones the row scrolls sideways: bring the active box into view without moving the page
-    if (isMobile()) { const b = this.list[i], r = this.el.getBoundingClientRect(), br = b.getBoundingClientRect(); if (br.left < r.left || br.right > r.right) this.el.scrollBy({ left: br.left + br.width / 2 - (r.left + r.width / 2), behavior: reduceMotion ? 'auto' : 'smooth' }); }
-  },
-  // a box can be the start of the opening only when it is on screen
-  visible(b) {
-    const r = b.getBoundingClientRect(), hr = hero.getBoundingClientRect(), vw = innerWidth;
-    return r.width > 8 && r.left >= Math.max(0, hr.left) - 2 && r.right <= Math.min(vw, hr.right) + 2 && r.top >= hr.top && r.bottom <= hr.bottom;
+    this.list.forEach((b, k) => { const on = k === i; b.classList.toggle('is-active', on); b.setAttribute('aria-selected', on); b.tabIndex = on ? 0 : -1; if (!on) $('.bx-bar i', b).style.transform = ''; });
   },
 };
 
 /* ════════════════════════════════════════════════════════════════
-   the words: each line sits in a mask; the old words leave upwards and the new ones rise into
-   place. With "پرواز از کادر" the title leaves the box and grows into its place.
+   the words: each line sits in a mask; the old words leave upwards and the new ones rise into place
    ════════════════════════════════════════════════════════════════ */
 const copy = {
-  el: $('#copy'), title: $('#title'), wi: $('#titleWi'), flyEl: null,
-  lines() { return ['#kNo', '#kCat', '#sub', '#desc', '#mDate', '#mTime', '#mVenue', '#price'].map((s) => $(s)); },
-  render(e, i, withTitle = true) {
-    $('#kNo').textContent = fa(i + 1); $('#kCat').textContent = e.cat; $('#kBadge').textContent = e.badge;
-    if (withTitle) { this.wi.textContent = e.name; this.fit(); }
-    $('#sub').textContent = e.by; $('#desc').textContent = e.desc;
-    $('#mDate').textContent = `${e.week} ${e.short}`; $('#mTime').textContent = `ساعت ${e.time}`; $('#mVenue').textContent = e.venue;
-    $('#price').textContent = `از ${e.price} تومان`;
+  el: $('#copy'), title: $('#title'), wi: $('#titleWi'),
+  lines() { return [$('#kick'), this.wi, $('#sub'), $('#price')]; },
+  render(e) {
+    $('#kick').textContent = `${e.cat} · ${e.week} ${e.short}`;
+    this.wi.textContent = e.name; this.fit();
+    $('#sub').textContent = `${e.by} · ${e.venue}`;
+    $('#price').textContent = `از ${e.price}`;
     $('#buyBtn').setAttribute('aria-label', `خرید بلیت ${e.type} ${e.name}، از ${e.price} تومان`);
-    $('#moreBtn').setAttribute('aria-label', `جزئیات اجرای ${e.name}`);
   },
   // a long name gets a smaller size instead of running out of its column
-  fit(t = this.title) { t.style.setProperty('--tf', '1'); const w = t.clientWidth, sw = t.scrollWidth; if (sw > w + 1) t.style.setProperty('--tf', ((w - 1) / sw).toFixed(3)); },
-  out(keepTitle) {
-    const els = this.lines(); if (!keepTitle) els.push(this.wi);
-    if (reduceMotion) { gsap.to([...els, '#kBadge'], { opacity: 0, duration: 0.2, overwrite: true }); return; }
-    gsap.to(els, { yPercent: -110, duration: 0.34, ease: 'power3.in', stagger: 0.016, overwrite: true });
-    gsap.to('#kBadge', { opacity: 0, scale: 0.85, duration: 0.3, ease: 'power2.in', overwrite: true });
+  fit() { const t = this.title; t.style.setProperty('--tf', '1'); const w = t.clientWidth, sw = t.scrollWidth; if (sw > w + 1) t.style.setProperty('--tf', ((w - 1) / sw).toFixed(3)); },
+  out() {
+    if (reduceMotion) { gsap.to(this.lines(), { opacity: 0, duration: 0.2, overwrite: true }); return; }
+    gsap.to(this.lines(), { yPercent: -110, duration: 0.5, ease: 'power3.in', stagger: 0.04, overwrite: true });
   },
-  in(delay = 0, withTitle = true) {
-    const els = this.lines(); if (withTitle) els.splice(2, 0, this.wi);
-    if (reduceMotion) { gsap.set(els, { yPercent: 0 }); gsap.to([...els, '#kBadge'], { opacity: 1, duration: 0.3, overwrite: true }); return; }
-    gsap.fromTo(els, { yPercent: 110 }, { yPercent: 0, duration: 1.05, ease: 'expo.out', stagger: 0.05, delay, overwrite: true });
-    gsap.fromTo('#kBadge', { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.8, ease: 'back.out(2)', delay: delay + 0.15, overwrite: true });
-  },
-  // the title flies out of the box: a copy is set exactly where the title will stand, then moved
-  // and shrunk onto the box's name and sent back; at the end the real title takes over
-  fly(from, e) {
-    this.land();
-    const name = $('.bx-txt b', from), hr = hero.getBoundingClientRect(), tr = this.title.getBoundingClientRect();
-    const c = document.createElement('div'); c.className = 'title fly'; c.setAttribute('aria-hidden', 'true');
-    c.innerHTML = '<span class="w"><span class="wi"></span></span>'; $('.wi', c).textContent = e.name;
-    Object.assign(c.style, { left: `${tr.left - hr.left}px`, top: `${tr.top - hr.top}px`, width: `${tr.width}px` });
-    hero.appendChild(c); this.fit(c);
-    const cr = c.getBoundingClientRect(), w = $('.wi', c).getBoundingClientRect(), nr = name.getBoundingClientRect();
-    const k = parseFloat(getComputedStyle(name).fontSize) / parseFloat(getComputedStyle(c).fontSize);
-    const ox = w.right - cr.left, oy = w.top + w.height / 2 - cr.top; // Persian starts on the right: the right ends meet
-    const dx = nr.right - w.right, dy = nr.top + nr.height / 2 - (w.top + w.height / 2);
-    this.flyEl = c; this.flyName = e.name;
-    gsap.set(c, { transformOrigin: `${ox}px ${oy}px` });
-    gsap.fromTo(c, { x: dx, y: dy, scale: k }, { x: 0, y: 0, scale: 1, duration: 1.2, ease: 'power3.inOut', onComplete: () => this.land() });
-    gsap.fromTo(c, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: 'power1.out' });
-  },
-  retarget() {
-    const c = this.flyEl; if (!c) return;
-    const hr = hero.getBoundingClientRect(), tr = this.title.getBoundingClientRect();
-    Object.assign(c.style, { left: `${tr.left - hr.left}px`, top: `${tr.top - hr.top}px`, width: `${tr.width}px` });
-  },
-  land() {
-    const c = this.flyEl; if (!c) return;
-    gsap.killTweensOf(c); c.remove(); this.flyEl = null;
-    this.wi.textContent = this.flyName; this.fit(); gsap.killTweensOf(this.wi); gsap.set(this.wi, { yPercent: 0, opacity: 1 });
-  },
-};
-
-// the number at the bottom rolls; the line under it shows how far through the shows we are
-const counter = {
-  set(i, instant) {
-    const el = $('#cCur'), f = (i + 1) / EVENTS.length;
-    if (instant || reduceMotion) { el.textContent = fa(i + 1); gsap.set('#cLine', { scaleX: f }); return; }
-    gsap.to(el, { yPercent: -110, duration: 0.35, ease: 'power3.in', overwrite: true, onComplete: () => { el.textContent = fa(i + 1); gsap.fromTo(el, { yPercent: 110 }, { yPercent: 0, duration: 0.8, ease: 'expo.out' }); } });
-    gsap.to('#cLine', { scaleX: f, duration: 1.2, ease: 'expo.inOut', overwrite: true });
+  in(delay = 0) {
+    if (reduceMotion) { gsap.set(this.lines(), { yPercent: 0 }); gsap.to(this.lines(), { opacity: 1, duration: 0.4, overwrite: true }); return; }
+    gsap.fromTo(this.lines(), { yPercent: 110 }, { yPercent: 0, duration: 1.3, ease: 'expo.out', stagger: 0.08, delay, overwrite: true });
   },
 };
 
@@ -969,32 +848,18 @@ function setAccent(e) { const s = hero.style; s.setProperty('--accent', e.accent
 let swapCall = null;
 function go(i, source = 'user') {
   if (i === state.i) return;
-  const e = EVENTS[i], from = boxes.list[i];
-  state.i = i; boxes.set(i);
+  const e = EVENTS[i];
+  state.i = i; boxes.set(i); timer.stop();
   copy.el.setAttribute('aria-live', source === 'auto' ? 'off' : 'polite');
-  const fromBox = !reduceMotion && boxes.visible(from);
-  bg.show(i, { from, mode: reduceMotion ? 'fade' : state.trans === 'expand' && fromBox ? 'expand' : 'fade' });
-  const flying = state.title === 'fly' && fromBox;
-  copy.land(); copy.out(); counter.set(i);
-  if (flying) copy.fly(from, e);
+  bg.show(i, { mode: reduceMotion ? 'fade' : state.trans, onOpen: (l) => timer.start(l) });
+  copy.out();
   if (swapCall) swapCall.kill();
-  swapCall = gsap.delayedCall(reduceMotion ? 0.2 : MID, () => {
-    swapCall = null;
-    setAccent(e); copy.render(e, i, !flying); copy.in(0, !flying); if (flying) copy.retarget();
-  });
+  swapCall = gsap.delayedCall(reduceMotion ? 0.2 : MID, () => { swapCall = null; setAccent(e); copy.render(e); copy.in(0); });
 }
 const next = (src = 'user') => go((state.i + 1) % EVENTS.length, src);
-const prev = () => go((state.i - 1 + EVENTS.length) % EVENTS.length, 'user');
 
-function syncPlay() {
-  const run = !reduceMotion && !state.userPaused && !state.hover && !state.intro && state.visible && !document.hidden;
-  root.style.setProperty('--play', run ? 'running' : 'paused');
-  root.style.setProperty('--amb', !reduceMotion && state.visible && !document.hidden ? 'running' : 'paused');
-}
+function syncPlay() { timer.sync(); }
 
-/* ════════════════════════════════════════════════════════════════
-   music: a small player in the menu bar; the playlist opens under it
-   ════════════════════════════════════════════════════════════════ */
 const player = {
   el: $('#music'), i: 0, hover: -1, lastLabel: 0, cx: null,
   get track() { return TRACKS[this.i]; },
@@ -1022,12 +887,12 @@ const player = {
   sizeWave() { const d = Math.min(2, devicePixelRatio || 1); this.cv.width = Math.round(this.wave.clientWidth * d); this.cv.height = Math.round(this.wave.clientHeight * d); this.draw(); },
   label() {
     const tr = this.track, an = tr.analysis;
-    $('#muTitle').textContent = tr.title; $('#muSub').textContent = tr.artist;
+    $('#muTitle').textContent = tr.title; $('#muOpen').setAttribute('aria-label', `پلی‌لیست هفته، ${tr.title} از ${tr.artist}`);
     $('#muNow').textContent = an ? `${tr.title} · ${tr.artist} · ${fa(Math.round(an.bpm))} ضرب` : `${tr.title} · ${tr.artist}`;
   },
   load(i, play) {
     this.i = (i + TRACKS.length) % TRACKS.length; const tr = this.track;
-    gsap.fromTo(['#muTitle', '#muSub'], { opacity: 0, y: 5 }, { opacity: 1, y: 0, duration: 0.5, stagger: 0.05, ease: 'expo.out' });
+    gsap.fromTo('#muTitle', { opacity: 0, y: 5 }, { opacity: 1, y: 0, duration: 0.5, stagger: 0.05, ease: 'expo.out' });
     this.label();
     const art = $('#muArt'); art.innerHTML = ''; art.appendChild(coverEl(tr, 46));
     audioSys.load(tr);
@@ -1111,9 +976,9 @@ const player = {
 };
 
 /* the beat: the logo's bars and the player's bars are small equalisers; with "تپش" the whole
-   background swells a little on each beat and a light in the show's colour rises from below */
+   picture swells a little on each beat */
 const meters = {
-  bars: $$('.bars i'), base: [0.38, 0.72, 1, 0.6, 0.34], eq: $$('.mu-eq i'), rest: true, bk: '', gk: '', pk: '', glow: $('#beat'), play: $('#muPlay'), avg: new Float32Array(48).fill(0.3),
+  bars: $$('.bars i'), base: [0.38, 0.72, 1, 0.6, 0.34], eq: $$('.mu-eq i'), rest: true, bk: '', pk: '', play: $('#muPlay'), avg: new Float32Array(48).fill(0.3),
   frame(dt) {
     const lvl = A.level, f = Math.min(1, dt * 1.5);
     for (let b = 0; b < 48; b++) this.avg[b] += ((A.bands[b] || 0) - this.avg[b]) * f;
@@ -1127,10 +992,8 @@ const meters = {
       [3, 10, 20, 32].forEach((band, k) => { this.eq[k].style.transform = `scaleY(${clamp(0.2 + (A.bands[band] || 0) * 0.9 + (k === 0 ? A.kick * 0.3 : 0), 0.15, 1).toFixed(3)})`; });
     }
     const on = state.react === 'pulse' && !reduceMotion && lvl > 0.01;
-    const s = on ? (1 + (A.kick * 0.012 + A.down * 0.006) * lvl).toFixed(4) : '1';
+    const s = on ? (1 + (A.kick * 0.01 + A.down * 0.005) * lvl).toFixed(4) : '1';
     if (s !== this.bk) { this.bk = s; bg.el.style.transform = s === '1' ? '' : `scale(${s})`; }
-    const g = on ? clamp((A.kick * 0.55 + A.energy * 0.22) * lvl, 0, 0.85).toFixed(2) : '0';
-    if (g !== this.gk) { this.gk = g; this.glow.style.opacity = g; }
     const p = (1 + A.kick * 0.22 * lvl).toFixed(3);
     if (p !== this.pk) { this.pk = p; this.play.style.setProperty('--pulse', p); }
   },
@@ -1145,13 +1008,9 @@ function toast(msg) {
   gsap.fromTo(toastEl, { y: 16, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: 'expo.out' });
   gsap.to(toastEl, { y: 10, opacity: 0, duration: 0.4, delay: 3.6, ease: 'power2.in' });
 }
-const seatToast = () => toast(`اینجا صفحه‌ی انتخاب صندلی «${EVENTS[state.i].type} ${EVENTS[state.i].name}» باز می‌شه.`);
-['#buyBtn', '#navBuy'].forEach((s) => $(s).addEventListener('click', seatToast));
-$('#moreBtn').addEventListener('click', () => toast(`اینجا صفحه‌ی اجرای «${EVENTS[state.i].name}» باز می‌شه.`));
-$$('#searchBtn, #loginBtn, #menuBtn').forEach((b) => b.addEventListener('click', () => toast('این بخش هنوز ساخته نشده.')));
+$('#buyBtn').addEventListener('click', () => toast(`اینجا صفحه‌ی انتخاب صندلی «${EVENTS[state.i].type} ${EVENTS[state.i].name}» باز می‌شه.`));
+$('#loginBtn').addEventListener('click', () => toast('این بخش هنوز ساخته نشده.'));
 $$('.links a').forEach((a) => a.addEventListener('click', (ev) => ev.preventDefault()));
-$('#nextBtn').addEventListener('click', () => next('user'));
-$('#prevBtn').addEventListener('click', prev);
 $('#autoBtn').addEventListener('click', (ev) => {
   state.userPaused = !state.userPaused; const b = ev.currentTarget;
   b.setAttribute('aria-pressed', state.userPaused); b.setAttribute('aria-label', state.userPaused ? 'ادامه‌ی نمایش خودکار' : 'توقف نمایش خودکار'); syncPlay();
@@ -1184,16 +1043,21 @@ function warm() {
     const b = ev.target.closest('button'); if (!b) return;
     $$('button', g).forEach((x) => x.setAttribute('aria-pressed', x === b ? 'true' : 'false'));
     const v = b.dataset.v, k = g.dataset.ctrl;
+    if (k === 'trans') { state.trans = v; next('user'); }
+    if (k === 'zoom') { state.zoom = v; bg.hold(bg.top, bg.top ? bg.top.hp || 0 : 0); }
+    if (k === 'dur') { state.dur = +v; timer.retime(); }
     if (k === 'boxes') {
       state.boxes = v; hero.dataset.boxes = v; boxes.el.setAttribute('aria-orientation', v === 'row' ? 'horizontal' : 'vertical');
       boxes.size(); copy.fit();
-      if (!reduceMotion) { gsap.set(boxes.list, { transition: 'none' }); gsap.fromTo(boxes.list, { opacity: 0, y: 14 }, { opacity: (k2) => (k2 === state.i ? 1 : 0.6), y: 0, duration: 0.7, stagger: 0.04, ease: 'expo.out', clearProps: 'opacity,transform,transition' }); }
+      if (!reduceMotion) { gsap.set(boxes.list, { transition: 'none' }); gsap.fromTo(boxes.list, { opacity: 0, y: 14 }, { opacity: (k2) => (k2 === state.i ? 1 : 0.55), y: 0, duration: 0.7, stagger: 0.05, ease: 'expo.out', clearProps: 'opacity,transform,transition' }); }
     }
-    if (k === 'trans') state.trans = v;
-    if (k === 'title') state.title = v;
-    if (k === 'dur') hero.style.setProperty('--dur', `${v}s`);
-    if (k === 'source') { state.source = v; boxes.refresh(); bg.show(state.i, { mode: 'fade' }); if (v === 'poster') toast('«چهارمضراب» و «بی‌تعارف» حالا فقط پوستر دارن؛ برو سراغشون.'); warm(); }
-    if (k === 'react') { state.react = v; if (v === 'pulse' && !player.playing()) toast('یه آهنگ از دکمه‌ی پخش بالای صفحه پخش کن تا پس‌زمینه با ضربش بتپه.'); }
+    if (k === 'source') {
+      state.source = v; boxes.refresh(); timer.stop();
+      bg.show(state.i, { mode: 'fade', onOpen: (l) => timer.start(l) });
+      if (v === 'poster') toast('«چهارمضراب» حالا فقط پوستر داره؛ برو سراغش.');
+      warm();
+    }
+    if (k === 'react') { state.react = v; if (v === 'pulse' && !player.playing()) toast('یه آهنگ از دکمه‌ی پخش بالای صفحه پخش کن تا تصویر با ضربش بتپه.'); }
   }));
 })();
 
@@ -1212,12 +1076,9 @@ function frame(now) {
 /* boot */
 audioSys.init();
 boxes.build(); boxes.size();
-copy.render(EVENTS[0], 0); setAccent(EVENTS[0]);
-counter.set(0, true);
-$('#cAll').textContent = fa(EVENTS.length);
+copy.render(EVENTS[0]); setAccent(EVENTS[0]);
 boxes.set(0);
 player.init();
-syncPlay();
 requestAnimationFrame(frame);
 if (reduceMotion) { state.userPaused = true; $('#autoBtn').setAttribute('aria-pressed', 'true'); $('#autoBtn').setAttribute('aria-label', 'ادامه‌ی نمایش خودکار'); }
 document.fonts.ready.then(() => copy.fit());
@@ -1225,26 +1086,26 @@ new ResizeObserver(() => copy.fit()).observe(copy.title);
 
 (function intro() {
   root.classList.remove('is-intro');
-  if (reduceMotion) { bg.show(0, { mode: 'instant' }); state.intro = false; syncPlay(); gsap.from(hero, { opacity: 0, duration: 0.5 }); warm(); return; }
-  bg.show(0, { mode: 'intro' });
-  copy.in(0.7); // fromTo with a delay: the words start hidden right away, so nothing flashes
-  const moving = [...boxes.list, ...$$('.cta > *')];
+  // the first picture opens from the middle too; its time starts when the intro is over
+  bg.show(0, { mode: reduceMotion ? 'instant' : 'intro', onOpen: (l) => timer.start(l) });
+  if (reduceMotion) { state.intro = false; syncPlay(); gsap.from(hero, { opacity: 0, duration: 0.5 }); warm(); return; }
+  copy.in(0.9); // fromTo with a delay: the words start hidden right away, so nothing flashes
+  const moving = [...boxes.list, $('#buyBtn')];
   gsap.set(moving, { transition: 'none' }); // their hover transitions would drag the entrance
   const tl = gsap.timeline({ defaults: { ease: 'expo.out' } });
-  tl.from('.brand', { y: -14, opacity: 0, duration: 1 }, 0.25)
-    .from('.links a', { y: -12, opacity: 0, duration: 0.9, stagger: 0.05 }, 0.32)
-    .from('.nav-end > *', { y: -12, opacity: 0, duration: 0.9, stagger: 0.06 }, 0.38)
-    .from('.k-line', { scaleX: 0, duration: 1.3, ease: 'expo.inOut' }, 0.5)
-    .from('.cta > *', { y: 22, opacity: 0, duration: 1.1, stagger: 0.08, clearProps: 'transform,opacity,transition' }, 1.05)
-    .from(boxes.list, { x: -46, opacity: 0, duration: 1.2, stagger: 0.07, clearProps: 'transform,opacity,transition' }, 0.75)
-    .from('.foot > *', { y: 16, opacity: 0, duration: 1, stagger: 0.08, clearProps: 'transform,opacity' }, 1.2)
+  tl.from('.brand', { y: -14, opacity: 0, duration: 1 }, 0.3)
+    .from('.links a', { y: -12, opacity: 0, duration: 0.9, stagger: 0.05 }, 0.38)
+    .from('.nav-end > *', { y: -12, opacity: 0, duration: 0.9, stagger: 0.06 }, 0.44)
+    .from('#buyBtn', { y: 20, opacity: 0, duration: 1.1, clearProps: 'transform,opacity,transition' }, 1.3)
+    .from(boxes.list, { x: -36, opacity: 0, duration: 1.2, stagger: 0.08, clearProps: 'transform,opacity,transition' }, 0.9)
+    .from('#autoBtn', { opacity: 0, duration: 0.8 }, 1.4)
     .from('#protoFab', { opacity: 0, duration: 0.6 }, 1.8)
-    .add(() => { state.intro = false; syncPlay(); }, 1.6)
+    .add(() => { state.intro = false; syncPlay(); }, 2.2)
     .add(warm, 2.2);
 })();
 
 // test hook for local checks only (?debug in the URL)
-if (/[?&]debug/.test(location.search)) window.__hero = { bg, boxes, copy, counter, player, meters, audioSys, A, analyseTrack, TRACKS, EVENTS, state, go, next, mediaOf, compose, syncPlay };
+if (/[?&]debug/.test(location.search)) window.__hero = { bg, boxes, copy, timer, player, meters, audioSys, A, analyseTrack, TRACKS, EVENTS, state, go, next, mediaOf, compose, syncPlay };
 })();
 </script>
 </body>
