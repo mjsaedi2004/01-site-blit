@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap">
 <style>
 /* One page to compare every hero version: a thin bar of tabs on top, the chosen version below.
-   Each version is its own page in v1/ … v4/. The bar is deliberately neutral so it doesn't
+   Each version is its own page in v1/ … v5/. The bar is deliberately neutral so it doesn't
    colour the comparison. */
 :root {
   --bar: #0b0a0e;
@@ -59,9 +59,10 @@ body { background: var(--bar); color: var(--fg); font-family: "Vazirmatn", Tahom
       <button type="button" class="tab" role="tab" data-v="v1" aria-selected="false"><b>۱</b><small>نسخه‌ی اول · صحنه‌ی WebGL و دسته‌ی بلیت</small></button>
       <button type="button" class="tab" role="tab" data-v="v2" aria-selected="false"><b>۲</b><small>عکس و جایگاه ویژه</small><span class="tag">نگه‌داشته</span></button>
       <button type="button" class="tab" role="tab" data-v="v3" aria-selected="false"><b>۳</b><small>پوستر گرافیکی</small></button>
-      <button type="button" class="tab" role="tab" data-v="v4" aria-selected="false"><b>۴</b><small>رسمی و زنده</small><span class="tag">تازه</span></button>
+      <button type="button" class="tab" role="tab" data-v="v4" aria-selected="false"><b>۴</b><small>رسمی و زنده</small></button>
+      <button type="button" class="tab" role="tab" data-v="v5" aria-selected="false"><b>۵</b><small>صحنه و هاله، از روی نمونه‌ها</small><span class="tag">تازه</span></button>
     </nav>
-    <span class="side"><span class="keys">1 – 4</span><a id="openAlone" href="v4/index.html" target="_blank" rel="noopener">باز کردن جدا</a></span>
+    <span class="side"><span class="keys">1 – 5</span><a id="openAlone" href="v5/index.html" target="_blank" rel="noopener">باز کردن جدا</a></span>
   </header>
   <main class="view" id="view">
     <div class="loading" aria-hidden="true">در حال بارگذاری…</div>
@@ -74,7 +75,7 @@ body { background: var(--bar); color: var(--fg); font-family: "Vazirmatn", Tahom
   const tabs = [...document.querySelectorAll('.tab')], frame = document.getElementById('frame'), view = document.getElementById('view'), alone = document.getElementById('openAlone');
   const ids = tabs.map((t) => t.dataset.v);
   const show = (v, push = true) => {
-    if (!ids.includes(v)) v = 'v4';
+    if (!ids.includes(v)) v = 'v5';
     tabs.forEach((t) => { const on = t.dataset.v === v; t.setAttribute('aria-selected', on); t.tabIndex = on ? 0 : -1; });
     const src = `${v}/index.html`;
     if (frame.getAttribute('src') !== src) { view.classList.remove('is-ready'); frame.setAttribute('src', src); }
@@ -88,9 +89,9 @@ body { background: var(--bar); color: var(--fg); font-family: "Vazirmatn", Tahom
     if (e.key === 'ArrowLeft') { e.preventDefault(); show(ids[(i + 1) % ids.length]); tabs[(i + 1) % ids.length].focus(); }
     if (e.key === 'ArrowRight') { e.preventDefault(); show(ids[(i - 1 + ids.length) % ids.length]); tabs[(i - 1 + ids.length) % ids.length].focus(); }
   });
-  document.addEventListener('keydown', (e) => { if (/^[1-4]$/.test(e.key) && !e.metaKey && !e.ctrlKey && !e.altKey) show('v' + e.key); });
+  document.addEventListener('keydown', (e) => { if (/^[1-5]$/.test(e.key) && !e.metaKey && !e.ctrlKey && !e.altKey) show('v' + e.key); });
   window.addEventListener('hashchange', () => show(location.hash.slice(1), false));
-  show(location.hash.slice(1) || 'v4', false);
+  show(location.hash.slice(1) || 'v5', false);
 })();
 </script>
 <!-- artifact:end -->
