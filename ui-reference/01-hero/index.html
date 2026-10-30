@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap">
 <style>
 /* One page to compare every hero version: a thin bar of tabs on top, the chosen version below.
-   Each version is its own page in v1/ … v6/. The bar is deliberately neutral so it doesn't
+   Each version is its own page in v1/ … v7/. The bar is deliberately neutral so it doesn't
    colour the comparison. */
 :root {
   --bar: #0b0a0e;
@@ -26,7 +26,7 @@ body { background: var(--bar); color: var(--fg); font-family: "Vazirmatn", Tahom
 .shell { height: 100%; display: grid; grid-template-rows: auto minmax(0, 1fr); }
 .bar { display: flex; align-items: center; gap: 18px; min-height: 52px; padding-block: 6px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); border-bottom: 1px solid var(--bar-line); }
 .bar h1 { margin: 0; font-size: 14px; font-weight: 700; white-space: nowrap; }
-.tabs { display: flex; gap: 4px; margin-inline: auto; overflow-x: auto; scrollbar-width: none; }
+.tabs { display: flex; gap: 4px; min-width: 0; margin-inline: auto; overflow-x: auto; scrollbar-width: none; }
 .tabs::-webkit-scrollbar { display: none; }
 .tab { all: unset; cursor: pointer; position: relative; display: inline-flex; align-items: baseline; gap: 8px; padding: 8px 14px; border-radius: 999px; color: var(--fg-2); white-space: nowrap; transition: color .25s, background .25s; }
 .tab b { font-weight: 700; color: var(--fg); }
@@ -44,6 +44,10 @@ body { background: var(--bar); color: var(--fg); font-family: "Vazirmatn", Tahom
 .view iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; background: #000; }
 .loading { position: absolute; inset: 0; display: grid; place-items: center; color: var(--fg-3); pointer-events: none; transition: opacity .3s; }
 .view.is-ready .loading { opacity: 0; }
+/* when the bar is short of room, only the open version keeps its description */
+@media (max-width: 1880px) {
+  .tab:not([aria-selected="true"]) small, .tab:not([aria-selected="true"]) .tag { display: none; }
+}
 @media (max-width: 900px) {
   .bar { flex-wrap: wrap; gap: 8px; }
   .bar h1 { flex: 1; }
@@ -61,9 +65,10 @@ body { background: var(--bar); color: var(--fg); font-family: "Vazirmatn", Tahom
       <button type="button" class="tab" role="tab" data-v="v3" aria-selected="false"><b>۳</b><small>پوستر گرافیکی</small></button>
       <button type="button" class="tab" role="tab" data-v="v4" aria-selected="false"><b>۴</b><small>رسمی و زنده</small></button>
       <button type="button" class="tab" role="tab" data-v="v5" aria-selected="false"><b>۵</b><small>صحنه و هاله، از روی نمونه‌ها</small><span class="tag">پسندیده</span></button>
-      <button type="button" class="tab" role="tab" data-v="v6" aria-selected="false"><b>۶</b><small>پوستر، بنر یا عکس · پنل مدیریت</small><span class="tag">تازه</span></button>
+      <button type="button" class="tab" role="tab" data-v="v6" aria-selected="false"><b>۶</b><small>پوستر، بنر یا عکس · پنل مدیریت</small></button>
+      <button type="button" class="tab" role="tab" data-v="v7" aria-selected="false"><b>۷</b><small>عکس تمام‌صفحه و کادرهای کنار صفحه</small><span class="tag">تازه</span></button>
     </nav>
-    <span class="side"><span class="keys">1 – 6</span><a id="openAlone" href="v6/index.html" target="_blank" rel="noopener">باز کردن جدا</a></span>
+    <span class="side"><span class="keys">1 – 7</span><a id="openAlone" href="v7/index.html" target="_blank" rel="noopener">باز کردن جدا</a></span>
   </header>
   <main class="view" id="view">
     <div class="loading" aria-hidden="true">در حال بارگذاری…</div>
@@ -76,7 +81,7 @@ body { background: var(--bar); color: var(--fg); font-family: "Vazirmatn", Tahom
   const tabs = [...document.querySelectorAll('.tab')], frame = document.getElementById('frame'), view = document.getElementById('view'), alone = document.getElementById('openAlone');
   const ids = tabs.map((t) => t.dataset.v);
   const show = (v, push = true) => {
-    if (!ids.includes(v)) v = 'v6';
+    if (!ids.includes(v)) v = 'v7';
     tabs.forEach((t) => { const on = t.dataset.v === v; t.setAttribute('aria-selected', on); t.tabIndex = on ? 0 : -1; });
     const src = `${v}/index.html`;
     if (frame.getAttribute('src') !== src) { view.classList.remove('is-ready'); frame.setAttribute('src', src); }
@@ -90,9 +95,9 @@ body { background: var(--bar); color: var(--fg); font-family: "Vazirmatn", Tahom
     if (e.key === 'ArrowLeft') { e.preventDefault(); show(ids[(i + 1) % ids.length]); tabs[(i + 1) % ids.length].focus(); }
     if (e.key === 'ArrowRight') { e.preventDefault(); show(ids[(i - 1 + ids.length) % ids.length]); tabs[(i - 1 + ids.length) % ids.length].focus(); }
   });
-  document.addEventListener('keydown', (e) => { if (/^[1-6]$/.test(e.key) && !e.metaKey && !e.ctrlKey && !e.altKey) show('v' + e.key); });
+  document.addEventListener('keydown', (e) => { if (/^[1-7]$/.test(e.key) && !e.metaKey && !e.ctrlKey && !e.altKey) show('v' + e.key); });
   window.addEventListener('hashchange', () => show(location.hash.slice(1), false));
-  show(location.hash.slice(1) || 'v6', false);
+  show(location.hash.slice(1) || 'v7', false);
 })();
 </script>
 <!-- artifact:end -->

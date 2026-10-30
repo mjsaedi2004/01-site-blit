@@ -1,0 +1,1251 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>بلیت · هیرو ۷</title>
+<meta name="description" content="نمونه‌ی هیروی صفحه‌ی اصلی بلیت: عکس اجرا کل صفحه رو می‌گیره و چند کادر کوچیک کنار صفحه اجراهای دیگه رو نگه می‌دارن.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wdth,wght@62.5,700..900&family=Vazirmatn:wght@300..800&family=Lalezar&display=swap">
+<link rel="preload" as="image" href="assets/photos/pop-frequency-1920.webp" imagesrcset="assets/photos/pop-frequency-1920.webp 1920w, assets/photos/pop-frequency-2560.webp 2560w" imagesizes="100vw" fetchpriority="high">
+<script>document.documentElement.classList.add('is-intro');setTimeout(function(){document.documentElement.classList.remove('is-intro')},4000);</script>
+<style>
+/* Layout, after the owner's description of the first screen of leemeenal.app: the show's photo
+   fills the whole screen, and a few small boxes at the side of the page hold the other shows.
+   Every few seconds the next box opens up into the background and the show's words take their
+   places on the right. Each box shows exactly the picture it will open into, so the change is
+   one continuous movement.
+   All sizes follow one unit, --u, which is 1% of the width on a 16:9 screen and shrinks with the
+   height on wider ones, so the composition is the same on any desktop screen and never
+   overflows. */
+:root {
+  --u: clamp(11px, min(1vw, 1.7778svh), 26px);
+  --bg: #050409;
+  --ink: #fbfaff;
+  --ink-2: rgba(246, 243, 255, .76);
+  --ink-3: rgba(246, 243, 255, .52);
+  --line: rgba(255, 255, 255, .14);
+  --line-2: rgba(255, 255, 255, .26);
+  --glass: rgba(9, 7, 16, .46);
+  --panel: #13111b;
+  --accent: #3b82f6;
+  --light: #93c5fd;
+  --on-accent: #fff;
+  --font-ui: "Vazirmatn", Tahoma, system-ui, sans-serif;
+  --font-title: "Noto Sans Arabic", "Vazirmatn", sans-serif;
+  --ease: cubic-bezier(.16, 1, .3, 1);
+  --pad: calc(var(--u) * 3.2);
+  --play: running;
+  --amb: running;
+  --dur: 7s;
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-ui); font-size: max(13px, calc(var(--u) * .8)); line-height: 1.7; -webkit-font-smoothing: antialiased; }
+[hidden] { display: none !important; }
+button { font: inherit; color: inherit; }
+img { display: block; max-width: 100%; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.is-intro .hero { visibility: hidden; }
+svg.i { width: 1.15em; height: 1.15em; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.mask { display: block; overflow: hidden; padding-block: .1em .2em; margin-block: -.1em -.2em; }
+.mask > * { display: block; will-change: transform; }
+
+/* ── hero ──────────────────────────────────────────────────────── */
+.hero {
+  position: relative; height: 100svh; min-height: 600px; overflow: hidden; isolation: isolate; background: var(--bg);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-areas: "nav nav" "copy boxes" "foot foot";
+  column-gap: calc(var(--u) * 4);
+  padding: max(calc(var(--u) * 1.5), env(safe-area-inset-top, 0px)) max(var(--pad), env(safe-area-inset-right, 0px)) max(calc(var(--u) * 1.5), env(safe-area-inset-bottom, 0px)) max(var(--pad), env(safe-area-inset-left, 0px));
+  /* where a poster stands when a show only has a poster: between the text and the boxes */
+  --pfx: 34%; --pfy: 51%; --pfh: 64%;
+}
+.hero[data-boxes="row"] { grid-template-areas: "nav nav" "copy copy" "foot boxes"; --pfx: 30%; --pfy: 43%; --pfh: 56%; }
+
+/* the pictures: a stack of layers; the newest one opens over the others */
+.bg { position: absolute; inset: 0; z-index: 0; overflow: hidden; background: var(--bg); will-change: transform; }
+.lay { position: absolute; inset: 0; visibility: hidden; contain: strict; }
+.lay.is-on { visibility: visible; }
+.mv { position: absolute; inset: 0; transform-origin: 50% 50%; will-change: transform; }
+.comp { position: absolute; inset: 0; overflow: hidden; background: #0b0912; }
+.ph { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; object-position: var(--op, 50% 50%); transform: scale(var(--z, 1)); transform-origin: var(--o, 50% 50%); }
+.lay.is-cur .ph { animation: drift calc(var(--dur) * 2.4) linear both; animation-play-state: var(--amb); }
+@keyframes drift { from { transform: scale(var(--z, 1)); } to { transform: scale(calc(var(--z, 1) * 1.1)); } }
+.dim { position: absolute; inset: 0; background: var(--bg); opacity: 0; pointer-events: none; }
+/* a show with only a poster: the poster, blurred, is the background and the poster itself stands in a frame */
+.comp.is-poster::after { content: ""; position: absolute; inset: 0; background: rgba(5, 4, 9, .3); }
+.pf { position: absolute; z-index: 1; left: var(--pfx); top: var(--pfy); height: var(--pfh); aspect-ratio: var(--pr, .8); translate: -50% -50%; rotate: -2.5deg; overflow: hidden; border-radius: calc(var(--hh, 1080px) * .014); box-shadow: 0 calc(var(--hh, 1080px) * .05) calc(var(--hh, 1080px) * .1) calc(var(--hh, 1080px) * -.035) rgba(0, 0, 0, .9), 0 0 0 1px rgba(255, 255, 255, .12); }
+.pf img { width: 100%; height: 100%; object-fit: cover; }
+
+/* legibility: dark on the right for the words, at the top for the menu, at the bottom and on the left for the boxes */
+.shade { position: absolute; inset: 0; z-index: 1; pointer-events: none; background:
+  linear-gradient(to left, rgba(5, 4, 9, .86) 0%, rgba(5, 4, 9, .64) 24%, rgba(5, 4, 9, .2) 50%, rgba(5, 4, 9, 0) 64%),
+  linear-gradient(to top, rgba(5, 4, 9, .78) 0%, rgba(5, 4, 9, 0) 26%),
+  linear-gradient(to bottom, rgba(5, 4, 9, .58) 0%, rgba(5, 4, 9, 0) 18%),
+  linear-gradient(to right, rgba(5, 4, 9, .55) 0%, rgba(5, 4, 9, 0) 22%); }
+.hero[data-boxes="row"] .shade { background:
+  linear-gradient(to left, rgba(5, 4, 9, .86) 0%, rgba(5, 4, 9, .64) 24%, rgba(5, 4, 9, .2) 50%, rgba(5, 4, 9, 0) 64%),
+  linear-gradient(to top, rgba(5, 4, 9, .88) 0%, rgba(5, 4, 9, .4) 22%, rgba(5, 4, 9, 0) 40%),
+  linear-gradient(to bottom, rgba(5, 4, 9, .58) 0%, rgba(5, 4, 9, 0) 18%); }
+/* the beat: a light from below in the show's colour */
+.beat { position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: 0; will-change: opacity; background: radial-gradient(60% 46% at 50% 112%, color-mix(in oklab, var(--accent) 62%, transparent), color-mix(in oklab, var(--accent) 14%, transparent) 55%, transparent 78%); }
+.grain { position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: .5; background-size: 220px 220px; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .06 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"); }
+
+/* ── nav ───────────────────────────────────────────────────────── */
+.nav { grid-area: nav; position: relative; z-index: 6; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: calc(var(--u) * 2); height: max(40px, calc(var(--u) * 2.6)); }
+.brand { justify-self: start; display: inline-flex; align-items: center; gap: calc(var(--u) * .6); text-decoration: none; font-weight: 800; font-size: max(17px, calc(var(--u) * 1.32)); line-height: 1; color: #fff; }
+.bars { display: flex; align-items: center; gap: max(2px, calc(var(--u) * .17)); height: max(18px, calc(var(--u) * 1.4)); direction: ltr; }
+.bars i { width: max(2.5px, calc(var(--u) * .2)); height: 100%; border-radius: 9px; background: var(--accent); transform: scaleY(var(--s)); will-change: transform; transition: background-color .8s; }
+.links { display: flex; gap: calc(var(--u) * 2.1); }
+.links a { position: relative; text-decoration: none; font-size: max(13px, calc(var(--u) * .8)); color: rgba(255, 255, 255, .8); padding-block: 4px; transition: color .3s; }
+.links a::after { content: ""; position: absolute; inset-inline: 30%; bottom: -3px; height: 2px; border-radius: 2px; background: var(--accent); transform: scaleX(0); transition: transform .5s var(--ease), background-color .8s; }
+.links a:hover, .links a[aria-current="page"] { color: #fff; }
+.links a:hover::after, .links a[aria-current="page"]::after { transform: scaleX(1); }
+.nav-end { justify-self: end; display: flex; align-items: center; gap: calc(var(--u) * .7); }
+.icon-btn { all: unset; cursor: pointer; display: grid; place-items: center; width: max(38px, calc(var(--u) * 2.6)); height: max(38px, calc(var(--u) * 2.6)); border-radius: 50%; border: 1px solid var(--line-2); background: var(--glass); color: #fff; transition: border-color .3s, background .3s; }
+.icon-btn:hover { border-color: rgba(255, 255, 255, .55); background: rgba(255, 255, 255, .1); }
+.icon-btn:focus-visible, .login:focus-visible, .pill:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.icon-btn svg.i { width: 44%; height: 44%; }
+.login { all: unset; cursor: pointer; font-size: max(13px, calc(var(--u) * .8)); color: rgba(255, 255, 255, .85); padding-inline: calc(var(--u) * .4); transition: color .3s; }
+.login:hover { color: #fff; }
+.pill { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: .5em; height: max(38px, calc(var(--u) * 2.6)); padding-inline: calc(var(--u) * 1.2); border-radius: 999px; background: #fff; color: #0b0a12; font-size: max(13px, calc(var(--u) * .8)); font-weight: 700; transition: transform .5s var(--ease), box-shadow .5s; }
+.pill:hover { transform: translateY(-1px); box-shadow: 0 10px 24px -12px rgba(0, 0, 0, .8); }
+.menu-btn { display: none; }
+
+/* music, in the menu bar */
+.music { position: relative; display: flex; align-items: center; gap: calc(var(--u) * .6); height: max(38px, calc(var(--u) * 2.6)); padding-inline: calc(var(--u) * .28) calc(var(--u) * .9); border-radius: 999px; background: var(--glass); border: 1px solid var(--line-2); }
+.mu-play { all: unset; cursor: pointer; position: relative; display: grid; place-items: center; width: max(30px, calc(var(--u) * 2)); height: max(30px, calc(var(--u) * 2)); border-radius: 50%; background: rgba(255, 255, 255, .12); color: #fff; transition: background .3s, color .3s; }
+.mu-play::after { content: ""; position: absolute; inset: -4px; border-radius: 50%; border: 1.5px solid var(--accent); opacity: 0; transform: scale(var(--pulse, 1)); transition: opacity .4s, border-color .8s; }
+.music.is-playing .mu-play::after { opacity: .7; }
+.mu-play:hover { background: rgba(255, 255, 255, .22); }
+.mu-play:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.mu-play svg.i { width: 42%; height: 42%; }
+.mu-play .i-pause, .music.is-playing .mu-play .i-play { display: none; }
+.music.is-playing .mu-play .i-pause { display: block; }
+.music.is-playing .mu-play { background: #fff; color: #0b0a12; }
+.mu-play .spin { display: none; width: 40%; height: 40%; border-radius: 50%; border: 1.5px solid currentColor; border-inline-end-color: transparent; animation: spin .8s linear infinite; }
+.music.is-loading .mu-play .spin { display: block; }
+.music.is-loading .mu-play .i-play, .music.is-loading .mu-play .i-pause { display: none; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.mu-meta { all: unset; cursor: pointer; display: grid; line-height: 1.3; max-width: calc(var(--u) * 8.5); min-width: 0; }
+.mu-meta:focus-visible { outline: 2px solid #fff; outline-offset: 4px; border-radius: 4px; }
+.mu-title { font-size: max(12.5px, calc(var(--u) * .74)); color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mu-sub { font-size: max(11px, calc(var(--u) * .6)); color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mu-eq { display: flex; align-items: flex-end; gap: 2px; height: 15px; direction: ltr; }
+.mu-eq i { width: 2px; height: 100%; border-radius: 1px; background: var(--accent); transform: scaleY(.2); transform-origin: bottom; will-change: transform; transition: background-color .8s; }
+.mu-pop { position: absolute; top: calc(100% + 12px); inset-inline-end: 0; z-index: 20; width: 340px; max-width: calc(100vw - 32px); padding: 16px; display: grid; gap: 12px; background: var(--panel); border: 1px solid var(--line); border-radius: 18px; box-shadow: 0 30px 70px -24px rgba(0, 0, 0, .85); font-size: 13.5px; }
+.mu-head { display: flex; align-items: center; gap: 12px; }
+.mu-head > :last-child { display: grid; line-height: 1.5; min-width: 0; }
+.mu-head b { font-size: 14px; }
+.mu-head span { font-size: 12px; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mu-art { width: 46px; height: 46px; flex: none; border-radius: 10px; overflow: hidden; background: rgba(255, 255, 255, .06); }
+.mu-art > * { width: 100%; height: 100%; object-fit: cover; display: block; }
+.mu-wave { position: relative; height: 30px; cursor: pointer; direction: ltr; touch-action: none; }
+.mu-wave canvas { width: 100%; height: 100%; display: block; }
+.mu-wave:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.mu-row { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; direction: ltr; font-size: 12px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.mu-row > :last-child { text-align: right; }
+.mu-ctrls { display: flex; gap: 4px; }
+.ghost { all: unset; cursor: pointer; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; color: var(--ink-2); transition: color .3s, background .3s; }
+.ghost:hover { color: #fff; background: rgba(255, 255, 255, .08); }
+.ghost:focus-visible { outline: 2px solid #fff; outline-offset: 1px; }
+.ghost svg.i { width: 15px; height: 15px; }
+.mu-list { display: grid; gap: 2px; max-height: 240px; overflow: auto; }
+.mu-list .row { all: unset; cursor: pointer; display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; padding: 6px; border-radius: 10px; transition: background .3s; }
+.mu-list .row:hover { background: rgba(255, 255, 255, .05); }
+.mu-list .row[aria-current="true"] { background: rgba(255, 255, 255, .08); }
+.mu-list .row:focus-visible { outline: 2px solid #fff; }
+.mu-list .row > img, .mu-list .row > canvas { width: 36px; height: 36px; border-radius: 8px; object-fit: cover; }
+.mu-list .row > span:nth-child(2) { display: grid; line-height: 1.45; min-width: 0; }
+.mu-list .tt { font-size: 13.5px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mu-list .ta { font-size: 11.5px; color: var(--ink-3); }
+.mu-list .td { font-size: 11.5px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.mu-list .bpm { color: var(--light); margin-inline-end: 6px; }
+.add-song { position: relative; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px; border: 1px dashed var(--line-2); border-radius: 12px; font-size: 13px; color: var(--ink-2); cursor: pointer; transition: color .3s, border-color .3s; }
+.add-song:hover { color: #fff; border-color: rgba(255, 255, 255, .45); }
+.add-song input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.add-song:focus-within { outline: 2px solid #fff; outline-offset: 2px; }
+
+/* ── the words of the show ─────────────────────────────────────── */
+.copy { grid-area: copy; position: relative; z-index: 3; align-self: center; width: min(100%, calc(var(--u) * 46)); display: grid; justify-items: start; }
+.kicker { display: flex; align-items: center; gap: calc(var(--u) * .75); font-size: max(12.5px, calc(var(--u) * .8)); color: var(--ink-2); }
+.k-no { color: var(--light); font-weight: 700; font-variant-numeric: tabular-nums; transition: color .6s; }
+.k-line { width: calc(var(--u) * 3); height: 1px; background: rgba(255, 255, 255, .45); transform-origin: 100% 50%; }
+.k-badge { display: inline-flex; align-items: center; height: 2em; padding-inline: .9em; border-radius: 999px; font-size: .88em; color: #fff; background: color-mix(in oklab, var(--accent) 24%, rgba(9, 7, 16, .45)); border: 1px solid color-mix(in oklab, var(--accent) 60%, transparent); transition: background-color .6s, border-color .6s; }
+.title { position: relative; width: 100%; margin: calc(var(--u) * .45) 0 0; font-family: var(--font-title); font-weight: 900; font-stretch: 62.5%; font-size: calc(var(--u) * 9.4 * var(--tf, 1)); line-height: 1.12; white-space: nowrap; color: #fff; text-shadow: 0 .03em .35em rgba(0, 0, 0, .22); }
+.title .w { display: inline-block; overflow: hidden; padding: .16em .05em .3em; margin: -.16em -.05em -.3em; vertical-align: bottom; }
+.title .wi { display: inline-block; will-change: transform; }
+.title.fly { position: absolute; z-index: 4; margin: 0; pointer-events: none; }
+.title.fly .w { overflow: visible; }
+.sub { margin: calc(var(--u) * .45) 0 0; font-size: max(15px, calc(var(--u) * 1.3)); font-weight: 300; color: #fff; }
+.desc { margin: calc(var(--u) * 1) 0 0; max-width: calc(var(--u) * 34); min-height: 3.9em; font-size: max(13px, calc(var(--u) * .9)); line-height: 1.95; color: var(--ink-2); text-wrap: pretty; }
+.desc #desc { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; }
+.meta { list-style: none; margin: calc(var(--u) * 1.25) 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: calc(var(--u) * .5) calc(var(--u) * 1.5); font-size: max(13px, calc(var(--u) * .84)); color: #fff; }
+.meta li { display: flex; align-items: center; gap: calc(var(--u) * .45); }
+.meta svg.i { color: var(--light); transition: color .6s; }
+.cta { display: flex; flex-wrap: wrap; align-items: center; gap: calc(var(--u) * 1.2); margin-top: calc(var(--u) * 1.9); }
+.buy { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: calc(var(--u) * .85); height: max(44px, calc(var(--u) * 3.1)); padding-inline: calc(var(--u) * 1.45) calc(var(--u) * .34); border-radius: 999px; background: #fff; color: #0b0a12; font-weight: 700; font-size: max(13.5px, calc(var(--u) * .88)); box-shadow: 0 calc(var(--u) * .8) calc(var(--u) * 2.4) calc(var(--u) * -.8) rgba(0, 0, 0, .7); transition: transform .5s var(--ease), box-shadow .5s; }
+.buy:hover { transform: translateY(-2px); }
+.buy:active { transform: scale(.98); }
+.buy:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
+.b-sep { width: 1px; height: 1.3em; background: rgba(11, 10, 18, .16); }
+.b-price { font-weight: 500; color: rgba(11, 10, 18, .62); white-space: nowrap; }
+.b-go { display: grid; place-items: center; width: max(34px, calc(var(--u) * 2.42)); height: max(34px, calc(var(--u) * 2.42)); border-radius: 50%; background: var(--accent); color: var(--on-accent); transition: background-color .6s, color .6s; }
+.b-go svg.i { width: 46%; height: 46%; stroke-width: 2; transition: transform .5s var(--ease); }
+.buy:hover .b-go svg { transform: translateX(-3px); }
+.more { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: .45em; padding-block: .35em; font-size: max(13.5px, calc(var(--u) * .88)); color: #fff; border-bottom: 1px solid rgba(255, 255, 255, .35); transition: border-color .3s; }
+.more:hover { border-color: #fff; }
+.more:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
+.more svg.i { width: 1em; height: 1em; transition: transform .5s var(--ease); }
+.more:hover svg.i { transform: translateX(-3px); }
+
+/* ── the boxes ─────────────────────────────────────────────────── */
+.boxes { grid-area: boxes; position: relative; z-index: 3; align-self: center; display: flex; flex-direction: column; gap: calc(var(--u) * .7); width: calc(var(--u) * 12.5); }
+.box { all: unset; box-sizing: border-box; position: relative; display: block; flex: none; height: calc(var(--u) * 6.1); border-radius: calc(var(--u) * .8); overflow: hidden; isolation: isolate; cursor: pointer; opacity: .6; transform: scale(.93); transform-origin: 0% 50%; transition: opacity .5s, transform .7s var(--ease); -webkit-tap-highlight-color: transparent; }
+.box::after { content: ""; position: absolute; inset: 0; z-index: 2; border-radius: inherit; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .18); transition: box-shadow .5s; pointer-events: none; }
+.box:not(.is-active):hover { opacity: .92; }
+.box:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.box.is-active { opacity: 1; transform: none; }
+.box.is-active::after { box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .95); }
+.bx-art { position: absolute; inset: 0; z-index: -1; overflow: hidden; border-radius: inherit; }
+.bx-art::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(5, 4, 9, .9), rgba(5, 4, 9, .22) 64%, rgba(5, 4, 9, 0)); }
+/* the box holds the whole screen's picture, scaled down: what you see in it is what opens */
+.comp.mini { inset: auto; left: 50%; top: 50%; width: var(--hw, 1920px); height: var(--hh, 1080px); transform: translate(-50%, -50%) scale(var(--bs, .125)); pointer-events: none; }
+.bx-txt { position: absolute; inset-inline: calc(var(--u) * .8); bottom: calc(var(--u) * .6); display: grid; line-height: 1.4; }
+.bx-txt small { font-size: max(10px, calc(var(--u) * .58)); color: rgba(255, 255, 255, .72); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bx-txt b { font-size: max(12px, calc(var(--u) * .92)); font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bx-bar { position: absolute; inset-inline: 0; bottom: 0; z-index: 3; height: 3px; background: rgba(255, 255, 255, .16); opacity: 0; transition: opacity .4s; }
+.bx-bar i { display: block; height: 100%; background: var(--bc, #fff); transform: scaleX(0); transform-origin: 100% 50%; }
+.box.is-active .bx-bar { opacity: 1; }
+.box.is-active .bx-bar i { animation: fill var(--dur) linear forwards; animation-play-state: var(--play); }
+@keyframes fill { to { transform: scaleX(1); } }
+.hero[data-boxes="row"] .boxes { align-self: end; flex-direction: row; width: auto; gap: calc(var(--u) * .65); }
+.hero[data-boxes="row"] .box { width: calc(var(--u) * 9.4); height: calc(var(--u) * 5.5); transform-origin: 50% 100%; }
+
+/* ── the bottom row ────────────────────────────────────────────── */
+.foot { grid-area: foot; position: relative; z-index: 3; display: flex; align-items: center; justify-content: space-between; gap: calc(var(--u) * 2); padding-top: calc(var(--u) * .9); }
+.hero[data-boxes="row"] .foot { align-self: end; }
+.count { display: flex; align-items: center; gap: calc(var(--u) * .5); min-width: 0; font-variant-numeric: tabular-nums; }
+.c-cur { font-size: max(16px, calc(var(--u) * 1.45)); font-weight: 700; color: #fff; line-height: 1.3; }
+.c-of { font-size: max(12px, calc(var(--u) * .75)); color: var(--ink-3); white-space: nowrap; }
+.c-line { position: relative; width: calc(var(--u) * 8); flex-shrink: 1; min-width: 24px; height: 2px; margin-inline-start: calc(var(--u) * .5); border-radius: 2px; overflow: hidden; background: rgba(255, 255, 255, .2); }
+.c-line i { position: absolute; inset: 0; background: #fff; transform-origin: 100% 50%; transform: scaleX(.1667); }
+.ctrls { display: flex; align-items: center; gap: calc(var(--u) * .5); }
+.ctl { all: unset; cursor: pointer; display: grid; place-items: center; width: max(36px, calc(var(--u) * 2.4)); height: max(36px, calc(var(--u) * 2.4)); border-radius: 50%; border: 1px solid rgba(255, 255, 255, .3); background: rgba(9, 7, 16, .3); color: #fff; transition: background .3s, border-color .3s; }
+.ctl:hover { background: rgba(255, 255, 255, .12); border-color: rgba(255, 255, 255, .65); }
+.ctl:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.ctl svg.i { width: 42%; height: 42%; }
+#autoBtn svg.i { width: 36%; height: 36%; }
+#autoBtn .i-play, #autoBtn[aria-pressed="true"] .i-pause { display: none; }
+#autoBtn[aria-pressed="true"] .i-play { display: block; }
+
+/* ── laptops and tablets ───────────────────────────────────────── */
+@media (max-width: 1100px) {
+  .links, .login { display: none; }
+  .nav { grid-template-columns: 1fr auto; }
+  .menu-btn { display: grid; }
+}
+/* ── phones: the words at the bottom, the boxes in a row under them ── */
+@media (max-width: 760px) {
+  .hero, .hero[data-boxes="row"] {
+    min-height: 640px; column-gap: 0; row-gap: 14px;
+    grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) auto auto;
+    grid-template-areas: "nav" "copy" "boxes" "foot";
+    padding: max(12px, env(safe-area-inset-top, 0px)) 16px max(14px, env(safe-area-inset-bottom, 0px));
+    --pfx: 50%; --pfy: 30%; --pfh: 38%;
+  }
+  .shade, .hero[data-boxes="row"] .shade { background:
+    linear-gradient(to top, rgba(5, 4, 9, .96) 0%, rgba(5, 4, 9, .8) 36%, rgba(5, 4, 9, .25) 60%, rgba(5, 4, 9, 0) 74%),
+    linear-gradient(to bottom, rgba(5, 4, 9, .6) 0%, rgba(5, 4, 9, 0) 16%); }
+  .ph { object-position: var(--mop, var(--op, 50% 50%)); }
+  .nav { gap: 10px; }
+  #searchBtn, .nav-end .pill, .mu-eq { display: none; }
+  .mu-meta { max-width: 92px; }
+  .copy { align-self: end; width: 100%; }
+  .title { font-size: calc(min(16vw, 84px) * var(--tf, 1)); }
+  .sub { font-size: 16px; }
+  .desc { font-size: 13.5px; line-height: 1.85; margin-top: 8px; min-height: 5.55em; }
+  .desc #desc { -webkit-line-clamp: 3; line-clamp: 3; }
+  .meta { margin-top: 12px; gap: 6px 16px; font-size: 13px; }
+  .cta { margin-top: 16px; }
+  .more { display: none; }
+  .boxes, .hero[data-boxes="row"] .boxes { align-self: auto; flex-direction: row; width: auto; gap: 8px; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none; margin-inline: -16px; padding: 3px 16px; scroll-padding-inline: 16px; scroll-snap-type: x proximity; }
+  .boxes::-webkit-scrollbar { display: none; }
+  .box, .hero[data-boxes="row"] .box { width: 31vw; height: 19vw; min-height: 66px; transform: none; scroll-snap-align: start; border-radius: 12px; }
+  .bx-txt { inset-inline: 9px; bottom: 7px; }
+  .foot { padding-top: 0; }
+  .c-line { width: 64px; }
+  .proto-fab { top: calc(50% - 17px); bottom: auto; }
+}
+@media (max-width: 760px) and (max-height: 700px) { .desc { display: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .lay.is-cur .ph { animation: none; }
+}
+
+/* ── prototype panel and toast (not part of the site) ──────────── */
+.proto-fab { position: fixed; z-index: 40; bottom: max(4px, env(safe-area-inset-bottom, 0px)); left: max(4px, env(safe-area-inset-left, 0px)); display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--line-2); background: var(--panel); color: var(--ink-2); cursor: pointer; box-shadow: 0 10px 26px -12px rgba(0, 0, 0, .8); transition: color .3s; }
+.proto-fab:hover { color: #fff; }
+.proto-fab svg.i { width: 16px; height: 16px; }
+.proto-panel { position: fixed; z-index: 41; bottom: max(14px, env(safe-area-inset-bottom, 0px)); left: max(14px, env(safe-area-inset-left, 0px)); width: min(340px, calc(100vw - 28px)); max-height: calc(100svh - 28px); overflow: auto; padding: 18px; display: grid; gap: 16px; background: var(--panel); border: 1px solid var(--line-2); border-radius: 18px; box-shadow: 0 30px 70px -24px rgba(0, 0, 0, .85); font-size: 13.5px; }
+.pp-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.pp-head b { font-weight: 700; font-size: 15px; }
+.pp-head span { display: block; font-size: 12px; color: var(--ink-3); }
+.pp-group { display: grid; gap: 8px; }
+.pp-group > span { font-size: 12.5px; color: var(--ink-2); }
+.seg { display: flex; flex-wrap: wrap; gap: 6px; }
+.seg button { all: unset; cursor: pointer; padding: 5px 12px; border-radius: 999px; border: 1px solid var(--line-2); font-size: 12.5px; color: var(--ink-2); transition: background .3s, color .3s, border-color .3s; }
+.seg button:hover { border-color: var(--ink-3); color: #fff; }
+.seg button[aria-pressed="true"] { background: #fff; border-color: #fff; color: #14111d; }
+.seg button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.toast { position: fixed; z-index: 60; bottom: calc(26px + env(safe-area-inset-bottom, 0px)); left: 0; right: 0; width: fit-content; max-width: min(92vw, 540px); margin-inline: auto; padding: 12px 20px; border-radius: 999px; background: #fff; color: #14111d; font-size: 14px; text-align: center; opacity: 0; pointer-events: none; }
+
+/* ── design notes under the hero (not part of the site) ────────── */
+.notes { max-width: 1120px; margin: 0 auto; padding: 72px max(24px, env(safe-area-inset-right, 0px)) 96px max(24px, env(safe-area-inset-left, 0px)); display: grid; gap: 40px; }
+.notes h2 { margin: 0 0 8px; font-size: clamp(24px, 2.4vw, 32px); font-weight: 800; line-height: 1.4; text-wrap: balance; }
+.notes .lead { margin: 0; max-width: 72ch; color: var(--ink-2); font-size: 15px; }
+.notes code { font-family: ui-monospace, "SFMono-Regular", Menlo, monospace; font-size: 12.5px; color: var(--ink-2); direction: ltr; unicode-bidi: isolate; }
+.cols { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 16px; }
+.cols article { padding: 20px 22px; border-radius: 18px; background: rgba(255, 255, 255, .035); border: 1px solid rgba(255, 255, 255, .08); }
+.cols h3 { margin: 0 0 6px; font-size: 15.5px; font-weight: 700; }
+.cols p { margin: 0; font-size: 14px; color: var(--ink-2); line-height: 1.9; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.6v12.8a1 1 0 0 0 1.5.86l10.1-6.4a1 1 0 0 0 0-1.72L9.5 4.74A1 1 0 0 0 8 5.6Z" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><rect x="6.5" y="5" width="3.6" height="14" rx="1" fill="currentColor" stroke="none"/><rect x="13.9" y="5" width="3.6" height="14" rx="1" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-prev" viewBox="0 0 24 24"><path d="M18.5 6.2v11.6a.8.8 0 0 1-1.25.66L9.5 13.2a1.4 1.4 0 0 1 0-2.4l7.75-5.26a.8.8 0 0 1 1.25.66Z" fill="currentColor" stroke="none"/><path d="M6 6v12" stroke-width="2"/></symbol>
+  <symbol id="i-next" viewBox="0 0 24 24"><path d="M5.5 6.2v11.6a.8.8 0 0 0 1.25.66l7.75-5.26a1.4 1.4 0 0 0 0-2.4L6.75 5.54A.8.8 0 0 0 5.5 6.2Z" fill="currentColor" stroke="none"/><path d="M18 6v12" stroke-width="2"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M19 12H5m6-6-6 6 6 6"/></symbol>
+  <symbol id="i-arrow-r" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4-4"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 8h16M4 16h16"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11Z"/><circle cx="12" cy="10" r="2.4"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="4" y="5.5" width="16" height="14.5" rx="2.6"/><path d="M4 10.2h16M8.5 3.5v4M15.5 3.5v4"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 7.6V12l2.9 1.9"/></symbol>
+  <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 15V4m-4.5 4.5L12 4l4.5 4.5"/><path d="M4.5 14.5V18a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-3.5"/></symbol>
+</svg>
+
+<div class="app">
+  <section class="hero" id="hero" data-boxes="column" aria-roledescription="carousel" aria-label="اجراهای ویژه">
+    <div class="bg" id="bg" aria-hidden="true"></div>
+    <div class="shade" aria-hidden="true"></div>
+    <div class="beat" id="beat" aria-hidden="true"></div>
+    <div class="grain" aria-hidden="true"></div>
+
+    <header class="nav">
+      <a class="brand" href="#hero" aria-label="بلیت، صفحه‌ی اصلی"><span class="bars" aria-hidden="true"><i style="--s:.38"></i><i style="--s:.72"></i><i style="--s:1"></i><i style="--s:.6"></i><i style="--s:.34"></i></span>بلیت</a>
+      <nav class="links" aria-label="دسته‌ها">
+        <a href="#hero" aria-current="page">کنسرت</a><a href="#hero">تئاتر</a><a href="#hero">استندآپ</a><a href="#hero">فستیوال</a><a href="#hero">خانوادگی</a>
+      </nav>
+      <div class="nav-end">
+        <div class="music" id="music">
+          <button type="button" class="mu-play" id="muPlay" aria-label="پخش"><svg class="i i-play"><use href="#i-play"/></svg><svg class="i i-pause"><use href="#i-pause"/></svg><span class="spin" aria-hidden="true"></span></button>
+          <button type="button" class="mu-meta" id="muOpen" aria-expanded="false" aria-controls="muPop" aria-label="پلی‌لیست هفته"><span class="mu-title" id="muTitle">تا ابد تو</span><span class="mu-sub" id="muSub">دایان</span></button>
+          <span class="mu-eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+          <div class="mu-pop" id="muPop" role="dialog" aria-label="پلی‌لیست هفته" hidden>
+            <div class="mu-head"><span class="mu-art" id="muArt"></span><div><b>پلی‌لیست هفته</b><span id="muNow"></span></div></div>
+            <div class="mu-wave" id="muWave" role="slider" tabindex="0" aria-label="جای پخش" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><canvas id="muWaveCv"></canvas></div>
+            <div class="mu-row"><span id="muCur">۰:۰۰</span><span class="mu-ctrls"><button type="button" class="ghost" id="muPrev" aria-label="آهنگ قبلی"><svg class="i"><use href="#i-prev"/></svg></button><button type="button" class="ghost" id="muNext" aria-label="آهنگ بعدی"><svg class="i"><use href="#i-next"/></svg></button></span><span id="muDur">۰:۰۰</span></div>
+            <div class="mu-list" id="muList"></div>
+            <label class="add-song"><input type="file" id="addSong" accept="audio/*"><svg class="i"><use href="#i-upload"/></svg>آهنگ خودت رو امتحان کن</label>
+          </div>
+        </div>
+        <button type="button" class="icon-btn" id="searchBtn" aria-label="جستجو"><svg class="i"><use href="#i-search"/></svg></button>
+        <button type="button" class="login" id="loginBtn">ورود</button>
+        <button type="button" class="pill" id="navBuy">خرید بلیت</button>
+        <button type="button" class="icon-btn menu-btn" id="menuBtn" aria-label="منو"><svg class="i"><use href="#i-menu"/></svg></button>
+      </div>
+    </header>
+
+    <div class="copy" id="copy" role="tabpanel" aria-live="off">
+      <div class="kicker">
+        <span class="mask k-no"><span id="kNo">۱</span></span>
+        <span class="k-line" aria-hidden="true"></span>
+        <span class="mask k-cat"><span id="kCat">کنسرت پاپ</span></span>
+        <span class="k-badge" id="kBadge">پرفروش</span>
+      </div>
+      <h1 class="title" id="title"><span class="w"><span class="wi" id="titleWi">فرکانس</span></span></h1>
+      <p class="sub"><span class="mask"><span id="sub">گروه نیمه‌شب · تور ۱۴۰۵</span></span></p>
+      <p class="desc"><span class="mask"><span id="desc">تور تازه‌ی گروه نیمه‌شب، این بار در سالن ۱۲ هزار نفری آزادی؛ یک شب نور و صدا با هزاران نفری که با هم می‌خوانند.</span></span></p>
+      <ul class="meta">
+        <li><svg class="i" aria-hidden="true"><use href="#i-cal"/></svg><span class="mask"><span id="mDate">سه‌شنبه ۲۴ آذر</span></span></li>
+        <li><svg class="i" aria-hidden="true"><use href="#i-clock"/></svg><span class="mask"><span id="mTime">ساعت ۲۰:۳۰</span></span></li>
+        <li><svg class="i" aria-hidden="true"><use href="#i-pin"/></svg><span class="mask"><span id="mVenue">مجموعه ورزشی آزادی</span></span></li>
+      </ul>
+      <div class="cta">
+        <button type="button" class="buy" id="buyBtn"><span>خرید بلیت</span><span class="b-sep" aria-hidden="true"></span><span class="mask b-price"><span id="price">از ۱٫۸ میلیون تومان</span></span><span class="b-go" aria-hidden="true"><svg class="i"><use href="#i-arrow"/></svg></span></button>
+        <button type="button" class="more" id="moreBtn">جزئیات اجرا<svg class="i" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+      </div>
+    </div>
+
+    <div class="boxes" id="boxes" role="tablist" aria-label="اجراهای ویژه" aria-orientation="vertical"></div>
+
+    <div class="foot">
+      <div class="count" aria-hidden="true"><span class="mask c-cur"><span id="cCur">۱</span></span><span class="c-of">/ <span id="cAll">۶</span></span><span class="c-line"><i id="cLine"></i></span></div>
+      <div class="ctrls">
+        <button type="button" class="ctl" id="prevBtn" aria-label="اجرای قبلی"><svg class="i"><use href="#i-arrow-r"/></svg></button>
+        <button type="button" class="ctl" id="autoBtn" aria-pressed="false" aria-label="توقف نمایش خودکار"><svg class="i i-pause"><use href="#i-pause"/></svg><svg class="i i-play"><use href="#i-play"/></svg></button>
+        <button type="button" class="ctl" id="nextBtn" aria-label="اجرای بعدی"><svg class="i"><use href="#i-arrow"/></svg></button>
+      </div>
+    </div>
+  </section>
+
+  <section class="notes" aria-labelledby="notes-h">
+    <div>
+      <h2 id="notes-h">یادداشت‌های طراحی · نسخه‌ی ۷، عکس تمام‌صفحه و کادرهای کنار صفحه</h2>
+      <p class="lead">این بخش جزو سایت نیست. این نسخه از روی توضیحِ صاحب پروژه درباره‌ی صفحه‌ی اول leemeenal.app ساخته شده (خود سایت از محیط ساخت باز نشد): چند کادر کوچیک کنار صفحه؛ هر چند ثانیه یکی‌شون فعال می‌شه، عکسش از دل همون کادر باز می‌شه و کل پس‌زمینه رو می‌گیره، و متن‌های همون اجرا سر جاشون می‌شینن. توضیح کامل برای پیاده‌سازی تو <code>SPEC.md</code> کنار همین صفحه هست. از دکمه‌ی گوشه‌ی پایین چپ می‌شه حالت‌های دیگه رو امتحان کرد.</p>
+    </div>
+    <div class="cols">
+      <article><h3>کادرها</h3><p>هر کادر دقیقاً همون صحنه‌ای رو نشون می‌ده که قراره باز بشه. خط پایین کادرِ فعال تو ۷ ثانیه پر می‌شه و بعد نوبت کادر بعدیه. با بردن موس روی کادرها مکث می‌کنه؛ با کلیک هر اجرایی رو می‌شه باز کرد.</p></article>
+      <article><h3>عوض شدن</h3><p>عکس اجرای بعدی از دل کادرش بزرگ می‌شه تا کل صفحه رو بگیره؛ عکس قبلی کمی عقب می‌ره و تاریک می‌شه. متن قبلی رو به بالا می‌ره و متن تازه از پایین سر جاش میاد. عکس فعلی هم آروم آروم زوم می‌شه که صفحه هیچ‌وقت ساکن نباشه.</p></article>
+      <article><h3>چی از مدیریت لازمه</h3><p>یه عکس افقی از اجرا (دست‌کم ۱۹۲۰ پیکسل، آدم یا صحنه سمت چپ یا وسط عکس) و متن‌ها. اگه فقط پوستر باشه، پس‌زمینه از خود پوستر (محو) ساخته می‌شه و پوستر تو یه قاب کنار متن می‌ایسته؛ تو تنظیمات «اگه فقط پوستر باشه» رو بزن.</p></article>
+      <article><h3>موزیک</h3><p>پخش‌کننده تو منوی بالاست. وقتی آهنگ پخش می‌شه، پس‌زمینه با ضرب آهنگ آروم می‌تپه، یه نور به رنگ اجرا از پایین صفحه با ریتم بالا و پایین می‌ره و میله‌های لوگو مثل اکولایزر تکون می‌خورن.</p></article>
+    </div>
+  </section>
+
+  <button type="button" class="proto-fab" id="protoFab" aria-expanded="false" aria-controls="protoPanel" aria-label="تنظیمات نمونه"><svg class="i"><use href="#i-sliders"/></svg></button>
+  <div class="proto-panel" id="protoPanel" role="dialog" aria-label="تنظیمات نمونه" hidden>
+    <div class="pp-head"><div><b>تنظیمات نمونه</b><span>برای مقایسه؛ جزو سایت نیست</span></div><button type="button" class="ghost" id="protoClose" aria-label="بستن"><svg class="i"><use href="#i-x"/></svg></button></div>
+    <div class="pp-group"><span>جای کادرها</span><div class="seg" data-ctrl="boxes"><button type="button" data-v="column" aria-pressed="true">ستون کنار صفحه</button><button type="button" data-v="row" aria-pressed="false">ردیف پایین صفحه</button></div></div>
+    <div class="pp-group"><span>عوض شدن عکس</span><div class="seg" data-ctrl="trans"><button type="button" data-v="expand" aria-pressed="true">باز شدن از دل کادر</button><button type="button" data-v="fade" aria-pressed="false">محو و زوم</button></div></div>
+    <div class="pp-group"><span>اومدن تیتر</span><div class="seg" data-ctrl="title"><button type="button" data-v="rise" aria-pressed="true">از پایین</button><button type="button" data-v="fly" aria-pressed="false">پرواز از کادر</button></div></div>
+    <div class="pp-group"><span>زمان هر اجرا</span><div class="seg" data-ctrl="dur"><button type="button" data-v="5" aria-pressed="false">۵ ثانیه</button><button type="button" data-v="7" aria-pressed="true">۷ ثانیه</button><button type="button" data-v="10" aria-pressed="false">۱۰ ثانیه</button></div></div>
+    <div class="pp-group"><span>تصویر اجراها</span><div class="seg" data-ctrl="source"><button type="button" data-v="photo" aria-pressed="true">عکس افقی</button><button type="button" data-v="poster" aria-pressed="false">اگه فقط پوستر باشه</button></div></div>
+    <div class="pp-group"><span>واکنش به موزیک</span><div class="seg" data-ctrl="react"><button type="button" data-v="pulse" aria-pressed="true">تپش پس‌زمینه و نور</button><button type="button" data-v="calm" aria-pressed="false">فقط نشانگرها</button></div></div>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
+<script>
+(() => {
+'use strict';
+
+/* ════════════════════════════════════════════════════════════════
+   helpers
+   ════════════════════════════════════════════════════════════════ */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const FA = '۰۱۲۳۴۵۶۷۸۹';
+const fa = (v) => String(v).replace(/\d/g, (d) => FA[d]);
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const smooth = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
+const mmss = (s) => { s = Math.max(0, Math.floor(s || 0)); return fa(`${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`); };
+const outCubic = (p) => 1 - Math.pow(1 - p, 3);
+const outExpo = (p) => (p >= 1 ? 1 : 1 - Math.pow(2, -10 * p));
+const root = document.documentElement;
+const hero = $('#hero');
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const isMobile = () => innerWidth <= 760;
+if (typeof window.gsap === 'undefined') { root.classList.remove('is-intro'); return; }
+
+const state = { i: 0, boxes: 'column', trans: 'expand', title: 'rise', source: 'photo', react: 'pulse', userPaused: false, hover: false, visible: true, intro: true };
+const MID = 0.5; // seconds into a change when the new show's words and colour arrive
+
+/* ════════════════════════════════════════════════════════════════
+   content (sample data — in production this comes from the admin panel)
+   photo: one wide photo per show; z and o frame it (zoom and its origin), op is the
+   object-position on wide screens and mop on phones
+   poster: what the show has when there is no photo (see "اگه فقط پوستر باشه")
+   ════════════════════════════════════════════════════════════════ */
+const EVENTS = [
+  { id: 'frequency', pal: 'blue', cat: 'کنسرت پاپ', type: 'کنسرت', name: 'فرکانس', by: 'گروه نیمه‌شب · تور ۱۴۰۵', badge: 'پرفروش',
+    desc: 'تور تازه‌ی گروه نیمه‌شب، این بار در سالن ۱۲ هزار نفری آزادی؛ یک شب نور و صدا با هزاران نفری که با هم می‌خوانند.',
+    venue: 'مجموعه ورزشی آزادی', startsAt: '2026-12-15T20:30:00+03:30', price: '۱٫۸ میلیون', track: 0,
+    photo: { name: 'pop-frequency', z: 1.06, o: '100% 40%', op: '50% 30%', mop: '44% 50%' } },
+  { id: 'spectrum', pal: 'pink', cat: 'فستیوال الکترونیک', type: 'فستیوال', name: 'طیف', by: 'شش دی‌جی · دو شب پشت سر هم', badge: 'فروش آغاز شد',
+    desc: 'شش دی‌جی، دو شب پشت سر هم در برج میلاد؛ صدا و نوری که تا آخر شب رهایتان نمی‌کند.',
+    venue: 'برج میلاد', startsAt: '2026-11-19T21:00:00+03:30', price: '۱٫۲ میلیون', track: 2,
+    photo: { name: 'edm-spectrum', z: 1.04, o: '40% 50%', op: '50% 45%', mop: '45% 50%' } },
+  { id: 'chaharmezrab', pal: 'gold', cat: 'ارکستر', type: 'ارکستر', name: 'چهارمضراب', by: 'ارکستر زهی باران · به رهبری آرش امینی', badge: 'دو شب',
+    desc: 'ارکستر زهی باران با تنظیم‌های تازه از قطعه‌های ماندگار موسیقی ایرانی؛ دو شب در تالار وحدت.',
+    venue: 'تالار وحدت', startsAt: '2026-11-28T19:00:00+03:30', price: '۹۵۰ هزار', track: 1,
+    photo: { name: 'orchestra-chaharmezrab', z: 1.04, o: '50% 60%', op: '50% 60%', mop: '62% 50%' },
+    poster: { src: 'assets/posters/orchestra-4x5.webp', thumb: 'assets/posters/orchestra-4x5-thumb.webp', r: 0.8 } },
+  { id: 'shadows', pal: 'orange', cat: 'تئاتر فیزیکال', type: 'تئاتر', name: 'سایه‌ها', by: 'گروه تئاتر آینه · نمایش بی‌کلام', badge: 'آخرین بلیت‌ها',
+    desc: 'تئاتری بی‌کلام که قصه‌اش را با بدن و نور می‌گوید؛ اجرای گروه تئاتر آینه در تالار اصلی تئاتر شهر.',
+    venue: 'تئاتر شهر', startsAt: '2026-11-07T19:30:00+03:30', price: '۴۵۰ هزار', track: 2,
+    photo: { name: 'theatre-shadows', z: 1.04, o: '30% 50%', op: '50% 50%', mop: '28% 50%' } },
+  { id: 'bitaarof', pal: 'crimson', cat: 'استندآپ کمدی', type: 'استندآپ', name: 'بی‌تعارف', by: 'گروه شب‌خند', badge: 'همین هفته',
+    desc: 'یک شب خنده‌ی بی‌وقفه با گروه شب‌خند؛ از ماجراهای هر روزمان تا حرف‌هایی که همه می‌زنیم و کسی بلند نمی‌گوید.',
+    venue: 'پردیس تئاتر شهرزاد', startsAt: '2026-11-03T21:00:00+03:30', price: '۶۵۰ هزار', track: 0,
+    photo: { name: 'standup-bitaarof', z: 1, o: '50% 30%', op: '50% 30%', mop: '50% 50%' },
+    poster: { src: 'assets/posters/standup-4x5.webp', thumb: 'assets/posters/standup-4x5-thumb.webp', r: 0.8 } },
+  { id: 'parvaz', pal: 'teal', cat: 'سیرک خانوادگی', type: 'سیرک', name: 'پرواز', by: 'گروه آکروبات آسمان', badge: 'مناسب خانواده',
+    desc: 'آکروبات‌هایی که روی هوا راه می‌روند؛ نمایشی برای همه‌ی خانواده، عصرهای آبان در فرهنگسرای نیاوران.',
+    venue: 'فرهنگسرای نیاوران', startsAt: '2026-11-14T17:00:00+03:30', price: '۳۸۰ هزار', track: 1,
+    photo: { name: 'circus-parvaz', z: 1.05, o: '0% 40%', op: '50% 40%', mop: '30% 50%' } },
+];
+// the fixed palette (the same eight sets as v6, SPEC §5): accent for lines, lights and the
+// arrow button; light for small coloured text on the photo
+const PALETTE = {
+  violet: { accent: '#8b5cf6', light: '#c4b5fd', onAccent: '#ffffff' },
+  blue: { accent: '#3b82f6', light: '#93c5fd', onAccent: '#ffffff' },
+  teal: { accent: '#14b8a6', light: '#5eead4', onAccent: '#03201c' },
+  green: { accent: '#22c55e', light: '#86efac', onAccent: '#03200f' },
+  gold: { accent: '#d9a441', light: '#f5d48b', onAccent: '#1a1206' },
+  orange: { accent: '#f97316', light: '#fdba74', onAccent: '#1b0d03' },
+  crimson: { accent: '#e11d48', light: '#fda4af', onAccent: '#ffffff' },
+  pink: { accent: '#ec4899', light: '#f9a8d4', onAccent: '#ffffff' },
+};
+EVENTS.forEach((e) => Object.assign(e, PALETTE[e.pal] || PALETTE.violet));
+const tz = { timeZone: 'Asia/Tehran' };
+const fWeek = new Intl.DateTimeFormat('fa-IR-u-ca-persian', { weekday: 'long', ...tz });
+const fShort = new Intl.DateTimeFormat('fa-IR-u-ca-persian', { day: 'numeric', month: 'long', ...tz });
+const fTime = new Intl.DateTimeFormat('fa-IR', { hour: '2-digit', minute: '2-digit', hour12: false, ...tz });
+EVENTS.forEach((e) => { e.date = new Date(e.startsAt); e.week = fWeek.format(e.date); e.short = fShort.format(e.date); e.time = fTime.format(e.date); });
+
+const photoFiles = (n) => ({ src: `assets/photos/${n}-1920.webp`, srcset: `assets/photos/${n}-1920.webp 1920w, assets/photos/${n}-2560.webp 2560w`, thumb: `assets/photos/${n}-640.webp` });
+// what a show is shown with right now: its photo, or (in the poster demo) its poster
+function mediaOf(e) {
+  if (state.source === 'poster' && e.poster) return { kind: 'poster', ...e.poster };
+  const p = e.photo; return { kind: 'photo', ...photoFiles(p.name), z: p.z, o: p.o, op: p.op, mop: p.mop };
+}
+
+/* playlist: managed in the admin panel; `analysis` is stored on upload (see SPEC §6) */
+const TRACKS = [
+  { id: 'dayan-ta-abad-to', title: 'تا ابد تو', artist: 'دایان', src: '../assets/music/dayan-ta-abad-to.mp3', cover: null, hues: ['#8b5cf6', '#db2777'], analysis: null },
+  { id: 'majid-razavi-manam', title: 'منم', artist: 'مجید رضوی', src: '../assets/music/majid-razavi-manam.mp3', cover: '../assets/music/majid-razavi-manam.webp', hues: ['#3b82f6', '#8b5cf6'], analysis: null },
+  { id: 'aron-afshar-sanie-var', title: 'ثانیه وار', artist: 'آرون افشار', src: '../assets/music/aron-afshar-sanie-var.mp3', cover: '../assets/music/aron-afshar-sanie-var.webp', hues: ['#f97316', '#e11d48'], analysis: null },
+];
+
+/* ANALYSIS:start */
+// precomputed with analyseTrack() — what the admin panel stores next to each uploaded track
+const ANALYSIS = {
+  'dayan-ta-abad-to': {"bpm":80,"beats":[0.36,1.14,1.77,2.64,3.39,4.14,4.9,5.64,6.39,7.14,7.77,8.64,9.39,10.15,11.14,12.01,12.92,13.77,14.64,15.4,16.14,16.9,17.64,18.39,19.14,19.89,20.65,21.39,22.15,22.94,23.64,24.39,25.14,25.9,26.64,27.39,28.15,28.88,29.64,30.39,31.15,31.89,32.64,33.39,34.14,34.86,35.65,36.39,37.14,37.89,38.64,39.4,40.14,40.95,41.64,42.39,43.14,43.9,44.64,45.39,46.15,46.92,47.64,48.39,49.14,49.89,50.64,51.39,52.14,52.93,53.65,54.39,55.14,55.89,56.65,57.39,58.16,58.93,59.65,60.39,61.14,61.89,62.64,63.39,64.15,64.94,65.65,66.39,67.14,67.88,68.65,69.39,70.14,70.9,71.65,72.39,73.14,73.89,74.64,75.39,76.15,76.93,77.64,78.39,79.14,79.88,80.64,81.39,82.13,82.9,83.65,84.39,85.15,85.89,86.65,87.39,88.15,88.94,89.65,90.39,91.14,91.9,92.64,93.39,94.15,94.9,95.65,96.39,97.15,97.9,98.65,99.39,100.14,100.91,101.65,102.39,103.15,103.9,104.64,105.39,106.15,106.89,107.64,108.37,109.14,109.75,110.49,111.39,112.15,112.92,113.64,114.39,115.14,115.89,116.64,117.39,118.14,118.9,119.64,120.39,121.14,121.77,122.64,123.39,124.15,124.92,125.64,126.4,127.14,127.89,128.64,129.39,130.14,130.91,131.64,132.38,133.15,133.89,134.64,135.39,136.14,136.91,137.64,138.38,139.14,139.89,140.65,141.39,142.14,142.8,143.64,144.41,145.14,145.87,146.66,147.39,148.16,148.95,149.7,150.46,151.15,151.78,152.5,153.35,154.11,154.89,155.65,156.39,157.14,157.89,158.64,159.4,160.15,160.94,161.65,162.38,163.13,163.88,164.65,165.39,166.14,166.9,167.65,168.39,169.14,169.89,170.64,171.39,172.15,172.92,173.64,174.39,175.14,175.88,176.64,177.39,178.13,178.9,179.65,180.42,181.19,181.92,182.65,183.39,184.15,184.91,185.65,186.39,187.15,187.9,188.64,189.39,190.15,190.9,191.65,192.39,193.14,193.9,194.65,195.39,196.15,196.92,197.65,198.39,199.15,199.9,200.64,201.39,202.15,202.9,203.64,204.48,205.12],"down":0,"energy":[0,0,0,0,0,0.01,0.05,0.25,0.28,0.26,0,0,0,0,0,0,0,0,0,0.01,0.02,0,0,0,0,0,0,0,0,0.04,0.08,0.26,0.3,0.27,0,0,0,0,0,0,0,0,0,0,0,0,0.06,0.12,0.13,0.43,0.7,0.78,0.75,0.86,0.83,0.93,0.96,1,0.84,0.9,0.71,0.6,0.49,0.47,0.25,0.12,0.21,0.39,0.26,0.33,0.46,0.48,0.43,0.62,0.69,0.78,0.74,0.85,0.82,0.89,0.89,0.91,0.8,0.86,0.74,0.65,0.49,0.32,0.15,0.06,0.18,0.44,0.44,0.46,0.49,0.45,0.39,0.53,0.61,0.73,0.79,0.9,0.93,1,1,1,0.86,0.87,0.78,0.77,0.74,0.72,0.66,0.62,0.69,0.81,0.84,0.82,0.79,0.74,0.54,0.43,0.34,0.33,0.26,0.52,0.58,0.75,0.8,0.72,0.48,0.51,0.48,0.52,0.66,0.73,0.74,0.69,0.7,0.71,0.79,0.55,0.45,0.39,0.37,0.3,0.61,0.74,0.77,0.92,0.92,0.95,0.95,0.96,0.81,0.9,0.84,0.8,0.74,0.68,0.58,0.55,0.67,0.8,0.9,0.95,0.95,0.95,0.94,0.95,0.94,0.97,0.88,0.95,0.92,0.96,0.91,0.91,0.71,0.75,0.7,0.72,0.74,0.79,0.73,0.7,0.77,0.87,0.87,0.86,0.83,0.78,0.68,0.73,0.74,0.74,0.71,0.82,0.8,0.89,0.93,0.94,0.83,0.88,0.79,0.75,0.67,0.55,0.43,0.46,0.56,0.72,0.87,0.83,0.82,0.83,0.82,0.83,0.92,0.83,0.71,0.79,0.8,0.92,1,1,0.9,0.92,0.73,0.69,0.69,0.58,0.6,0.5,0.34,0.24,0.42,0.24,0.36,0.58,0.67,0.6,0.72,0.79,0.79,0.89,0.94,1,1,1,0.9,0.93,0.87,0.84,0.8,0.76,0.72,0.73,0.8,0.91,0.97,0.96,0.93,0.92,0.86,0.83,0.83,0.86,0.87,0.99,1,1,1,1,0.99,1,0.92,0.89,0.89,0.91,0.83,0.82,0.89,0.95,0.94,0.96,0.94,0.9,0.84,0.81,0.78,0.82,0.78,0.87,0.95,1,1,1,0.92,0.92,0.87,0.87,0.88,0.86,0.82,0.8,0.84,0.91,0.95,0.95,0.92,0.92,0.86,0.81,0.81,0.84,0.82,0.93,1,1,1,1,0.97,0.98,0.84,0.72,0.63,0.59,0.45,0.39,0.42,0.42,0.53,0.56,0.46,0.5,0.58,0.53,0.58,0.76,0.8,0.9,0.89,0.95,0.98,0.99,0.92,0.98,0.93,0.92,0.89,0.84,0.74,0.69,0.74,0.83,0.86,0.9,0.9,0.85,0.8,0.81,0.8,0.84,0.84,0.91,0.9,0.97,0.96,0.95,0.84,0.91,0.86,0.86,0.87,0.87,0.78,0.75,0.8,0.86,0.85,0.86,0.84,0.82,0.75,0.77,0.78,0.82,0.82,0.91,0.91,0.99,0.99,0.99,0.93,0.98,0.94,0.95,0.91,0.85,0.77,0.72,0.76,0.86,0.89,0.88,0.86,0.82,0.76,0.76,0.77,0.82,0.81,0.89,0.89,0.96,0.96,0.96,0.86,0.92,0.87,0.86,0.86,0.83,0.75,0.74,0.79,0.86,0.86,0.85,0.83,0.7,0.44,0.36,0.23,0.2,0.13,0.24,0.17,0.17,0.32,0.41,0.37,0.56,0.7,0.59,0.55,0.56,0.57,0.57,0.71,0.9,1,0.92,0.93,0.89,0.79,0.76,0.73,0.54,0.47,0.59,0.69,0.86,1,1,0.89,0.88,0.81,0.79,0.81,0.78,0.71,0.63,0.68,0.78,0.79,0.68,0.6,0.46,0.36,0.41,0.56,0.65,0.73,0.84,0.84,0.93,0.98,0.99,0.91,0.96,0.91,0.9,0.83,0.67,0.59,0.53,0.61,0.76,0.85,0.78,0.82,0.83,0.76,0.78,0.78,0.68,0.59,0.69,0.75,0.95,1,1,0.95,0.94,0.86,0.88,0.84,0.8,0.76,0.68,0.73,0.85,0.87,0.82,0.72,0.57,0.46,0.5,0.52,0.63,0.69,0.84,0.84,0.96,0.98,1,0.91,0.96,0.88,0.85,0.73,0.61,0.54,0.56,0.66,0.84,0.9,0.84,0.82,0.83,0.77,0.78,0.75,0.63,0.5,0.6,0.69,0.88,1,1,0.97,0.94,0.87,0.87,0.85,0.84,0.72,0.63,0.64,0.72,0.68,0.69,0.53,0.32,0.09,0.08,0.1,0.3,0.44,0.56,0.45,0.41,0.33,0.37,0.38,0.48,0.47,0.4,0.2,0.07,0.04,0.03,0.15,0.34,0.46,0.47,0.52,0.49,0.47,0.46,0.51,0.53,0.48,0.47,0.45,0.38,0.37,0.38,0.38,0.49,0.6,0.72,0.74,0.72,0.73,0.74,0.63,0.75,0.8,0.77,0.79,0.82,0.75,0.76,0.74,0.71,0.77,0.88,0.93,1,0.99,0.99,0.88,0.91,0.84,0.81,0.79,0.76,0.73,0.73,0.83,0.92,0.96,0.95,0.92,0.91,0.85,0.81,0.82,0.86,0.85,0.98,1,1,1,1,0.99,1,0.93,0.88,0.88,0.9,0.81,0.79,0.87,0.94,0.94,0.95,0.93,0.89,0.83,0.8,0.77,0.82,0.79,0.88,0.95,1,1,1,0.93,0.92,0.88,0.9,0.9,0.88,0.84,0.81,0.84,0.91,0.95,0.94,0.92,0.92,0.86,0.82,0.83,0.86,0.85,0.96,1,1,1,1,0.98,1,0.92,0.89,0.88,0.9,0.83,0.82,0.9,0.98,0.98,0.98,0.94,0.85,0.67,0.58,0.47,0.41,0.33,0.31,0.3,0.45,0.48,0.6,0.76,0.88,0.84,0.9,0.86,0.76,0.74,0.69,0.74,0.83,0.87,0.88,0.86,0.82,0.77,0.78,0.77,0.82,0.82,0.89,0.89,0.95,0.97,0.96,0.85,0.92,0.85,0.85,0.86,0.85,0.76,0.74,0.77,0.84,0.84,0.85,0.84,0.83,0.77,0.79,0.81,0.83,0.8,0.9,0.9,0.98,0.99,1,0.93,0.98,0.93,0.93,0.89,0.84,0.75,0.71,0.75,0.84,0.87,0.87,0.87,0.83,0.76,0.77,0.8,0.84,0.84,0.92,0.92,0.97,0.96,0.95,0.85,0.9,0.85,0.86,0.87,0.87,0.8,0.79,0.83,0.89,0.85,0.7,0.51,0.21,0,0,0,0,0,0,0,0],"peaks":[0.84,0.96,0.93,0.86,0.51,0.95,0.88,0.97,0.92,0.84,0.95,0.7,0.81,0.95,0.84,0.7,0.9,0.88,0.72,0.97,0.82,0.53,0.87,0.81,0.62,0.93,0.8,0.64,0.8,0.86,0.98,0.89,0.89,0.58,0.79,0.83,0.94,0.97,0.87,0.85,0.81,0.77,0.98,0.86,0.8,0.88,0.8,0.81,0.91,0.8,0.76,0.81,0.79,0.67,0.9,0.87,0.9,0.94,0.77,0.66,0.82,0.72,0.6,0.87,0.8,0.92,0.8,0.78,0.66,0.9,0.78,0.82,0.78,0.78,0.86,0.9,0.78,0.89,0.84,0.78,0.57,0.8,0.76,0.83,0.75,0.64,0.9,0.83,0.74,0.83,0.83,0.59,0.84,0.83,0.79,0.8,0.77,0.58,0.88,0.84,0.84,0.78,0.82,0.59,0.86,0.56,0.44,0.82,0.83,0.9,0.8,0.92,0.86,0.83,0.88,0.94,0.86,0.83,0.98,0.78,0.61,0.84,0.85,0.7,0.87,0.9,0.62,0.89,0.84,1,0.98,0.85,0.64,0.86,0.81,0.9,0.91,0.9,0.72,0.88,0.53,0.5,0.67,0.44,0.51,0.53,0.51,0.51,0.58,0.82,0.85,0.87,0.73,0.82,0.73,0.59,0.86,0.78,0.68,0.92,0.8,0.61,0.89,0.76,0.76,0.81,0.78,0.63,0.85,0.76,0.92,0.83,0.77,0.64,0.93,0.61,0.54,0.88,0.79,0.85,0.82,0.8,0.83,0.87,0.74,0.85,0.82,0.73,0.82,0.78,0.58,0.89,0.8,0.63,0.83,0.86,0.62,0.84,0.25,0.02],"hook":167.8,"duration":205.91,"drive":0.7,"style":"pulse"},
+  'majid-razavi-manam': {"bpm":74.1,"beats":[0.23,1.04,1.85,2.68,3.47,4.29,5.09,5.9,6.71,7.52,8.33,9.14,9.95,10.77,11.59,12.39,13.2,14.01,14.82,15.63,16.44,17.23,18.06,18.9,19.69,20.48,21.3,22.1,22.93,23.74,24.55,25.36,26.17,26.98,27.8,28.61,29.42,30.22,31.06,31.86,32.69,33.48,34.28,35.09,35.9,36.71,37.52,38.32,39.14,39.95,40.76,41.58,42.39,43.21,44.01,44.66,45.46,46.24,47.05,47.85,48.67,49.48,50.3,51.3,52.12,52.93,53.74,54.54,55.34,55.98,56.78,57.61,58.42,59.21,60.02,60.85,61.85,62.67,63.47,64.28,65.09,65.9,66.71,67.51,68.33,69.15,69.96,70.77,71.58,72.39,73.2,74.01,74.82,75.63,76.44,77.25,78.06,78.87,79.68,80.5,81.31,82.12,82.93,83.74,84.55,85.36,86.17,86.98,87.79,88.61,89.42,90.23,91.04,91.85,92.66,93.47,94.28,95.1,95.91,96.72,97.71,98.62,99.54,100.39,101.19,102.03,102.79,103.61,104.4,105.25,106.11,106.83,107.5,108.34,109.11,109.9,110.69,111.33,112.12,112.94,113.74,114.56,115.36,116.17,116.99,117.79,118.61,119.41,120.21,120.85,121.65,122.47,123.29,124.08,124.89,125.7,126.51,127.32,128.14,129.14,129.96,130.77,131.58,132.38,133.19,134.01,134.82,135.63,136.44,137.26,138.06,138.88,139.69,140.5,141.31,142.12,142.93,143.74,144.55,145.36,146.17,146.98,147.79,148.61,149.42,150.23,151.04,151.85,152.66,153.47,154.28,155.1,155.9,156.71,157.52,158.34,159.15,159.96,160.77,161.57,162.4,163.3,164.18,164.92,165.68],"down":0,"energy":[0,0,0,0,0,0,0,0,0,0.02,0.05,0.05,0.06,0.1,0.06,0.08,0.14,0.21,0.29,0.33,0.36,0.37,0.34,0.24,0.18,0.12,0.08,0.05,0.03,0.01,0.01,0.04,0.08,0.11,0.13,0.14,0.1,0.05,0.02,0,0,0,0,0.01,0.04,0.07,0.07,0.09,0.09,0.07,0.04,0.01,0,0,0,0,0.04,0.07,0.11,0.15,0.17,0.17,0.17,0.15,0.12,0.11,0.12,0.08,0.04,0.05,0.28,0.29,0.45,0.58,0.63,0.49,0.59,0.68,0.73,0.73,0.63,0.54,0.46,0.57,0.62,0.72,0.76,0.67,0.52,0.56,0.67,0.71,0.83,0.87,0.84,0.78,0.93,0.81,0.77,0.76,0.74,0.5,0.56,0.7,0.7,0.67,0.74,0.71,0.6,0.73,0.75,0.71,0.72,0.75,0.64,0.73,0.89,0.99,1,1,0.99,0.98,0.92,0.84,0.79,0.68,0.48,0.41,0.39,0.41,0.46,0.51,0.6,0.69,0.77,0.87,0.92,0.88,0.78,0.69,0.55,0.59,0.62,0.68,0.73,0.74,0.69,0.81,0.93,0.87,0.92,0.9,0.73,0.63,0.73,0.72,0.75,0.75,0.77,0.67,0.66,0.75,0.77,0.71,0.8,0.86,0.79,0.79,0.83,0.82,0.79,0.79,0.84,0.79,0.88,0.9,0.84,0.85,0.87,0.72,0.81,0.82,0.73,0.84,0.93,0.8,0.93,1,0.95,0.89,0.88,0.73,0.62,0.7,0.65,0.62,0.81,0.87,0.72,0.91,1,0.94,0.85,0.95,0.8,0.65,0.76,0.78,0.73,0.85,0.92,0.87,1,1,1,0.96,0.95,0.88,0.73,0.77,0.85,0.85,0.92,1,1,1,1,1,0.94,0.91,0.88,0.75,0.85,0.78,0.74,0.83,0.91,0.75,0.96,1,0.97,0.91,0.92,0.7,0.61,0.7,0.63,0.62,0.79,0.87,0.81,1,1,0.97,0.86,0.86,0.68,0.57,0.73,0.74,0.72,0.84,0.95,0.89,1,1,1,0.92,0.9,0.82,0.68,0.75,0.82,0.83,0.89,0.98,0.93,0.99,0.97,0.8,0.7,0.59,0.47,0.39,0.42,0.39,0.4,0.37,0.32,0.24,0.25,0.22,0.22,0.22,0.24,0.22,0.2,0.23,0.24,0.28,0.3,0.33,0.3,0.31,0.29,0.3,0.28,0.29,0.26,0.24,0.25,0.28,0.32,0.33,0.34,0.3,0.29,0.28,0.29,0.32,0.35,0.36,0.39,0.45,0.5,0.57,0.63,0.63,0.6,0.62,0.66,0.6,0.57,0.59,0.55,0.48,0.66,0.66,0.72,0.79,0.74,0.56,0.81,0.8,0.7,0.7,0.71,0.43,0.3,0.5,0.49,0.58,0.7,0.72,0.56,0.85,0.82,0.69,0.69,0.66,0.37,0.25,0.48,0.46,0.57,0.67,0.68,0.54,0.82,0.77,0.67,0.69,0.62,0.32,0.22,0.42,0.4,0.54,0.64,0.66,0.45,0.5,0.43,0.47,0.6,0.77,0.76,0.82,0.75,0.73,0.71,0.83,0.85,0.97,1,1,0.93,0.88,0.86,0.68,0.72,0.9,0.88,0.87,0.95,0.91,0.81,0.93,0.85,0.74,0.7,0.71,0.54,0.6,0.81,0.86,0.76,0.79,0.8,0.65,0.67,0.67,0.57,0.56,0.53,0.45,0.53,0.52,0.52,0.59,0.69,0.77,0.94,1,1,0.95,0.88,0.83,0.74,0.75,0.76,0.74,0.7,0.74,0.77,0.71,0.78,0.8,0.76,0.72,0.73,0.63,0.61,0.69,0.6,0.76,0.83,0.86,0.81,1,0.96,0.89,0.87,0.88,0.66,0.65,0.8,0.77,0.83,0.9,0.94,0.95,1,1,0.99,0.94,0.86,0.78,0.72,0.82,0.86,0.92,0.95,1,1,1,1,0.92,0.94,0.89,0.75,0.77,0.88,0.74,0.84,0.9,0.9,0.88,1,0.97,0.92,0.9,0.75,0.57,0.61,0.66,0.57,0.75,0.84,0.9,0.95,1,1,0.93,0.84,0.76,0.57,0.6,0.73,0.73,0.81,0.9,0.93,0.98,1,1,0.96,0.92,0.83,0.74,0.71,0.81,0.8,0.87,0.9,0.97,0.95,1,0.88,0.75,0.63,0.52,0.4,0.4,0.4,0.37,0.37,0.34,0.26,0.22,0.25,0.23,0.22,0.24,0.26,0.22,0.25,0.25,0.27,0.29,0.34,0.31,0.29,0.31,0.31,0.28,0.28,0.29,0.24,0.25,0.27,0.28,0.33,0.36,0.32,0.3,0.32,0.3,0.31,0.34,0.37,0.37,0.42,0.47,0.53,0.58,0.65,0.62,0.56,0.68,0.64,0.58,0.59,0.61,0.48,0.57,0.66,0.62,0.8,0.77,0.63,0.73,0.92,0.73,0.7,0.74,0.54,0.32,0.41,0.49,0.44,0.66,0.7,0.6,0.72,0.95,0.72,0.68,0.7,0.49,0.26,0.39,0.47,0.43,0.66,0.68,0.57,0.7,0.92,0.69,0.68,0.69,0.46,0.23,0.36,0.42,0.38,0.62,0.66,0.51,0.46,0.55,0.31,0.28,0.25,0.2,0.08,0.05,0.02,0,0,0.05,0.04,0.04,0.07,0.14,0.09,0.08,0.08,0.05,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"peaks":[0.01,0.02,0.02,0.29,0.27,0.22,0.48,0.16,0.13,0.14,0.17,0.1,0.14,0.14,0.14,0.11,0.12,0.14,0.15,0.12,0.17,0.83,0.5,0.94,0.55,0.86,0.53,0.93,0.51,0.92,0.91,0.95,0.88,0.77,0.9,0.82,0.64,0.55,0.57,0.57,0.79,0.47,0.97,0.52,0.98,0.46,0.91,0.51,0.74,0.6,0.6,0.67,0.8,0.69,0.89,0.89,0.78,0.86,0.87,0.94,0.54,0.86,0.88,0.83,0.58,0.79,0.82,0.77,0.62,0.88,0.85,0.9,0.52,0.92,0.85,0.79,0.61,0.87,0.81,0.75,0.81,0.81,0.65,0.39,0.54,0.51,0.46,0.22,0.49,0.44,0.51,0.28,0.49,0.47,0.53,0.31,0.65,0.42,0.82,0.47,0.97,0.93,0.91,0.98,0.96,0.95,0.44,0.96,0.98,0.94,0.39,1,0.96,0.55,0.6,0.51,0.55,0.84,0.59,0.89,0.47,0.9,0.63,0.89,0.61,0.66,0.53,0.53,0.72,0.47,0.62,0.62,0.82,0.48,0.83,0.88,0.95,0.55,0.86,0.85,0.81,0.56,0.79,0.75,0.78,0.59,0.9,0.88,0.89,0.83,0.88,0.86,0.51,0.85,0.85,0.79,0.57,0.79,0.83,0.59,0.3,0.51,0.5,0.49,0.23,0.53,0.36,0.55,0.28,0.49,0.51,0.42,0.6,0.66,0.84,0.45,0.92,0.92,0.97,0.41,0.93,0.96,1,0.43,0.94,0.98,0.95,0.38,0.98,0.95,0.61,0.08,0.07,0.25,0.29,0.03,0.02,0.02,0.01,0],"hook":113.8,"duration":169.1,"drive":0.54,"style":"halo"},
+  'aron-afshar-sanie-var': {"bpm":75.9,"beats":[0.19,1.02,1.93,2.58,3.37,4.16,4.94,5.74,6.53,7.24,7.98,8.7,9.68,10.47,11.26,12.05,12.84,13.65,14.52,15.4,16.23,17,17.79,18.56,19.35,20.21,20.93,21.72,22.51,23.3,24.1,24.88,25.66,26.46,27.25,28.04,28.83,29.66,30.41,31.2,31.99,32.79,33.57,34.35,35.14,35.94,36.72,37.51,38.3,39.08,39.87,40.66,41.47,42.28,43.05,43.83,44.61,45.41,46.2,46.98,47.77,48.57,49.35,50.14,50.93,51.73,52.51,53.3,54.09,54.88,55.67,56.46,57.25,58.03,58.83,59.62,60.44,61.21,62.01,62.77,63.56,64.36,65.15,65.94,66.71,67.52,68.32,69.09,69.88,70.65,71.46,72.24,73.04,73.83,74.63,75.41,76.2,76.99,77.76,78.54,79.35,80.14,80.95,81.74,82.53,83.3,84.1,84.88,85.68,86.47,87.25,88.04,88.84,89.62,90.42,91.2,92,92.8,93.58,94.36,95.14,95.93,96.72,97.51,98.3,99.09,99.89,100.67,101.46,102.25,103.03,103.83,104.51,105.21,105.9,106.6,107.4,108.17,108.98,109.76,110.53,111.33,112.12,112.93,113.7,114.5,115.3,116.1,116.84,117.65,118.43,119.23,120.01,120.8,121.49,122.19,122.99,123.76,124.54,125.22,125.93,126.73,127.54,128.3,129.09,129.88,130.69,131.46,132.25,133.05,133.86,134.62,135.41,136.19,136.99,137.77,138.56,139.35,140.14,140.93,141.72,142.51,143.3,144.1,144.88,145.67,146.47,147.25,148.04,148.82,149.6,150.41,151.2,151.99,152.78,153.59,154.35,155.14,155.94,156.73,157.51,158.29,159.1,159.89,160.67,161.46,162.23,163.04,163.82,164.62,165.41,166.2,166.99,167.78,168.58,169.35,170.12,170.92,171.72,172.52,173.31,174.1,174.88,175.68,176.46,177.25,178.11,178.83,179.62,180.41,181.2,182,182.78,183.56,184.36,185.15,185.93,186.72,187.52,188.3,189.09,189.87,190.68,191.47,192.25,193.04,193.83,194.62,195.41,196.19,196.99,197.77,198.57,199.39,200.13,200.89,201.7,202.56,203.37,204.16,204.9,205.66,206.47,207.27,208.05,208.82,209.61,210.36,211.13,211.96,212.71,213.53,214.27],"down":3,"energy":[0,0,0,0,0,0,0,0,0.07,0.18,0.24,0.27,0.24,0.2,0.16,0.14,0.11,0.11,0.05,0.01,0,0,0.02,0.05,0.12,0.19,0.18,0.14,0.12,0.06,0,0,0,0,0.07,0.11,0.21,0.27,0.28,0.26,0.25,0.18,0.12,0.11,0.06,0.06,0.07,0.14,0.12,0.19,0.18,0.19,0.17,0.17,0.13,0.12,0.09,0.07,0.19,0.28,0.41,0.61,0.73,0.8,0.88,0.9,0.89,1,0.98,0.96,0.93,0.85,0.72,0.6,0.55,0.56,0.54,0.58,0.6,0.51,0.38,0.29,0.13,0,0,0.08,0.19,0.36,0.56,0.66,0.72,0.8,0.85,0.82,0.84,0.84,0.82,0.74,0.74,0.78,0.73,0.74,0.8,0.83,0.62,0.58,0.43,0.34,0.21,0.25,0.31,0.4,0.52,0.58,0.71,0.78,0.84,0.73,0.69,0.56,0.42,0.25,0.24,0.26,0.41,0.51,0.68,0.8,0.85,0.92,1,1,1,1,1,0.92,0.83,0.83,0.84,0.74,0.74,0.81,0.84,0.87,0.89,0.9,0.8,0.66,0.6,0.56,0.53,0.55,0.63,0.63,0.72,0.85,0.89,0.78,0.66,0.61,0.52,0.55,0.72,0.91,0.96,1,1,1,0.99,0.96,0.92,0.89,0.76,0.67,0.51,0.53,0.54,0.64,0.62,0.79,0.75,0.74,0.73,0.85,0.84,0.79,0.84,0.88,0.88,0.91,0.94,0.87,0.86,0.82,0.76,0.77,0.83,0.84,0.81,0.76,0.74,0.69,0.75,0.82,0.88,0.9,0.96,0.85,0.87,0.92,0.8,0.75,0.75,0.77,0.72,0.82,0.85,0.85,0.82,0.85,0.85,0.86,0.92,0.85,0.76,0.73,0.71,0.62,0.72,0.8,0.84,0.86,0.92,0.86,0.91,0.78,0.7,0.66,0.63,0.58,0.73,0.76,0.87,0.98,1,1,1,1,1,1,1,0.89,0.75,0.75,0.76,0.75,0.77,0.81,0.83,0.89,0.98,0.99,0.99,0.94,0.88,0.89,0.86,0.82,0.8,0.83,0.7,0.74,0.83,0.89,0.82,0.78,0.74,0.62,0.64,0.66,0.69,0.7,0.77,0.74,0.82,0.92,0.91,0.92,0.87,0.84,0.84,0.9,0.88,0.92,0.93,0.93,0.86,0.88,0.91,0.83,0.7,0.71,0.66,0.69,0.74,0.84,0.9,0.89,0.8,0.82,0.85,0.7,0.73,0.71,0.72,0.69,0.8,0.8,0.87,0.89,0.97,1,1,1,1,1,1,1,1,1,1,0.97,0.8,0.76,0.71,0.7,0.8,0.82,0.73,0.71,0.76,0.78,0.84,0.9,0.89,0.89,0.87,0.82,0.78,0.69,0.59,0.56,0.62,0.68,0.8,0.85,0.79,0.66,0.67,0.7,0.72,0.82,0.89,0.81,0.79,0.79,0.79,0.85,0.87,0.82,0.81,0.83,0.8,0.83,0.8,0.74,0.68,0.7,0.7,0.73,0.77,0.69,0.6,0.63,0.67,0.69,0.77,0.79,0.73,0.73,0.74,0.76,0.84,0.88,0.86,0.86,0.9,0.89,0.82,0.84,0.76,0.68,0.65,0.74,0.75,0.82,0.79,0.77,0.71,0.74,0.69,0.77,0.76,0.74,0.66,0.72,0.71,0.72,0.78,0.81,0.69,0.68,0.73,0.72,0.76,0.76,0.75,0.7,0.67,0.66,0.76,0.82,0.83,0.89,0.91,0.86,0.79,0.71,0.58,0.43,0.48,0.57,0.69,0.8,0.95,0.76,0.63,0.46,0.31,0.15,0.19,0.21,0.28,0.46,0.63,0.67,0.76,0.84,0.83,0.88,0.98,0.93,0.85,0.73,0.58,0.52,0.5,0.57,0.69,0.78,0.65,0.58,0.44,0.31,0.2,0.28,0.33,0.41,0.55,0.58,0.65,0.76,0.82,0.66,0.67,0.57,0.45,0.35,0.36,0.37,0.45,0.55,0.62,0.67,0.76,0.83,0.83,0.91,0.97,0.96,0.93,0.9,0.77,0.74,0.69,0.76,0.75,0.82,0.91,1,0.97,0.98,0.96,0.87,0.75,0.63,0.66,0.65,0.67,0.72,0.83,0.85,0.93,0.87,0.73,0.66,0.53,0.52,0.63,0.76,0.82,0.94,0.92,0.88,0.9,0.87,0.86,0.83,0.81,0.76,0.67,0.64,0.66,0.67,0.68,0.78,0.79,0.85,0.79,0.84,0.86,0.83,0.77,0.83,0.85,0.87,0.89,0.91,0.87,0.85,0.8,0.84,0.85,0.89,0.82,0.76,0.69,0.66,0.68,0.81,0.85,0.87,0.9,0.87,0.83,0.92,0.88,0.8,0.73,0.76,0.65,0.76,0.79,0.83,0.8,0.85,0.8,0.83,0.9,0.86,0.79,0.73,0.76,0.67,0.71,0.8,0.84,0.8,0.89,0.84,0.88,0.82,0.71,0.67,0.64,0.55,0.68,0.79,0.82,0.94,1,1,1,1,1,1,1,0.93,0.8,0.72,0.72,0.74,0.78,0.8,0.81,0.89,0.97,0.92,0.96,0.93,0.89,0.87,0.89,0.83,0.81,0.79,0.77,0.75,0.81,0.9,0.86,0.76,0.69,0.63,0.59,0.63,0.66,0.73,0.75,0.74,0.76,0.88,0.92,0.93,0.84,0.88,0.83,0.83,0.84,0.9,0.88,0.9,0.87,0.87,0.93,0.83,0.75,0.72,0.67,0.66,0.75,0.82,0.88,0.87,0.85,0.81,0.86,0.77,0.77,0.69,0.71,0.66,0.78,0.79,0.82,0.85,0.95,1,1,1,1,1,1,1,1,1,1,1,0.86,0.81,0.76,0.73,0.78,0.82,0.74,0.71,0.75,0.77,0.83,0.87,0.86,0.84,0.85,0.77,0.75,0.67,0.59,0.53,0.64,0.71,0.81,0.87,0.84,0.7,0.71,0.74,0.76,0.83,0.89,0.81,0.78,0.8,0.79,0.85,0.88,0.85,0.75,0.8,0.79,0.8,0.77,0.76,0.68,0.65,0.66,0.7,0.75,0.71,0.62,0.62,0.64,0.61,0.71,0.81,0.73,0.68,0.74,0.72,0.75,0.85,0.91,0.85,0.87,0.91,0.8,0.79,0.73,0.69,0.65,0.74,0.74,0.86,0.85,0.8,0.77,0.82,0.76,0.78,0.82,0.77,0.64,0.63,0.65,0.66,0.73,0.78,0.77,0.72,0.76,0.73,0.77,0.74,0.74,0.6,0.51,0.37,0.3,0.19,0.15,0.13,0.15,0.21,0.29,0.35,0.41,0.45,0.44,0.43,0.46,0.49,0.54,0.62,0.63,0.58,0.5,0.41,0.3,0.23,0.25,0.28,0.28,0.37,0.42,0.39,0.33,0.32,0.25,0.2,0.21,0.21,0.2,0.22,0.24,0.23,0.26,0.28,0.25,0.27,0.3,0.3,0.27,0.27,0.25,0.22,0.2,0.2,0.21,0.17,0.15,0.13,0.06,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"peaks":[0.47,0.55,0.8,0.35,0.3,0.43,0.58,0.47,0.49,0.44,0.47,0.64,0.52,0.81,0.78,0.8,0.8,0.71,0.7,0.76,0.89,0.86,0.8,0.8,0.68,0.86,0.79,0.65,0.78,0.79,1,0.78,0.78,0.66,0.78,0.92,0.82,0.9,0.81,0.79,0.81,0.85,0.84,0.92,0.82,0.88,0.85,0.83,0.81,0.88,0.94,0.78,0.82,0.87,0.97,0.82,0.96,0.83,0.84,0.79,0.78,0.85,0.89,0.9,0.85,0.81,0.91,0.85,0.84,0.86,0.92,0.96,0.89,0.93,0.91,0.79,0.64,0.85,0.8,0.82,0.83,0.84,0.9,0.8,0.77,0.8,0.92,0.82,0.84,0.88,0.83,0.77,0.81,0.76,0.86,0.84,0.86,0.73,0.78,0.79,0.82,0.82,0.84,0.89,0.89,0.72,0.87,0.83,0.79,0.81,0.75,0.75,0.89,0.85,0.8,0.85,0.82,0.91,0.67,0.83,0.82,0.74,0.72,0.78,0.83,0.72,0.84,0.94,0.92,0.83,0.8,0.83,0.9,0.86,0.83,0.82,0.87,0.92,0.9,0.94,0.89,0.84,0.78,0.8,0.82,0.87,0.89,0.88,0.86,0.87,0.88,0.82,0.86,0.85,0.99,0.88,0.86,0.93,0.89,0.66,0.76,0.86,0.81,0.83,0.72,0.9,0.83,0.76,0.76,0.79,0.84,0.86,0.9,0.87,0.76,0.88,0.77,0.79,0.84,0.84,0.77,0.36,0.44,0.5,0.62,0.61,0.57,0.5,0.58,0.4,0.4,0.39,0.48,0.33,0.11,0.04,0.02,0.01,0,0],"hook":71,"duration":219.92,"drive":0.77,"style":"beams"},
+};
+TRACKS.forEach((t) => { t.analysis = ANALYSIS[t.id] || null; });
+/* ANALYSIS:end */
+
+/* ════════════════════════════════════════════════════════════════
+   rhythm analysis — runs once per track (in production: on upload, stored with the track)
+   1. onset strength: a 10-band filter bank rendered offline in 30 s chunks, log-energy rise per band
+   2. tempo: autocorrelation of the onset curve, each lag supported by its multiples (×2, ×4),
+      with a prior around 100 BPM so the visual pulse stays in a comfortable 70–140 range
+   3. beats: dynamic programming over the onset curve (Ellis 2007), so beats follow the song even
+      when the tempo breathes
+   4. downbeat class, 4 Hz energy curve, waveform peaks, loudest 12 s, and a style for "auto"
+   ════════════════════════════════════════════════════════════════ */
+async function analyseTrack(input, { maxSeconds = 600 } = {}) {
+  const ab = input instanceof Blob ? await input.arrayBuffer() : await (await fetch(input)).arrayBuffer();
+  const OAC = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+  const audio = await new OAC(1, 1, 22050).decodeAudioData(ab);
+  const sr = 16000, hop = 160, fr = sr / hop, dur = Math.min(audio.duration, maxSeconds), n = Math.floor(dur * fr);
+  const centers = Array.from({ length: 10 }, (_, k) => 60 * Math.pow(2, k * 0.75)), B = centers.length;
+  const db = centers.map(() => new Float32Array(n)), eF = new Float32Array(n);
+  for (let c0 = 0; c0 < dur; c0 += 30) {
+    const start = Math.max(0, c0 - 0.5), end = Math.min(dur, c0 + 30), s0 = Math.round(start * sr), clen = Math.ceil((end - start) * sr) + hop;
+    const off = new OAC(B + 1, clen, sr), src = off.createBufferSource(), mg = off.createChannelMerger(B + 1);
+    src.buffer = audio;
+    centers.forEach((f, k) => { const bp = off.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = f; bp.Q.value = 1.9; src.connect(bp); bp.connect(mg, 0, k); });
+    src.connect(mg, 0, B); mg.connect(off.destination); src.start(0, start, end - start);
+    const r = await off.startRendering();
+    const i0 = Math.ceil(c0 * fr), i1 = Math.min(n, Math.floor(end * fr));
+    for (let b = 0; b <= B; b++) {
+      const x = r.getChannelData(b);
+      for (let i = i0; i < i1; i++) {
+        let a = 0; const j0 = i * hop - s0; for (let j = j0, z = j0 + hop; j < z; j++) a += x[j] * x[j];
+        if (b === B) eF[i] = Math.sqrt(a / hop); else db[b][i] = 10 * Math.log10(a / hop + 1e-10);
+      }
+    }
+  }
+  // onset strength: mean positive dB change across bands (80 dB floor per band), then detrend + normalise
+  const o = new Float32Array(n), kick = new Float32Array(n);
+  db.forEach((d, b) => {
+    let mx = -Infinity; for (let i = 0; i < n; i++) if (d[i] > mx) mx = d[i];
+    for (let i = 0; i < n; i++) d[i] = Math.max(d[i], mx - 80);
+    for (let i = 1; i < n; i++) { const v = Math.max(0, d[i] - d[i - 1]); o[i] += v / B; if (b < 2) kick[i] += v; }
+  });
+  const W = Math.round(fr * 0.4), om = new Float32Array(n); let acc = 0;
+  for (let i = 0; i < n; i++) { acc += o[i]; if (i >= W) acc -= o[i - W]; om[i] = Math.max(0, o[i] - acc / Math.min(i + 1, W)); }
+  let sd = 0; for (let i = 0; i < n; i++) sd += om[i] * om[i]; sd = Math.sqrt(sd / n) || 1;
+  for (let i = 0; i < n; i++) om[i] /= sd;
+  // tempo
+  const minLag = Math.floor(fr * 60 / 200), maxLag = Math.ceil(fr * 60 / 50), top = maxLag * 4 + 2, ac = new Float32Array(top + 2);
+  for (let lag = Math.floor(minLag / 2); lag <= top && lag < n; lag++) { let sum = 0; for (let i = 0, z = n - lag; i < z; i++) sum += om[i] * om[i + lag]; ac[lag] = sum / (n - lag); }
+  const at = (x) => { const i = Math.floor(x), f = x - i; return (ac[i] || 0) * (1 - f) + (ac[i + 1] || 0) * f; };
+  const pk = (x) => Math.max(at(x - 1), at(x), at(x + 1));
+  const score = new Float32Array(maxLag + 2);
+  for (let lag = minLag; lag <= maxLag + 1; lag++) {
+    const bpm = 60 * fr / lag, prior = Math.exp(-0.5 * Math.pow(Math.log2(bpm / 100) / 0.75, 2));
+    score[lag] = (at(lag) + 0.5 * pk(2 * lag) + 0.25 * pk(4 * lag)) * prior;
+  }
+  let best = minLag; for (let lag = minLag; lag <= maxLag; lag++) if (score[lag] > score[best]) best = lag;
+  const y0 = score[best - 1] || 0, y1 = score[best], y2 = score[best + 1] || 0, den = y0 - 2 * y1 + y2;
+  const P = best + (den ? clamp((y0 - y2) / (2 * den), -0.5, 0.5) : 0);
+  const drive = clamp(pk(P / 2) / (at(P) || 1), 0, 1.5); // how busy the half-beats are
+  // beats (dynamic programming)
+  const ls = new Float32Array(n), gw = Math.max(1, Math.round(P / 32)), g = [];
+  for (let k = -3 * gw; k <= 3 * gw; k++) g.push(Math.exp(-0.5 * (k / gw) * (k / gw)));
+  for (let i = 0; i < n; i++) { let a = 0; for (let k = 0; k < g.length; k++) { const j = i + k - 3 * gw; if (j >= 0 && j < n) a += om[j] * g[k]; } ls[i] = a; }
+  let lsMax = 0; for (let i = 0; i < n; i++) lsMax = Math.max(lsMax, ls[i]);
+  const cs = new Float32Array(n), bl = new Int32Array(n).fill(-1), lo = Math.round(P / 2), hi = Math.round(P * 2), lP = Math.log(P);
+  let started = false;
+  for (let i = 0; i < n; i++) {
+    let bs = -Infinity, bj = -1;
+    for (let j = i - lo; j >= i - hi && j >= 0; j--) { const d = Math.log(i - j) - lP, v = cs[j] - 100 * d * d; if (v > bs) { bs = v; bj = j; } }
+    cs[i] = ls[i] + (bj >= 0 ? bs : 0);
+    if (!started && ls[i] < 0.01 * lsMax) bl[i] = -1; else { bl[i] = bj; started = true; }
+  }
+  const lm = []; for (let i = 1; i < n - 1; i++) if (cs[i] > cs[i - 1] && cs[i] >= cs[i + 1]) lm.push(cs[i]);
+  const med = lm.sort((a, b) => a - b)[Math.floor(lm.length / 2)] || 0;
+  let tail = n - 1; for (let i = n - 2; i > 0; i--) if (cs[i] > cs[i - 1] && cs[i] >= cs[i + 1] && cs[i] * 2 > med) { tail = i; break; }
+  let bi = []; for (let i = tail; i >= 0; i = bl[i]) bi.push(i); bi.reverse();
+  const th = 0.5 * Math.sqrt(bi.reduce((a, i) => a + ls[i] * ls[i], 0) / (bi.length || 1));
+  const sm = (k) => { let a = 0, c = 0; for (let q = k - 2; q <= k + 2; q++) if (bi[q] !== undefined) { a += ls[bi[q]]; c++; } return a / c; };
+  let a0 = 0; while (a0 < bi.length && sm(a0) < th) a0++;
+  let a1 = bi.length - 1; while (a1 > a0 && sm(a1) < th) a1--;
+  bi = bi.slice(a0, a1 + 1);
+  const beats = bi.map((i) => +(i / fr).toFixed(3));
+  const ibi = beats.slice(1).map((b, k) => b - beats[k]).sort((a, b) => a - b), period = ibi[Math.floor(ibi.length / 2)] || P / fr;
+  // downbeat: the beat class (mod 4) with the strongest low-band onsets
+  const cls = [0, 0, 0, 0];
+  bi.forEach((i, k) => { let m = 0; for (let j = Math.max(0, i - 3); j <= Math.min(n - 1, i + 3); j++) m = Math.max(m, kick[j]); cls[k % 4] += m; });
+  const down = cls.indexOf(Math.max(...cls));
+  // energy curve (4 Hz, normalised to the track's own range) and waveform peaks
+  const step = Math.round(fr / 4), energy = [];
+  for (let i = 0; i < n; i += step) { let m = 0; for (let j = i; j < i + step && j < n; j++) m += eF[j]; energy.push(m / step); }
+  const smE = energy.map((_, i) => { let a = 0, c = 0; for (let j = i - 2; j <= i + 2; j++) if (energy[j] !== undefined) { a += energy[j]; c++; } return a / c; });
+  const sorted = [...smE].sort((a, b) => a - b), eLo = sorted[Math.floor(sorted.length * 0.05)], eHi = sorted[Math.floor(sorted.length * 0.95)] || 1;
+  const en = smE.map((v) => +clamp((v - eLo) / (eHi - eLo || 1), 0, 1).toFixed(2));
+  const peaks = [], pb = n / 200;
+  for (let p = 0; p < 200; p++) { let m = 0; for (let j = Math.floor(p * pb); j < Math.floor((p + 1) * pb); j++) m = Math.max(m, eF[j]); peaks.push(m); }
+  const pm = Math.max(...peaks) || 1;
+  // loudest 12 s (for teasers), skipping the first and last 15 s
+  let hook = 0, hookE = -1; const win = 48;
+  for (let i = 60; i + win < en.length - 60; i++) { let a = 0; for (let j = i; j < i + win; j++) a += en[j]; if (a > hookE) { hookE = a; hook = i / 4; } }
+  // style for the "auto" reaction: busy, energetic songs get stage beams, slow ones the halo
+  const bpm = 60 / period, eMean = en.reduce((a, v) => a + v, 0) / (en.length || 1);
+  const style = drive > 0.75 && eMean > 0.55 ? 'beams' : bpm < 90 && drive < 0.6 ? 'halo' : 'pulse';
+  return { bpm: +bpm.toFixed(1), beats, down, energy: en, peaks: peaks.map((v) => +(v / pm).toFixed(2)), hook: +hook.toFixed(1), duration: +audio.duration.toFixed(2), drive: +drive.toFixed(2), style };
+}
+
+/* ════════════════════════════════════════════════════════════════
+   audio: <audio> + analyser; the beat clock uses the stored analysis
+   ════════════════════════════════════════════════════════════════ */
+const A = { playing: false, level: 0, kick: 0, down: 0, energy: 0, beat: 0, bars: 0, phase: 0, period: 0.75, bands: new Float32Array(48) };
+const audioSys = {
+  el: new Audio(), ctx: null, analyser: null, freq: null, time: null, bins: [], track: null, lastBeat: -1, live: 0, prevLow: 0, fluxAvg: 0, lastOnset: 0, ct: -1, ctAt: 0,
+  init() {
+    this.el.preload = 'none'; this.el.crossOrigin = 'anonymous';
+    this.el.addEventListener('ended', () => player.load(player.i + 1, true));
+    this.el.addEventListener('error', () => player.onError());
+    this.el.addEventListener('loadedmetadata', () => player.onMeta());
+    this.el.addEventListener('waiting', () => player.el.classList.add('is-loading'));
+    this.el.addEventListener('playing', () => player.el.classList.remove('is-loading'));
+  },
+  graph() {
+    if (this.ctx) { if (this.ctx.state !== 'running') this.ctx.resume(); return; }
+    const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
+    try {
+      this.ctx = new AC();
+      const src = this.ctx.createMediaElementSource(this.el);
+      this.analyser = this.ctx.createAnalyser(); this.analyser.fftSize = 2048; this.analyser.smoothingTimeConstant = 0.55; this.analyser.minDecibels = -92; this.analyser.maxDecibels = -16;
+      src.connect(this.analyser); this.analyser.connect(this.ctx.destination);
+      this.freq = new Uint8Array(this.analyser.frequencyBinCount); this.time = new Uint8Array(this.analyser.fftSize);
+      const hz = this.ctx.sampleRate / this.analyser.fftSize, nb = A.bands.length;
+      for (let b = 0; b < nb; b++) {
+        const f0 = 40 * Math.pow(12000 / 40, b / nb), f1 = 40 * Math.pow(12000 / 40, (b + 1) / nb);
+        const a = Math.max(1, Math.floor(f0 / hz)), z = Math.max(a, Math.floor(f1 / hz)); this.bins.push([a, z]);
+      }
+    } catch (err) { this.ctx = null; }
+  },
+  load(tr) { this.track = tr; this.lastBeat = -1; this.ct = -1; this.el.src = tr.mem || tr.src; },
+  // seek even when the file server can't serve byte ranges: then the song is fetched once and
+  // played from memory (production servers should support ranges, so this rarely runs)
+  seekTo(t) {
+    const el = this.el; this.lastBeat = -1;
+    if (el.readyState < 1 || this.canSeek(t)) { el.currentTime = t; return; }
+    this.toMemory(this.track, t);
+  },
+  canSeek(t) { const r = this.el.seekable; for (let i = 0; i < r.length; i++) if (t >= r.start(i) && t <= r.end(i)) return true; return this.el.src.startsWith('blob:'); },
+  async toMemory(tr, t, play = !this.el.paused) {
+    if (!tr.mem) {
+      try { const res = await fetch(tr.src); if (!res.ok) return false; tr.mem = URL.createObjectURL(await res.blob()); } catch (err) { return false; }
+    }
+    if (this.track !== tr) return false;
+    const el = this.el;
+    el.src = tr.mem;
+    el.addEventListener('loadedmetadata', () => { el.currentTime = t; this.lastBeat = -1; if (play) el.play().then(() => player.ui(true), () => {}); }, { once: true });
+    return true;
+  },
+  frame(dt) {
+    const playing = !this.el.paused && !this.el.ended && this.el.readyState > 2;
+    A.playing = playing;
+    A.level += ((playing ? 1 : 0) - A.level) * (1 - Math.exp(-dt * (playing ? 3 : 2)));
+    A.kick *= Math.exp(-dt * 7.5); A.down *= Math.exp(-dt * 3.2);
+    if (!playing || !this.analyser) { for (let b = 0; b < A.bands.length; b++) A.bands[b] *= Math.exp(-dt * 4); A.energy *= Math.exp(-dt); return; }
+    this.analyser.getByteFrequencyData(this.freq);
+    for (let b = 0; b < A.bands.length; b++) {
+      const [a, z] = this.bins[b]; let sum = 0; for (let k = a; k <= z; k++) sum += this.freq[k];
+      const v = sum / ((z - a + 1) * 255), cur = A.bands[b]; A.bands[b] = cur + (v - cur) * (v > cur ? 0.55 : 0.16);
+    }
+    this.analyser.getByteTimeDomainData(this.time);
+    let sq = 0; for (let k = 0; k < this.time.length; k += 2) { const x = (this.time[k] - 128) / 128; sq += x * x; }
+    this.live = this.live * 0.9 + Math.sqrt(sq / (this.time.length / 2)) * 0.1;
+    const an = this.track && this.track.analysis;
+    // media time advances in steps; interpolate between updates so beats land on the right frame
+    const nowMs = performance.now(); let ct = this.el.currentTime;
+    if (ct !== this.ct) { this.ct = ct; this.ctAt = nowMs; } else ct += (nowMs - this.ctAt) / 1000 * this.el.playbackRate;
+    const t = ct - ((this.ctx && (this.ctx.outputLatency || this.ctx.baseLatency)) || 0.03);
+    const e = an ? curve(an.energy, t * 4) : clamp(this.live * 3.2, 0, 1);
+    A.energy += (e - A.energy) * (1 - Math.exp(-dt * 2));
+    const gate = smooth(0.012, 0.07, this.live);
+    if (an && an.beats && an.beats.length > 1) {
+      const bt = an.beats; let k = this.lastBeat;
+      if (k < -1 || k >= bt.length || (k >= 0 && bt[k] > t) || (k + 2 < bt.length && bt[k + 2] < t)) { k = -1; let a = 0, z = bt.length; while (a < z) { const m = (a + z) >> 1; if (bt[m] <= t) a = m + 1; else z = m; } k = a - 1; this.lastBeat = k; }
+      else while (k + 1 < bt.length && bt[k + 1] <= t) k++;
+      if (k !== this.lastBeat) {
+        this.lastBeat = k; A.beat = k;
+        const amp = (0.5 + 0.5 * A.energy) * gate; A.kick = Math.max(A.kick, amp);
+        if ((((k - an.down) % 4) + 4) % 4 === 0) { A.down = Math.max(A.down, amp); A.bars++; }
+      }
+      if (k >= 0 && k + 1 < bt.length) { A.period = bt[k + 1] - bt[k]; A.phase = clamp((t - bt[k]) / A.period, 0, 1); }
+    } else {
+      const low = (A.bands[0] + A.bands[1] + A.bands[2] + A.bands[3]) / 4, flux = Math.max(0, low - this.prevLow); this.prevLow = low;
+      this.fluxAvg = this.fluxAvg * 0.95 + flux * 0.05;
+      if (flux > this.fluxAvg * 2.2 + 0.03 && t - this.lastOnset > 0.28) { this.lastOnset = t; A.beat++; A.kick = Math.max(A.kick, 0.8 * gate); if (A.beat % 4 === 0) { A.down = 0.8 * gate; A.bars++; } }
+    }
+  },
+};
+function curve(arr, x) { if (!arr || !arr.length) return 0; const i = clamp(Math.floor(x), 0, arr.length - 1), j = Math.min(arr.length - 1, i + 1), f = clamp(x - i, 0, 1); return arr[i] * (1 - f) + arr[j] * f; }
+
+/* covers: the stored square cover, or one drawn from the title */
+function drawCover(cv, tr) {
+  const x = cv.getContext('2d'), w = cv.width, h = cv.height, [c1, c2] = tr.hues || ['#5aa2ff', '#ff4fd8'];
+  const g = x.createLinearGradient(0, 0, w, h); g.addColorStop(0, c1); g.addColorStop(1, c2); x.fillStyle = g; x.fillRect(0, 0, w, h);
+  x.fillStyle = 'rgba(7,6,11,.35)'; x.fillRect(0, 0, w, h);
+  x.fillStyle = '#fff'; x.textAlign = 'center'; x.direction = 'rtl'; x.font = `${Math.round(w * 0.26)}px Lalezar, Vazirmatn, sans-serif`; x.fillText(tr.title, w / 2, h * 0.56, w * 0.88);
+  x.font = `600 ${Math.round(w * 0.11)}px Vazirmatn, sans-serif`; x.fillStyle = 'rgba(255,255,255,.8)'; x.fillText(tr.artist, w / 2, h * 0.8, w * 0.88);
+}
+function coverEl(tr, size) {
+  if (tr.cover) { const im = new Image(); im.alt = ''; im.width = size; im.height = size; im.src = tr.cover; im.onerror = () => { const cv = document.createElement('canvas'); cv.width = cv.height = size * 2; drawCover(cv, tr); im.replaceWith(cv); }; return im; }
+  const cv = document.createElement('canvas'); cv.width = cv.height = size * 2; drawCover(cv, tr); return cv;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   pictures: one function draws a show's picture at full size, for the background, and the same
+   picture scaled down inside its box
+   ════════════════════════════════════════════════════════════════ */
+const imgCache = new Map(), blurCache = new Map();
+function getImg(src) {
+  if (!imgCache.has(src)) imgCache.set(src, new Promise((res, rej) => { const im = new Image(); im.decoding = 'async'; im.onload = () => res(im); im.onerror = rej; im.src = src; }));
+  return imgCache.get(src);
+}
+// a poster's background: the poster itself, drawn small and blurred once (cheap to show full screen)
+function blurred(src) {
+  if (!blurCache.has(src)) blurCache.set(src, getImg(src).then((im) => {
+    const w = 160, h = 90, c = document.createElement('canvas'); c.width = w; c.height = h;
+    const x = c.getContext('2d'), r = Math.max(w / im.naturalWidth, h / im.naturalHeight) * 1.3, dw = im.naturalWidth * r, dh = im.naturalHeight * r;
+    x.filter = 'blur(6px) saturate(1.3)'; x.drawImage(im, (w - dw) / 2, (h - dh) / 2, dw, dh);
+    return c.toDataURL('image/webp', 0.85);
+  }));
+  return blurCache.get(src);
+}
+const decoded = (im) => (im.decode ? im.decode() : Promise.resolve()).catch(() => {});
+function compose(comp, e, mini) {
+  const m = mediaOf(e), key = `${m.kind}|${e.id}`;
+  if (comp.dataset.key === key && comp.ready) return comp.ready;
+  comp.dataset.key = key; comp.innerHTML = '';
+  comp.className = `comp${mini ? ' mini' : ''}${m.kind === 'poster' ? ' is-poster' : ''}`;
+  if (m.kind === 'photo') {
+    const s = comp.style; s.setProperty('--z', m.z); s.setProperty('--o', m.o); s.setProperty('--op', m.op); s.setProperty('--mop', m.mop);
+    const im = new Image(); im.className = 'ph'; im.alt = ''; im.decoding = 'async';
+    if (mini) im.src = m.thumb; else { im.sizes = '100vw'; im.srcset = m.srcset; im.src = m.src; }
+    comp.appendChild(im);
+    return (comp.ready = decoded(im));
+  }
+  ['--z', '--o', '--op', '--mop'].forEach((p) => comp.style.removeProperty(p));
+  const bd = new Image(); bd.className = 'ph'; bd.alt = '';
+  const pf = document.createElement('span'); pf.className = 'pf'; pf.style.setProperty('--pr', m.r);
+  const pim = new Image(); pim.alt = ''; pim.decoding = 'async'; pim.src = mini ? m.thumb : m.src; pf.appendChild(pim);
+  comp.append(bd, pf);
+  return (comp.ready = blurred(m.src).then((url) => { bd.src = url; return Promise.all([decoded(bd), decoded(pim)]); }, () => {}));
+}
+
+/* ════════════════════════════════════════════════════════════════
+   the background: a stack of layers. A change takes a free layer, puts it on top and opens it
+   out of the box (a clip that grows from the box's rectangle to the whole screen while the
+   picture inside scales from the box's size to full size); the layers under it step back and
+   darken, and are let go when it has finished. A second change during the first simply opens
+   on top of it.
+   ════════════════════════════════════════════════════════════════ */
+const bg = {
+  el: $('#bg'), pool: [], z: 0, token: 0,
+  free() {
+    let l = this.pool.find((x) => !x.busy);
+    if (!l) {
+      l = document.createElement('div'); l.className = 'lay';
+      l.innerHTML = '<div class="mv"><div class="comp"></div><i class="dim"></i></div>';
+      l.mv = $('.mv', l); l.comp = $('.comp', l); l.dim = $('.dim', l);
+      this.el.appendChild(l); this.pool.push(l);
+    }
+    l.busy = true; return l;
+  },
+  release(l) {
+    if (l.tw) { l.tw.kill(); l.tw = null; }
+    l.busy = false; l.pusher = null; l.classList.remove('is-on', 'is-cur');
+    l.style.clipPath = ''; l.style.opacity = ''; l.style.zIndex = ''; l.mv.style.transform = ''; l.dim.style.opacity = '';
+    // quick clicking can stack several layers; keep three and let the rest (and their pictures) go
+    if (this.pool.length > 3) { this.pool.splice(this.pool.indexOf(l), 1); l.remove(); }
+  },
+  async show(i, { from = null, mode = 'fade' } = {}) {
+    const token = ++this.token, l = this.free();
+    await compose(l.comp, EVENTS[i], false);
+    if (token !== this.token) { this.release(l); return; }
+    const under = this.pool.filter((m) => m !== l && m.busy && m.classList.contains('is-on'));
+    l.zi = ++this.z; l.style.zIndex = l.zi;
+    l.classList.remove('is-cur'); void l.offsetWidth; l.classList.add('is-on', 'is-cur'); // restarts the slow zoom
+    const done = () => {
+      l.tw = null; l.style.clipPath = ''; l.style.opacity = ''; l.mv.style.transform = '';
+      [...this.pool].forEach((m) => { if (m !== l && m.busy && m.zi < l.zi) this.release(m); }); // a copy: release() can shorten the pool
+    };
+    if (mode === 'instant' || !under.length && mode !== 'intro') { done(); return; }
+    // layers that are still opening keep going underneath; the settled ones step back
+    const back = under.filter((m) => !m.tw); back.forEach((m) => { m.pusher = l; });
+    const push = (p, k, d) => back.forEach((m) => { if (m.pusher === l) { m.mv.style.transform = `scale(${(1 + k * p).toFixed(4)})`; m.dim.style.opacity = (d * p).toFixed(3); } });
+    const o = { p: 0 };
+    let upd, dur, ease = 'none';
+    if (mode === 'expand' && from) {
+      const hr = hero.getBoundingClientRect(), br = from.getBoundingClientRect(), W = hr.width, H = hr.height;
+      const bx = br.left - hr.left, by = br.top - hr.top, bw = br.width, bh = br.height;
+      const s = Math.max(bw / W, bh / H), dx = bx + bw / 2 - W / 2, dy = by + bh / 2 - H / 2;
+      const rad = parseFloat(getComputedStyle(from).borderTopLeftRadius) || 0;
+      upd = () => {
+        const p = o.p, q = 1 - p;
+        l.style.clipPath = `inset(${(by * q).toFixed(1)}px ${((W - bx - bw) * q).toFixed(1)}px ${((H - by - bh) * q).toFixed(1)}px ${(bx * q).toFixed(1)}px round ${(rad * q).toFixed(1)}px)`;
+        l.mv.style.transform = `translate3d(${(dx * q).toFixed(2)}px, ${(dy * q).toFixed(2)}px, 0) scale(${(s + (1 - s) * p).toFixed(5)})`;
+        push(p, 0.06, 0.55);
+      };
+      dur = 1.3; ease = 'power3.inOut';
+    } else if (mode === 'intro') {
+      upd = () => { const p = o.p; l.style.opacity = smooth(0, 0.5, p).toFixed(3); l.mv.style.transform = `scale(${(1 + 0.16 * (1 - outExpo(p))).toFixed(4)})`; };
+      dur = 2.6;
+    } else {
+      upd = () => { const p = o.p; l.style.opacity = smooth(0, 0.7, p).toFixed(3); l.mv.style.transform = `scale(${(1 + 0.08 * (1 - outCubic(p))).toFixed(4)})`; push(smooth(0, 0.7, p), 0.03, 0.4); };
+      dur = reduceMotion ? 0.5 : 1.5;
+      if (reduceMotion) upd = () => { l.style.opacity = o.p.toFixed(3); };
+    }
+    upd();
+    l.tw = gsap.to(o, { p: 1, duration: dur, ease, onUpdate: upd, onComplete: done });
+  },
+};
+
+/* ════════════════════════════════════════════════════════════════
+   the boxes: each is a tab for one show and holds that show's picture, scaled from the whole
+   screen. The line along the bottom of the active box is the timer (a CSS animation paused with
+   --play); when it ends, the next box opens.
+   ════════════════════════════════════════════════════════════════ */
+const boxes = {
+  el: $('#boxes'), list: [],
+  build() {
+    EVENTS.forEach((e, k) => {
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'box'; b.setAttribute('role', 'tab'); b.setAttribute('aria-selected', 'false'); b.setAttribute('aria-controls', 'copy'); b.tabIndex = -1;
+      b.style.setProperty('--bc', e.accent);
+      b.innerHTML = `<span class="bx-art" aria-hidden="true"><span class="comp mini"></span></span><span class="bx-txt"><small>${fa(k + 1)} · ${e.type}</small><b>${e.name}</b></span><span class="bx-bar" aria-hidden="true"><i></i></span>`;
+      b.setAttribute('aria-label', `${e.name}، ${e.cat}، ${e.short}`);
+      b.addEventListener('click', () => { if (k === state.i) $('#buyBtn').focus(); else go(k, 'user'); });
+      this.el.appendChild(b); this.list.push(b);
+    });
+    this.refresh();
+    this.el.addEventListener('animationend', (ev) => { if (ev.animationName === 'fill' && ev.target.closest('.box') === this.list[state.i]) next('auto'); });
+    this.el.addEventListener('keydown', (ev) => {
+      const k = { ArrowDown: 1, ArrowLeft: 1, ArrowUp: -1, ArrowRight: -1 }[ev.key];
+      if (k) { ev.preventDefault(); go((state.i + k + EVENTS.length) % EVENTS.length, 'user'); this.list[state.i].focus(); }
+      if (ev.key === 'Home' || ev.key === 'End') { ev.preventDefault(); go(ev.key === 'Home' ? 0 : EVENTS.length - 1, 'user'); this.list[state.i].focus(); }
+    });
+    this.el.addEventListener('pointerenter', () => { state.hover = true; syncPlay(); });
+    this.el.addEventListener('pointerleave', () => { state.hover = false; syncPlay(); });
+    this.el.addEventListener('focusin', () => { state.hover = true; syncPlay(); });
+    this.el.addEventListener('focusout', () => { state.hover = false; syncPlay(); });
+    const ro = new ResizeObserver(() => this.size()); ro.observe(hero); ro.observe(this.list[0]);
+  },
+  refresh() { this.list.forEach((b, k) => compose($('.comp', b), EVENTS[k], true)); },
+  // the scale that fits the whole screen's picture into a box (covering it, like the background)
+  size() {
+    const W = hero.clientWidth, H = hero.clientHeight, b = this.list[0]; if (!W || !H || !b) return;
+    hero.style.setProperty('--hw', W + 'px'); hero.style.setProperty('--hh', H + 'px');
+    this.el.style.setProperty('--bs', Math.max(b.offsetWidth / W, b.offsetHeight / H).toFixed(5));
+  },
+  set(i) {
+    this.list.forEach((b, k) => { const on = k === i; b.classList.toggle('is-active', on); b.setAttribute('aria-selected', on); b.tabIndex = on ? 0 : -1; });
+    // on phones the row scrolls sideways: bring the active box into view without moving the page
+    if (isMobile()) { const b = this.list[i], r = this.el.getBoundingClientRect(), br = b.getBoundingClientRect(); if (br.left < r.left || br.right > r.right) this.el.scrollBy({ left: br.left + br.width / 2 - (r.left + r.width / 2), behavior: reduceMotion ? 'auto' : 'smooth' }); }
+  },
+  // a box can be the start of the opening only when it is on screen
+  visible(b) {
+    const r = b.getBoundingClientRect(), hr = hero.getBoundingClientRect(), vw = innerWidth;
+    return r.width > 8 && r.left >= Math.max(0, hr.left) - 2 && r.right <= Math.min(vw, hr.right) + 2 && r.top >= hr.top && r.bottom <= hr.bottom;
+  },
+};
+
+/* ════════════════════════════════════════════════════════════════
+   the words: each line sits in a mask; the old words leave upwards and the new ones rise into
+   place. With "پرواز از کادر" the title leaves the box and grows into its place.
+   ════════════════════════════════════════════════════════════════ */
+const copy = {
+  el: $('#copy'), title: $('#title'), wi: $('#titleWi'), flyEl: null,
+  lines() { return ['#kNo', '#kCat', '#sub', '#desc', '#mDate', '#mTime', '#mVenue', '#price'].map((s) => $(s)); },
+  render(e, i, withTitle = true) {
+    $('#kNo').textContent = fa(i + 1); $('#kCat').textContent = e.cat; $('#kBadge').textContent = e.badge;
+    if (withTitle) { this.wi.textContent = e.name; this.fit(); }
+    $('#sub').textContent = e.by; $('#desc').textContent = e.desc;
+    $('#mDate').textContent = `${e.week} ${e.short}`; $('#mTime').textContent = `ساعت ${e.time}`; $('#mVenue').textContent = e.venue;
+    $('#price').textContent = `از ${e.price} تومان`;
+    $('#buyBtn').setAttribute('aria-label', `خرید بلیت ${e.type} ${e.name}، از ${e.price} تومان`);
+    $('#moreBtn').setAttribute('aria-label', `جزئیات اجرای ${e.name}`);
+  },
+  // a long name gets a smaller size instead of running out of its column
+  fit(t = this.title) { t.style.setProperty('--tf', '1'); const w = t.clientWidth, sw = t.scrollWidth; if (sw > w + 1) t.style.setProperty('--tf', ((w - 1) / sw).toFixed(3)); },
+  out(keepTitle) {
+    const els = this.lines(); if (!keepTitle) els.push(this.wi);
+    if (reduceMotion) { gsap.to([...els, '#kBadge'], { opacity: 0, duration: 0.2, overwrite: true }); return; }
+    gsap.to(els, { yPercent: -110, duration: 0.34, ease: 'power3.in', stagger: 0.016, overwrite: true });
+    gsap.to('#kBadge', { opacity: 0, scale: 0.85, duration: 0.3, ease: 'power2.in', overwrite: true });
+  },
+  in(delay = 0, withTitle = true) {
+    const els = this.lines(); if (withTitle) els.splice(2, 0, this.wi);
+    if (reduceMotion) { gsap.set(els, { yPercent: 0 }); gsap.to([...els, '#kBadge'], { opacity: 1, duration: 0.3, overwrite: true }); return; }
+    gsap.fromTo(els, { yPercent: 110 }, { yPercent: 0, duration: 1.05, ease: 'expo.out', stagger: 0.05, delay, overwrite: true });
+    gsap.fromTo('#kBadge', { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.8, ease: 'back.out(2)', delay: delay + 0.15, overwrite: true });
+  },
+  // the title flies out of the box: a copy is set exactly where the title will stand, then moved
+  // and shrunk onto the box's name and sent back; at the end the real title takes over
+  fly(from, e) {
+    this.land();
+    const name = $('.bx-txt b', from), hr = hero.getBoundingClientRect(), tr = this.title.getBoundingClientRect();
+    const c = document.createElement('div'); c.className = 'title fly'; c.setAttribute('aria-hidden', 'true');
+    c.innerHTML = '<span class="w"><span class="wi"></span></span>'; $('.wi', c).textContent = e.name;
+    Object.assign(c.style, { left: `${tr.left - hr.left}px`, top: `${tr.top - hr.top}px`, width: `${tr.width}px` });
+    hero.appendChild(c); this.fit(c);
+    const cr = c.getBoundingClientRect(), w = $('.wi', c).getBoundingClientRect(), nr = name.getBoundingClientRect();
+    const k = parseFloat(getComputedStyle(name).fontSize) / parseFloat(getComputedStyle(c).fontSize);
+    const ox = w.right - cr.left, oy = w.top + w.height / 2 - cr.top; // Persian starts on the right: the right ends meet
+    const dx = nr.right - w.right, dy = nr.top + nr.height / 2 - (w.top + w.height / 2);
+    this.flyEl = c; this.flyName = e.name;
+    gsap.set(c, { transformOrigin: `${ox}px ${oy}px` });
+    gsap.fromTo(c, { x: dx, y: dy, scale: k }, { x: 0, y: 0, scale: 1, duration: 1.2, ease: 'power3.inOut', onComplete: () => this.land() });
+    gsap.fromTo(c, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: 'power1.out' });
+  },
+  retarget() {
+    const c = this.flyEl; if (!c) return;
+    const hr = hero.getBoundingClientRect(), tr = this.title.getBoundingClientRect();
+    Object.assign(c.style, { left: `${tr.left - hr.left}px`, top: `${tr.top - hr.top}px`, width: `${tr.width}px` });
+  },
+  land() {
+    const c = this.flyEl; if (!c) return;
+    gsap.killTweensOf(c); c.remove(); this.flyEl = null;
+    this.wi.textContent = this.flyName; this.fit(); gsap.killTweensOf(this.wi); gsap.set(this.wi, { yPercent: 0, opacity: 1 });
+  },
+};
+
+// the number at the bottom rolls; the line under it shows how far through the shows we are
+const counter = {
+  set(i, instant) {
+    const el = $('#cCur'), f = (i + 1) / EVENTS.length;
+    if (instant || reduceMotion) { el.textContent = fa(i + 1); gsap.set('#cLine', { scaleX: f }); return; }
+    gsap.to(el, { yPercent: -110, duration: 0.35, ease: 'power3.in', overwrite: true, onComplete: () => { el.textContent = fa(i + 1); gsap.fromTo(el, { yPercent: 110 }, { yPercent: 0, duration: 0.8, ease: 'expo.out' }); } });
+    gsap.to('#cLine', { scaleX: f, duration: 1.2, ease: 'expo.inOut', overwrite: true });
+  },
+};
+
+function setAccent(e) { const s = hero.style; s.setProperty('--accent', e.accent); s.setProperty('--light', e.light); s.setProperty('--on-accent', e.onAccent); player.draw(); }
+
+/* ════════════════════════════════════════════════════════════════
+   a change: the box, the background and the words
+   ════════════════════════════════════════════════════════════════ */
+let swapCall = null;
+function go(i, source = 'user') {
+  if (i === state.i) return;
+  const e = EVENTS[i], from = boxes.list[i];
+  state.i = i; boxes.set(i);
+  copy.el.setAttribute('aria-live', source === 'auto' ? 'off' : 'polite');
+  const fromBox = !reduceMotion && boxes.visible(from);
+  bg.show(i, { from, mode: reduceMotion ? 'fade' : state.trans === 'expand' && fromBox ? 'expand' : 'fade' });
+  const flying = state.title === 'fly' && fromBox;
+  copy.land(); copy.out(); counter.set(i);
+  if (flying) copy.fly(from, e);
+  if (swapCall) swapCall.kill();
+  swapCall = gsap.delayedCall(reduceMotion ? 0.2 : MID, () => {
+    swapCall = null;
+    setAccent(e); copy.render(e, i, !flying); copy.in(0, !flying); if (flying) copy.retarget();
+  });
+}
+const next = (src = 'user') => go((state.i + 1) % EVENTS.length, src);
+const prev = () => go((state.i - 1 + EVENTS.length) % EVENTS.length, 'user');
+
+function syncPlay() {
+  const run = !reduceMotion && !state.userPaused && !state.hover && !state.intro && state.visible && !document.hidden;
+  root.style.setProperty('--play', run ? 'running' : 'paused');
+  root.style.setProperty('--amb', !reduceMotion && state.visible && !document.hidden ? 'running' : 'paused');
+}
+
+/* ════════════════════════════════════════════════════════════════
+   music: a small player in the menu bar; the playlist opens under it
+   ════════════════════════════════════════════════════════════════ */
+const player = {
+  el: $('#music'), i: 0, hover: -1, lastLabel: 0, cx: null,
+  get track() { return TRACKS[this.i]; },
+  init() {
+    this.cv = $('#muWaveCv'); this.cx = this.cv.getContext('2d'); this.wave = $('#muWave'); this.pop = $('#muPop');
+    this.buildList(); this.load(0, false);
+    $('#muPlay').addEventListener('click', () => this.toggle());
+    $('#muOpen').addEventListener('click', () => this.togglePop());
+    $('#muNext').addEventListener('click', () => this.load(this.i + 1, this.playing()));
+    $('#muPrev').addEventListener('click', () => { if (audioSys.el.currentTime > 3) audioSys.seekTo(0); else this.load(this.i - 1, this.playing()); });
+    const seekAt = (ev) => { const r = this.wave.getBoundingClientRect(); this.seek(clamp((ev.clientX - r.left) / r.width, 0, 1)); };
+    let scrub = false;
+    this.wave.addEventListener('pointerdown', (ev) => { scrub = true; this.wave.setPointerCapture(ev.pointerId); seekAt(ev); });
+    this.wave.addEventListener('pointermove', (ev) => { const r = this.wave.getBoundingClientRect(); this.hover = clamp((ev.clientX - r.left) / r.width, 0, 1); if (scrub) seekAt(ev); this.draw(); });
+    this.wave.addEventListener('pointerup', () => { scrub = false; });
+    this.wave.addEventListener('pointerleave', () => { this.hover = -1; this.draw(); });
+    this.wave.addEventListener('keydown', (ev) => { const d = this.duration(); if (!d) return; if (ev.key === 'ArrowRight') this.seek(clamp((audioSys.el.currentTime + 5) / d, 0, 1)); if (ev.key === 'ArrowLeft') this.seek(clamp((audioSys.el.currentTime - 5) / d, 0, 1)); });
+    new ResizeObserver(() => this.sizeWave()).observe(this.wave);
+    document.addEventListener('click', (ev) => { if (!this.pop.hidden && !ev.target.closest('#music')) this.togglePop(false); });
+    document.addEventListener('keydown', (ev) => { if (ev.key === 'Escape' && !this.pop.hidden) { this.togglePop(false); $('#muOpen').focus(); } });
+    $('#addSong').addEventListener('change', (ev) => this.addFile(ev.target.files[0], ev.target));
+  },
+  playing() { return !audioSys.el.paused && !audioSys.el.ended; },
+  duration() { return (this.track.analysis && this.track.analysis.duration) || audioSys.el.duration || 0; },
+  sizeWave() { const d = Math.min(2, devicePixelRatio || 1); this.cv.width = Math.round(this.wave.clientWidth * d); this.cv.height = Math.round(this.wave.clientHeight * d); this.draw(); },
+  label() {
+    const tr = this.track, an = tr.analysis;
+    $('#muTitle').textContent = tr.title; $('#muSub').textContent = tr.artist;
+    $('#muNow').textContent = an ? `${tr.title} · ${tr.artist} · ${fa(Math.round(an.bpm))} ضرب` : `${tr.title} · ${tr.artist}`;
+  },
+  load(i, play) {
+    this.i = (i + TRACKS.length) % TRACKS.length; const tr = this.track;
+    gsap.fromTo(['#muTitle', '#muSub'], { opacity: 0, y: 5 }, { opacity: 1, y: 0, duration: 0.5, stagger: 0.05, ease: 'expo.out' });
+    this.label();
+    const art = $('#muArt'); art.innerHTML = ''; art.appendChild(coverEl(tr, 46));
+    audioSys.load(tr);
+    $('#muCur').textContent = mmss(0); $('#muDur').textContent = mmss(this.duration());
+    this.markList();
+    if (!tr.analysis && !tr.analysing) this.analyse(tr);
+    if (play) this.play(); else this.ui(false);
+    this.draw();
+  },
+  async analyse(tr) {
+    tr.analysing = true;
+    try { tr.analysis = await analyseTrack(tr.file || tr.src); this.buildList(); if (tr === this.track) { $('#muDur').textContent = mmss(this.duration()); this.label(); this.draw(); } }
+    catch (err) { /* stays on live detection */ }
+    tr.analysing = false;
+  },
+  async play() {
+    audioSys.graph();
+    this.el.classList.add('is-loading');
+    try { await audioSys.el.play(); this.ui(true); }
+    catch (err) { this.el.classList.remove('is-loading'); if (err && err.name !== 'AbortError') this.onError(); }
+  },
+  pause() { audioSys.el.pause(); this.ui(false); },
+  toggle() { if (this.playing()) this.pause(); else this.play(); },
+  ui(on) { this.el.classList.toggle('is-playing', on); if (!on) this.el.classList.remove('is-loading'); $('#muPlay').setAttribute('aria-label', on ? 'توقف' : 'پخش'); this.markList(); },
+  onMeta() { $('#muDur').textContent = mmss(this.duration()); this.draw(); },
+  async onError() {
+    // some hosts refuse to stream media; try the same file from memory once before giving up
+    const tr = this.track;
+    if (!tr.mem && !tr.memTried) { tr.memTried = true; if (await audioSys.toMemory(tr, 0, true)) return; }
+    this.ui(false); toast('فایل این آهنگ پیدا نشد. فایل‌ها رو تو پوشه‌ی assets/music بذار، یا «آهنگ خودت» رو امتحان کن.');
+  },
+  seek(r) { const d = this.duration(); if (!d) return; audioSys.seekTo(r * d); $('#muCur').textContent = mmss(r * d); this.draw(); },
+  buildList() {
+    const list = $('#muList'); list.innerHTML = '';
+    TRACKS.forEach((tr, k) => {
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'row';
+      b.innerHTML = `<span class="c"></span><span><span class="tt"></span><span class="ta"></span></span><span class="td">${tr.analysis ? `<span class="bpm">${fa(Math.round(tr.analysis.bpm))} ضرب</span>${mmss(tr.analysis.duration)}` : ''}</span>`;
+      $('.tt', b).textContent = tr.title; $('.ta', b).textContent = tr.artist;
+      $('.c', b).replaceWith(coverEl(tr, 36));
+      b.addEventListener('click', () => this.load(k, true));
+      list.appendChild(b);
+    });
+    this.markList();
+  },
+  markList() { $$('#muList .row').forEach((b, k) => b.setAttribute('aria-current', k === this.i ? 'true' : 'false')); },
+  togglePop(force) {
+    const pop = this.pop, open = force ?? pop.hidden;
+    $('#muOpen').setAttribute('aria-expanded', open);
+    if (open) { pop.hidden = false; this.sizeWave(); gsap.fromTo(pop, { opacity: 0, y: -8 }, { opacity: 1, y: 0, duration: 0.5, ease: 'expo.out' }); }
+    else if (!pop.hidden) gsap.to(pop, { opacity: 0, y: -6, duration: 0.25, ease: 'power2.in', onComplete: () => { pop.hidden = true; } });
+  },
+  async addFile(file, input) {
+    if (!file) return;
+    toast('دارم ریتم آهنگ رو تشخیص می‌دم…');
+    const e = EVENTS[state.i];
+    const tr = { id: 'user-' + Date.now(), title: file.name.replace(/\.[^.]+$/, '').slice(0, 40), artist: 'آهنگ شما', src: URL.createObjectURL(file), file, cover: null, hues: [e.accent, '#1e1b2e'], analysis: null };
+    try { tr.analysis = await analyseTrack(file); } catch (err) { /* live detection */ }
+    TRACKS.push(tr); this.buildList(); this.load(TRACKS.length - 1, true);
+    toast(tr.analysis ? `ریتم پیدا شد: حدود ${fa(Math.round(tr.analysis.bpm))} ضرب در دقیقه. پس‌زمینه با همین می‌تپه.` : 'تحلیل کامل نشد؛ پس‌زمینه با تشخیص زنده کار می‌کنه.');
+    if (input) input.value = '';
+  },
+  frame() {
+    if (!this.playing()) return;
+    const now = performance.now();
+    if (now - this.lastLabel > 250) { $('#muCur').textContent = mmss(audioSys.el.currentTime); const d = this.duration(); this.wave.setAttribute('aria-valuenow', d ? Math.round(audioSys.el.currentTime / d * 100) : 0); this.lastLabel = now; }
+    if (!this.pop.hidden) this.draw();
+  },
+  draw() {
+    const x = this.cx; if (!x) return;
+    const w = this.cv.width, h = this.cv.height; if (!w || !h) return;
+    const peaks = (this.track.analysis && this.track.analysis.peaks) || null, dpr = Math.min(2, devicePixelRatio || 1), n = Math.max(24, Math.floor(w / (4.5 * dpr)));
+    const d = this.duration(), prog = d ? audioSys.el.currentTime / d : 0, bw = Math.max(1.5, 2 * dpr), stepX = w / n, acc = EVENTS[state.i].accent;
+    x.clearRect(0, 0, w, h);
+    for (let k = 0; k < n; k++) {
+      let v; if (peaks) { const a = Math.floor(k / n * peaks.length), z = Math.max(a + 1, Math.floor((k + 1) / n * peaks.length)); v = 0; for (let j = a; j < z; j++) v = Math.max(v, peaks[j]); } else v = 0.35 + 0.25 * Math.sin(k * 0.7) * Math.sin(k * 0.23);
+      const f = (k + 0.5) / n, bh = Math.max(2, (0.14 + v * 0.86) * h);
+      x.fillStyle = f <= prog ? acc : (this.hover >= 0 && f <= this.hover ? 'rgba(255,255,255,.5)' : 'rgba(255,255,255,.2)');
+      x.beginPath(); if (x.roundRect) x.roundRect(Math.round(k * stepX), Math.round((h - bh) / 2), bw, Math.round(bh), bw / 2); else x.rect(Math.round(k * stepX), Math.round((h - bh) / 2), bw, Math.round(bh)); x.fill();
+    }
+  },
+};
+
+/* the beat: the logo's bars and the player's bars are small equalisers; with "تپش" the whole
+   background swells a little on each beat and a light in the show's colour rises from below */
+const meters = {
+  bars: $$('.bars i'), base: [0.38, 0.72, 1, 0.6, 0.34], eq: $$('.mu-eq i'), rest: true, bk: '', gk: '', pk: '', glow: $('#beat'), play: $('#muPlay'), avg: new Float32Array(48).fill(0.3),
+  frame(dt) {
+    const lvl = A.level, f = Math.min(1, dt * 1.5);
+    for (let b = 0; b < 48; b++) this.avg[b] += ((A.bands[b] || 0) - this.avg[b]) * f;
+    // a band shows how far it is above its own recent average, so quiet and loud songs both move
+    const lift = (b) => clamp(0.2 + ((A.bands[b] || 0) - this.avg[b]) / 0.14, 0, 1);
+    if (lvl < 0.01) {
+      if (!this.rest) { this.bars.forEach((b) => { b.style.transform = ''; }); this.eq.forEach((b) => { b.style.transform = ''; }); this.rest = true; }
+    } else {
+      this.rest = false;
+      [2, 6, 11, 18, 28].forEach((band, k) => { this.bars[k].style.transform = `scaleY(${clamp(this.base[k] * (1 - lvl) + (0.2 + lift(band) * 0.7 + (k === 2 ? A.kick * 0.2 : 0)) * lvl, 0.15, 1).toFixed(3)})`; });
+      [3, 10, 20, 32].forEach((band, k) => { this.eq[k].style.transform = `scaleY(${clamp(0.2 + (A.bands[band] || 0) * 0.9 + (k === 0 ? A.kick * 0.3 : 0), 0.15, 1).toFixed(3)})`; });
+    }
+    const on = state.react === 'pulse' && !reduceMotion && lvl > 0.01;
+    const s = on ? (1 + (A.kick * 0.012 + A.down * 0.006) * lvl).toFixed(4) : '1';
+    if (s !== this.bk) { this.bk = s; bg.el.style.transform = s === '1' ? '' : `scale(${s})`; }
+    const g = on ? clamp((A.kick * 0.55 + A.energy * 0.22) * lvl, 0, 0.85).toFixed(2) : '0';
+    if (g !== this.gk) { this.gk = g; this.glow.style.opacity = g; }
+    const p = (1 + A.kick * 0.22 * lvl).toFixed(3);
+    if (p !== this.pk) { this.pk = p; this.play.style.setProperty('--pulse', p); }
+  },
+};
+
+/* ════════════════════════════════════════════════════════════════
+   small interactions
+   ════════════════════════════════════════════════════════════════ */
+const toastEl = $('#toast');
+function toast(msg) {
+  toastEl.textContent = msg; gsap.killTweensOf(toastEl);
+  gsap.fromTo(toastEl, { y: 16, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: 'expo.out' });
+  gsap.to(toastEl, { y: 10, opacity: 0, duration: 0.4, delay: 3.6, ease: 'power2.in' });
+}
+const seatToast = () => toast(`اینجا صفحه‌ی انتخاب صندلی «${EVENTS[state.i].type} ${EVENTS[state.i].name}» باز می‌شه.`);
+['#buyBtn', '#navBuy'].forEach((s) => $(s).addEventListener('click', seatToast));
+$('#moreBtn').addEventListener('click', () => toast(`اینجا صفحه‌ی اجرای «${EVENTS[state.i].name}» باز می‌شه.`));
+$$('#searchBtn, #loginBtn, #menuBtn').forEach((b) => b.addEventListener('click', () => toast('این بخش هنوز ساخته نشده.')));
+$$('.links a').forEach((a) => a.addEventListener('click', (ev) => ev.preventDefault()));
+$('#nextBtn').addEventListener('click', () => next('user'));
+$('#prevBtn').addEventListener('click', prev);
+$('#autoBtn').addEventListener('click', (ev) => {
+  state.userPaused = !state.userPaused; const b = ev.currentTarget;
+  b.setAttribute('aria-pressed', state.userPaused); b.setAttribute('aria-label', state.userPaused ? 'ادامه‌ی نمایش خودکار' : 'توقف نمایش خودکار'); syncPlay();
+});
+
+// after the intro: every show's full picture, one at a time, so each change opens at once
+function warm() {
+  let k = 0;
+  const step = () => {
+    const e = EVENTS[k++]; if (!e) return;
+    const m = mediaOf(e), im = new Image();
+    if (m.kind === 'photo') { im.sizes = '100vw'; im.srcset = m.srcset; }
+    im.src = m.src; decoded(im).then(() => setTimeout(step, 60));
+  };
+  step();
+}
+
+// prototype panel
+(() => {
+  const fab = $('#protoFab'), panel = $('#protoPanel');
+  const open = (on) => {
+    fab.setAttribute('aria-expanded', on);
+    if (on) { panel.hidden = false; fab.style.visibility = 'hidden'; gsap.fromTo(panel, { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5, ease: 'expo.out' }); }
+    else gsap.to(panel, { opacity: 0, y: 8, duration: 0.25, onComplete: () => { panel.hidden = true; fab.style.visibility = ''; } });
+  };
+  fab.addEventListener('click', () => open(true));
+  $('#protoClose').addEventListener('click', () => { open(false); fab.focus(); });
+  panel.addEventListener('keydown', (ev) => { if (ev.key === 'Escape') { open(false); fab.focus(); } });
+  $$('.seg', panel).forEach((g) => g.addEventListener('click', (ev) => {
+    const b = ev.target.closest('button'); if (!b) return;
+    $$('button', g).forEach((x) => x.setAttribute('aria-pressed', x === b ? 'true' : 'false'));
+    const v = b.dataset.v, k = g.dataset.ctrl;
+    if (k === 'boxes') {
+      state.boxes = v; hero.dataset.boxes = v; boxes.el.setAttribute('aria-orientation', v === 'row' ? 'horizontal' : 'vertical');
+      boxes.size(); copy.fit();
+      if (!reduceMotion) { gsap.set(boxes.list, { transition: 'none' }); gsap.fromTo(boxes.list, { opacity: 0, y: 14 }, { opacity: (k2) => (k2 === state.i ? 1 : 0.6), y: 0, duration: 0.7, stagger: 0.04, ease: 'expo.out', clearProps: 'opacity,transform,transition' }); }
+    }
+    if (k === 'trans') state.trans = v;
+    if (k === 'title') state.title = v;
+    if (k === 'dur') hero.style.setProperty('--dur', `${v}s`);
+    if (k === 'source') { state.source = v; boxes.refresh(); bg.show(state.i, { mode: 'fade' }); if (v === 'poster') toast('«چهارمضراب» و «بی‌تعارف» حالا فقط پوستر دارن؛ برو سراغشون.'); warm(); }
+    if (k === 'react') { state.react = v; if (v === 'pulse' && !player.playing()) toast('یه آهنگ از دکمه‌ی پخش بالای صفحه پخش کن تا پس‌زمینه با ضربش بتپه.'); }
+  }));
+})();
+
+new IntersectionObserver(([en]) => { state.visible = en.isIntersecting; syncPlay(); }, { threshold: 0.05 }).observe(hero);
+document.addEventListener('visibilitychange', syncPlay);
+
+let last = performance.now();
+function frame(now) {
+  const dt = Math.min(0.05, (now - last) / 1000); last = now;
+  audioSys.frame(dt);
+  if (state.visible && !document.hidden) meters.frame(dt);
+  player.frame();
+  requestAnimationFrame(frame);
+}
+
+/* boot */
+audioSys.init();
+boxes.build(); boxes.size();
+copy.render(EVENTS[0], 0); setAccent(EVENTS[0]);
+counter.set(0, true);
+$('#cAll').textContent = fa(EVENTS.length);
+boxes.set(0);
+player.init();
+syncPlay();
+requestAnimationFrame(frame);
+if (reduceMotion) { state.userPaused = true; $('#autoBtn').setAttribute('aria-pressed', 'true'); $('#autoBtn').setAttribute('aria-label', 'ادامه‌ی نمایش خودکار'); }
+document.fonts.ready.then(() => copy.fit());
+new ResizeObserver(() => copy.fit()).observe(copy.title);
+
+(function intro() {
+  root.classList.remove('is-intro');
+  if (reduceMotion) { bg.show(0, { mode: 'instant' }); state.intro = false; syncPlay(); gsap.from(hero, { opacity: 0, duration: 0.5 }); warm(); return; }
+  bg.show(0, { mode: 'intro' });
+  copy.in(0.7); // fromTo with a delay: the words start hidden right away, so nothing flashes
+  const moving = [...boxes.list, ...$$('.cta > *')];
+  gsap.set(moving, { transition: 'none' }); // their hover transitions would drag the entrance
+  const tl = gsap.timeline({ defaults: { ease: 'expo.out' } });
+  tl.from('.brand', { y: -14, opacity: 0, duration: 1 }, 0.25)
+    .from('.links a', { y: -12, opacity: 0, duration: 0.9, stagger: 0.05 }, 0.32)
+    .from('.nav-end > *', { y: -12, opacity: 0, duration: 0.9, stagger: 0.06 }, 0.38)
+    .from('.k-line', { scaleX: 0, duration: 1.3, ease: 'expo.inOut' }, 0.5)
+    .from('.cta > *', { y: 22, opacity: 0, duration: 1.1, stagger: 0.08, clearProps: 'transform,opacity,transition' }, 1.05)
+    .from(boxes.list, { x: -46, opacity: 0, duration: 1.2, stagger: 0.07, clearProps: 'transform,opacity,transition' }, 0.75)
+    .from('.foot > *', { y: 16, opacity: 0, duration: 1, stagger: 0.08, clearProps: 'transform,opacity' }, 1.2)
+    .from('#protoFab', { opacity: 0, duration: 0.6 }, 1.8)
+    .add(() => { state.intro = false; syncPlay(); }, 1.6)
+    .add(warm, 2.2);
+})();
+
+// test hook for local checks only (?debug in the URL)
+if (/[?&]debug/.test(location.search)) window.__hero = { bg, boxes, copy, counter, player, meters, audioSys, A, analyseTrack, TRACKS, EVENTS, state, go, next, mediaOf, compose, syncPlay };
+})();
+</script>
+</body>
+</html>
