@@ -13,13 +13,13 @@ Then open http://localhost:8000/01-hero/ to compare the hero versions. Use a loc
 
 Hosted previews (private to the owner; the hero preview includes the songs):
 - Moodboard of 16 international ticketing, festival and theatre sites: https://claude.ai/artifact/G67hnwxgRA75NhkLfJZUAP
-- Hero, all versions on one page (tabs 1–5): https://claude.ai/artifact/FMdoTVhR22nUCmfX76FvjU
+- Hero, all versions on one page (tabs 1–6): https://claude.ai/artifact/FMdoTVhR22nUCmfX76FvjU
 
 ## بخش‌ها · Sections
 
 | # | بخش | Section | Status | Refs |
 |---|---|---|---|---|
-| 1 | هیرو (صحنه) | Hero: five versions side by side (v1 WebGL stage, v2 photo + featured rail, v3 posters, v4 formal and alive, v5 cut-out performer and striped halo after references A and B) | **v5 new, waiting for feedback; v2 kept** → [`01-hero`](01-hero/) | الف، ب، ۱۰، ۱۵ |
+| 1 | هیرو (صحنه) | Hero: six versions side by side (v1 WebGL stage, v2 photo + featured rail, v3 posters, v4 formal and alive, v5 cut-out performer and striped halo after references A and B, v6 = v5 working with posters, banners, photos or nothing, plus a demo admin panel) | **v6 new, waiting for feedback; v5 liked** → [`01-hero`](01-hero/) | الف، ب، ۱۰، ۱۵ |
 | 2 | جستجو با حال‌وهوا | Mood search ("something funny", "date night", "this weekend") | next | ۳، ۵ |
 | 3 | پرفروش‌های هفته | Weekly best sellers with giant numbers | later | ۳ |
 | 4 | قفسه‌ی تئاتر | Theatre poster shelf | later | ۵، ۱۴ |

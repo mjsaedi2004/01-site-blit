@@ -2,7 +2,7 @@
 
 فایل‌های صوتی این پوشه تو گیت نیستن. آهنگ‌ها مال صاحبانشون هستن و این مخزن عمومیه. نسخه‌ی خصوصی پیش‌نمایش خودش آهنگ‌ها رو داره.
 
-The audio files are **not committed** (the songs belong to their rights holders and this repository is public). The private hosted preview carries its own copies. Versions 2–5 all read the songs from here (`../assets/music/` from their folders); version 1 synthesises its own music.
+The audio files are **not committed** (the songs belong to their rights holders and this repository is public). The private hosted preview carries its own copies. Versions 2–6 all read the songs from here (`../assets/music/` from their folders); version 1 synthesises its own music.
 
 ## اجرا روی سیستم خودت · Running locally
 
@@ -13,7 +13,7 @@ Put the files here with exactly these names:
 | `dayan-ta-abad-to.mp3` | دایان · تا ابد تو |
 | `majid-razavi-manam.mp3` | مجید رضوی · منم |
 | `aron-afshar-sanie-var.mp3` | آرون افشار · ثانیه وار |
-| `majid-razavi-manam.webp`, `aron-afshar-sanie-var.webp` | optional square covers (versions 2, 3 and 5); without them the player draws a cover from the title |
+| `majid-razavi-manam.webp`, `aron-afshar-sanie-var.webp` | optional square covers (versions 2, 3, 5 and 6); without them the player draws a cover from the title |
 
 Serve `ui-reference/` with a server that supports HTTP range requests (`npx http-server`), so the players can seek. Python's `http.server` plays the songs but can't seek.
 

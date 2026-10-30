@@ -1,0 +1,146 @@
+<!doctype html><html><body style="margin:0;background:transparent">
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+<script type="module">
+// Ready-made "emblems" for the hero's fallback mode: simple studio renders in neutral materials.
+// The page tints them in the show's colour at runtime, like the performer cut-outs.
+import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+
+const S = 1400;
+const r = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+r.setPixelRatio(1); r.setSize(S, S); r.toneMapping = THREE.ACESFilmicToneMapping; r.toneMappingExposure = 1.05;
+r.outputColorSpace = THREE.SRGBColorSpace; r.shadowMap.enabled = true; r.shadowMap.type = THREE.PCFSoftShadowMap;
+document.body.appendChild(r.domElement);
+const pm = new THREE.PMREMGenerator(r);
+const env = pm.fromScene(new RoomEnvironment(), 0.03).texture;
+
+function stage() {
+  const s = new THREE.Scene(); s.environment = env;
+  const key = new THREE.DirectionalLight(0xffffff, 2.2); key.position.set(-3, 4, 5); s.add(key);
+  const rim = new THREE.DirectionalLight(0xffffff, 1.6); rim.position.set(4, 2, -4); s.add(rim);
+  s.add(new THREE.AmbientLight(0xffffff, 0.25));
+  return s;
+}
+function cam(fov, pos, look = [0, 0, 0]) { const c = new THREE.PerspectiveCamera(fov, 1, 0.1, 100); c.position.set(...pos); c.lookAt(...look); return c; }
+const mat = (o) => new THREE.MeshPhysicalMaterial(Object.assign({ color: 0xdedede, roughness: 0.35, metalness: 0.0 }, o));
+
+// a canvas texture helper
+function canvasTex(w, h, draw, repeat) { const c = document.createElement('canvas'); c.width = w; c.height = h; draw(c.getContext('2d'), w, h); const t = new THREE.CanvasTexture(c); if (repeat) { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(...repeat); } t.anisotropy = 8; return t; }
+
+const builders = {
+  // stage spotlight: a can with barn doors on a yoke, lens glowing
+  spotlight() {
+    const s = stage(), g = new THREE.Group(), head = new THREE.Group();
+    const body = mat({ color: 0x9c9c9c, roughness: 0.38, metalness: 0.55, clearcoat: 0.4 });
+    const dark = mat({ color: 0x6d6d6d, roughness: 0.3, metalness: 0.8 });
+    // the can, open at the front, rounded at the back, with cooling fins
+    const can = new THREE.Mesh(new THREE.CylinderGeometry(0.66, 0.7, 1.6, 72, 1, true), body); can.rotation.x = Math.PI / 2; head.add(can);
+    const back = new THREE.Mesh(new THREE.SphereGeometry(0.7, 64, 32, 0, Math.PI * 2, 0, Math.PI / 2), body); back.rotation.x = -Math.PI / 2; back.position.z = -0.8; back.scale.set(1, 1, 0.5); head.add(back);
+    for (let k = 0; k < 5; k++) { const fin = new THREE.Mesh(new THREE.TorusGeometry(0.7, 0.03, 12, 72), dark); fin.position.z = -0.55 + k * 0.13; head.add(fin); }
+    const rim = new THREE.Mesh(new THREE.TorusGeometry(0.66, 0.08, 24, 96), dark); rim.position.z = 0.8; head.add(rim);
+    const lens = new THREE.Mesh(new THREE.CircleGeometry(0.62, 96), new THREE.MeshPhysicalMaterial({ color: 0xffffff, emissive: 0xffffff, emissiveIntensity: 1.6, roughness: 0.05, clearcoat: 1 })); lens.position.z = 0.79; head.add(lens);
+    const fres = new THREE.Mesh(new THREE.RingGeometry(0.15, 0.6, 96, 6), new THREE.MeshBasicMaterial({ color: 0xdddddd, transparent: true, opacity: 0.45, wireframe: true })); fres.position.z = 0.795; head.add(fres);
+    // four barn doors hinged on the rim, opened outward
+    const door = mat({ color: 0x7e7e7e, roughness: 0.4, metalness: 0.6, side: THREE.DoubleSide });
+    const plate = (w, d) => { const sh = new THREE.Shape(); sh.moveTo(-w / 2, 0); sh.lineTo(w / 2, 0); sh.lineTo(w * 0.42, d); sh.lineTo(-w * 0.42, d); sh.closePath(); return new THREE.ExtrudeGeometry(sh, { depth: 0.025, bevelEnabled: false }); };
+    [['top', 0], ['bottom', Math.PI], ['left', Math.PI / 2], ['right', -Math.PI / 2]].forEach(([n, a2]) => {
+      const pivot = new THREE.Group(); pivot.rotation.z = a2; pivot.position.z = 0.84; head.add(pivot);
+      const hinge = new THREE.Group(); hinge.position.y = 0.66; hinge.rotation.x = -0.75; pivot.add(hinge);
+      const d = new THREE.Mesh(plate(1.25, 0.62), door); d.rotation.x = Math.PI / 2; hinge.add(d);
+    });
+    head.rotation.set(0.12, -0.62, 0); g.add(head);
+    // a U-shaped yoke from the side knobs down to a clamp
+    const yoke = dark;
+    [-1, 1].forEach((sx) => {
+      const bar = new THREE.Mesh(new RoundedBoxGeometry(0.1, 1.05, 0.14, 3, 0.03), yoke); bar.position.set(sx * 0.86, -0.47, 0); g.add(bar);
+      const knob = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.13, 0.12, 32), yoke); knob.rotation.z = Math.PI / 2; knob.position.set(sx * 0.82, 0, 0); g.add(knob);
+    });
+    const cross = new THREE.Mesh(new RoundedBoxGeometry(1.82, 0.1, 0.14, 3, 0.03), yoke); cross.position.y = -1.0; g.add(cross);
+    const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.42, 24), yoke); stem.position.y = -1.25; g.add(stem);
+    const clamp = new THREE.Mesh(new RoundedBoxGeometry(0.38, 0.24, 0.34, 4, 0.05), yoke); clamp.position.y = -1.5; g.add(clamp);
+    g.rotation.set(0.18, 0.28, 0.06); s.add(g);
+    return [s, cam(30, [0, -0.15, 7.4], [0, -0.2, 0])];
+  },
+  // three glossy balloons with strings
+  balloons() {
+    const s = stage(), g = new THREE.Group();
+    const bal = (x, y, z, sc, shade) => {
+      const m = new THREE.Mesh(new THREE.SphereGeometry(0.62, 96, 64), mat({ color: shade, roughness: 0.18, clearcoat: 1, clearcoatRoughness: 0.08, sheen: 0.4 }));
+      const p = m.geometry.attributes.position; for (let i = 0; i < p.count; i++) { const yy = p.getY(i); if (yy < 0) p.setY(i, yy * (1.25 - 0.2 * (yy / -0.62))); }
+      m.geometry.computeVertexNormals(); m.scale.set(sc, sc * 1.08, sc); m.position.set(x, y, z); g.add(m);
+      const knot = new THREE.Mesh(new THREE.SphereGeometry(0.06 * sc, 24, 16), m.material); knot.scale.set(1, 0.8, 1); knot.position.set(x, y - 0.84 * sc, z); g.add(knot);
+      const tie = new THREE.Mesh(new THREE.TorusGeometry(0.045 * sc, 0.018 * sc, 10, 24), m.material); tie.rotation.x = Math.PI / 2; tie.position.set(x, y - 0.89 * sc, z); g.add(tie);
+      const curve = new THREE.CatmullRomCurve3([new THREE.Vector3(x, y - 0.9 * sc, z), new THREE.Vector3(x * 0.6 + 0.05, y - 1.6, z * 0.5), new THREE.Vector3(x * 0.25 - 0.05, -1.9, 0.1), new THREE.Vector3(0, -2.5, 0.2)]);
+      g.add(new THREE.Mesh(new THREE.TubeGeometry(curve, 64, 0.012, 8), mat({ color: 0x999999, roughness: 0.6 })));
+    };
+    bal(-0.55, 0.5, 0.1, 1.0, 0xd0d0d0); bal(0.58, 0.68, -0.35, 0.92, 0xbdbdbd); bal(0.02, 1.32, 0.3, 0.84, 0xe2e2e2);
+    g.position.y = -0.1; g.rotation.y = 0.2; s.add(g);
+    return [s, cam(30, [0, 0.1, 8.2], [0, 0.1, 0])];
+  },
+  // handheld microphone: mesh grille, ring, tapered body
+  microphone() {
+    const s = stage(), g = new THREE.Group();
+    const grid = canvasTex(512, 512, (x, w, h) => { x.fillStyle = '#000'; x.fillRect(0, 0, w, h); x.strokeStyle = '#fff'; x.lineWidth = 7; for (let i = 0; i <= 32; i++) { x.beginPath(); x.moveTo(i * 16, 0); x.lineTo(i * 16, h); x.stroke(); x.beginPath(); x.moveTo(0, i * 16); x.lineTo(w, i * 16); x.stroke(); } }, [6, 3]);
+    const metal = mat({ color: 0xe0e0e0, roughness: 0.22, metalness: 1 });
+    const grille = new THREE.Mesh(new THREE.SphereGeometry(0.62, 96, 64), new THREE.MeshPhysicalMaterial({ color: 0xe8e8e8, metalness: 1, roughness: 0.3, alphaMap: grid, transparent: true, alphaTest: 0.4, side: THREE.DoubleSide }));
+    grille.scale.set(1, 1.08, 1); grille.position.y = 1.15; g.add(grille);
+    const inner = new THREE.Mesh(new THREE.SphereGeometry(0.56, 64, 48), mat({ color: 0x1c1c1c, roughness: 0.9 })); inner.scale.set(1, 1.08, 1); inner.position.y = 1.15; g.add(inner);
+    const ring = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.56, 0.22, 96), metal); ring.position.y = 0.52; g.add(ring);
+    const band = new THREE.Mesh(new THREE.TorusGeometry(0.59, 0.035, 16, 96), metal); band.rotation.x = Math.PI / 2; band.position.y = 0.64; g.add(band);
+    const body = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.26, 2.5, 96), mat({ color: 0x6e6e6e, roughness: 0.28, metalness: 0.7, clearcoat: 0.8 })); body.position.y = -0.85; g.add(body);
+    const sw = new THREE.Mesh(new RoundedBoxGeometry(0.14, 0.42, 0.1, 4, 0.04), metal); sw.position.set(0, -0.35, 0.44); sw.rotation.x = -0.1; g.add(sw);
+    const tip = new THREE.Mesh(new THREE.CylinderGeometry(0.26, 0.24, 0.16, 64), metal); tip.position.y = -2.18; g.add(tip);
+    g.rotation.set(0.25, 0.4, -0.5); g.position.set(0.1, 0.1, 0); s.add(g);
+    return [s, cam(30, [0, 0, 8.4])];
+  },
+  // mirror ball: rows of small square mirrors on a sphere
+  discoball() {
+    const s = stage(), g = new THREE.Group();
+    const R = 1.25, tile = 0.105, rows = Math.floor(Math.PI * R / (tile * 1.12));
+    const mirror = new THREE.MeshPhysicalMaterial({ color: 0xffffff, metalness: 0.92, roughness: 0.12 });
+    const geo = new THREE.BoxGeometry(tile, tile, 0.02), mats = [], dummy = new THREE.Object3D(); let count = 0;
+    const places = [];
+    for (let i = 1; i < rows; i++) {
+      const phi = Math.PI * i / rows, rr = R * Math.sin(phi), y = R * Math.cos(phi), n = Math.max(1, Math.floor(2 * Math.PI * rr / (tile * 1.12)));
+      for (let j = 0; j < n; j++) { const th = 2 * Math.PI * (j + (i % 2) * 0.5) / n; places.push([rr * Math.cos(th), y, rr * Math.sin(th)]); }
+    }
+    const inst = new THREE.InstancedMesh(geo, mirror, places.length);
+    places.forEach(([x, y, z], k) => { dummy.position.set(x, y, z); dummy.lookAt(x * 2, y * 2, z * 2); dummy.rotateZ((Math.random() - 0.5) * 0.08); dummy.rotateX((Math.random() - 0.5) * 0.12); dummy.updateMatrix(); inst.setMatrixAt(k, dummy.matrix); });
+    g.add(inst);
+    g.add(new THREE.Mesh(new THREE.SphereGeometry(R * 0.985, 64, 48), mat({ color: 0x333333, roughness: 0.8 })));
+    const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.16, 0.14, 32), mat({ color: 0xbbbbbb, metalness: 1, roughness: 0.3 })); cap.position.y = R + 0.05; g.add(cap);
+    for (let k = 0; k < 7; k++) { const l = new THREE.Mesh(new THREE.TorusGeometry(0.06, 0.016, 10, 24), mat({ color: 0xcccccc, metalness: 1, roughness: 0.3 })); l.position.y = R + 0.2 + k * 0.11; l.rotation.y = k % 2 ? Math.PI / 2 : 0; g.add(l); }
+    g.rotation.set(0.15, 0.6, 0); s.add(g);
+    // extra point lights for sparkle
+    s.add(new THREE.HemisphereLight(0xffffff, 0x666666, 1.4)); [[-3, 2, 4, 40], [3, 3, 3, 30], [0, -2, 4, 18], [2, -1, 5, 16]].forEach(([x, y, z, i]) => { const p = new THREE.PointLight(0xffffff, i, 20); p.position.set(x, y, z); s.add(p); });
+    return [s, cam(30, [0, 0.25, 7.6], [0, 0.25, 0])];
+  },
+  // daf: a wooden frame drum with a skin and rings inside the rim
+  daf() {
+    const s = stage(), g = new THREE.Group();
+    const wood = canvasTex(1024, 64, (x, w, h) => { for (let i = 0; i < w; i += 2) { const v = 150 + 40 * Math.sin(i * 0.07) + 25 * Math.sin(i * 0.31) + Math.random() * 16; x.fillStyle = `rgb(${v},${v},${v})`; x.fillRect(i, 0, 2, h); } }, [3, 1]);
+    const frameM = mat({ color: 0xc8c8c8, roughness: 0.55, map: wood });
+    const prof = [new THREE.Vector2(1.5, -0.28), new THREE.Vector2(1.62, -0.28), new THREE.Vector2(1.62, 0.28), new THREE.Vector2(1.5, 0.28)];
+    const frame = new THREE.Mesh(new THREE.LatheGeometry(prof.concat([prof[0]]), 160), frameM); frame.rotation.x = Math.PI / 2; g.add(frame);
+    const skinT = canvasTex(1024, 1024, (x, w, h) => { const gr = x.createRadialGradient(w / 2, h / 2, 50, w / 2, h / 2, w / 2); gr.addColorStop(0, '#f2efe8'); gr.addColorStop(0.85, '#e2ddd2'); gr.addColorStop(1, '#bdb6a8'); x.fillStyle = gr; x.fillRect(0, 0, w, h); for (let i = 0; i < 7000; i++) { x.fillStyle = `rgba(0,0,0,${Math.random() * 0.05})`; x.fillRect(Math.random() * w, Math.random() * h, 2, 2); } x.strokeStyle = 'rgba(80,70,60,.25)'; x.lineWidth = 6; x.beginPath(); x.arc(w / 2, h / 2, w * 0.36, 0, 7); x.stroke(); });
+    const skin = new THREE.Mesh(new THREE.CircleGeometry(1.6, 160), mat({ color: 0xffffff, roughness: 0.75, map: skinT, side: THREE.DoubleSide })); skin.position.z = 0.27; g.add(skin);
+    // inner rings (the daf's jingles)
+    const metal = mat({ color: 0xdddddd, metalness: 1, roughness: 0.25 });
+    for (let k = 0; k < 26; k++) {
+      const a = (k / 26) * Math.PI * 2; const ring = new THREE.Mesh(new THREE.TorusGeometry(0.11, 0.018, 12, 40), metal);
+      ring.position.set(Math.cos(a) * 1.4, Math.sin(a) * 1.4, -0.05 + (k % 3) * 0.08); ring.rotation.set(Math.PI / 2 + (Math.random() - 0.5) * 0.5, (Math.random() - 0.5) * 0.4, a); g.add(ring);
+    }
+    const hook = new THREE.Mesh(new THREE.TorusGeometry(1.4, 0.012, 8, 160), metal); hook.position.z = 0.0; g.add(hook);
+    g.rotation.set(0.3, Math.PI + 0.55, -0.12); s.add(g);
+    return [s, cam(30, [0, 0, 8.4])];
+  },
+};
+
+window.renderEmblem = (name) => {
+  const [s, c] = builders[name]();
+  r.render(s, c);
+  return r.domElement.toDataURL('image/png');
+};
+window.ready = true;
+</script></body></html>
