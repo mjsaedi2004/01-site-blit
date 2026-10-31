@@ -37,3 +37,7 @@ Reference numbers point to [`references.md`](references.md).
 - Motion: GSAP for timelines, WAAPI or CSS for compositor-only effects; `expo.out` for entrances, `power3.in` for exits; always a reduced-motion path.
 - Performance: continuous animation only on `transform` and `opacity`; no WebGL, backdrop-filter or blend modes; nothing restyles the whole page per frame. See [`01-hero/v2/SPEC.md` §10](01-hero/v2/SPEC.md#10-performance-rules).
 - RTL rules (no per-letter splitting, LTR clocks and media bars, mirrored arrows, unmirrored media icons) are in [`01-hero/v2/SPEC.md` §11](01-hero/v2/SPEC.md#11-persian--rtl-rules).
+
+## ادامه‌ی کار با Claude یا حساب دیگه · Handoff
+
+برای ادامه‌ی پروژه با یه Claude دیگه، اول [`HANDOFF.md`](HANDOFF.md) رو بخون: پروژه چیه، نسخه‌ها و نظر صاحب پروژه، قواعد، تست و کار باز مونده.
